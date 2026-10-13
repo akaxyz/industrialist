@@ -1,0 +1,262 @@
+local v1 = game:GetService("Players")
+local v_u_2 = game:GetService("TweenService")
+local v_u_3 = v1.LocalPlayer
+local v_u_4 = v_u_3:WaitForChild("PlayerGui"):WaitForChild("Menu")
+local v_u_5 = v_u_4.Frame.Logo.SplashText
+local v6 = {
+	["REGULAR_LIST"] = {
+		{
+			["Text"] = "Hello world!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "pls buy my vip t-shirt",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "123 for industrializing",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "AFK simulator!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Rolling down in the deep",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "did you change da world?",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "c00lkidd club only",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "industrialistic desires...",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "The town of industrialistia is calling!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Maxsters was here\240\159\164\171",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = " ",
+			["Weight"] = 0.5
+		},
+		{
+			["Text"] = "someone stole one of our splash texts\240\159\152\161",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "The player can see our thoughts?",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Who keeps changing these splash texts?",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Industrialist movie when",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "9/10 industrialists recommend!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Music by Maxsters!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Industrial Craft 3D",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Pollution-aires rise up",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "New year new splash texts",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "tsilairtsudnI",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Violets aren\'t blue!!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Industrial Escape 2",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "The Industrial Script",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Player1 is watching!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "It\'s free!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "No, you\'re not alone.",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "war",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "hi",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "!!!!!!!!",
+			["Weight"] = 1
+		}
+	},
+	["CHRISTMAS_LIST"] = {
+		{
+			["Text"] = "Merry Christmas!",
+			["Weight"] = 2
+		},
+		{
+			["Text"] = "Get some hot chocolate for this season!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Happy Holidays!",
+			["Weight"] = 1.5
+		},
+		{
+			["Text"] = "Snowing Season!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Get those presents!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Chill & Cheer!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Christmas Swag",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Stunning gifts only!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Ho Ho Home Dear Home!",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "\226\157\132\239\184\143",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "\226\157\132\239\184\143\226\157\132\239\184\143\226\157\132\239\184\143",
+			["Weight"] = 1
+		},
+		{
+			["Text"] = "Merry Christmas!!!!!",
+			["Weight"] = 1.5
+		}
+	}
+}
+v6.SEASONAL_EVENTS = {
+	["December"] = v6.CHRISTMAS_LIST
+}
+function v6.GetWeightedRandom(_, p7) -- name: GetWeightedRandom
+	local v8 = 0
+	for _, v9 in ipairs(p7) do
+		v8 = v8 + v9.Weight
+	end
+	if v8 <= 0 then
+		return nil
+	end
+	local v10 = Random.new():NextNumber(0, v8)
+	local v11 = 0
+	for _, v12 in ipairs(p7) do
+		v11 = v11 + v12.Weight
+		if v10 <= v11 then
+			return v12
+		end
+	end
+end
+function v6.Run(p13) -- name: Run
+	-- upvalues: (copy) v_u_3, (copy) v_u_5, (copy) v_u_4, (copy) v_u_2
+	local v14 = os.date("%B")
+	local v15 = p13.SEASONAL_EVENTS[v14] or p13.REGULAR_LIST
+	local v16 = table.clone(v15)
+	local v17 = {
+		["Text"] = nil,
+		["Weight"] = 1,
+		["Text"] = ("Hello %*\240\159\152\138\240\159\152\138"):format(v_u_3.DisplayName)
+	}
+	table.insert(v16, v17)
+	local v18 = v_u_3.AccountAge / 365
+	if v18 > 3 then
+		local v19 = {
+			["Text"] = nil,
+			["Weight"] = 1,
+			["Text"] = ("You joined %* years ago. unc!!"):format((math.round(v18)))
+		}
+		table.insert(v16, v19)
+	else
+		local v20 = {
+			["Text"] = nil,
+			["Weight"] = 1,
+			["Text"] = ("You joined %* years ago. Newbie!!"):format((math.floor(v18)))
+		}
+		table.insert(v16, v20)
+	end
+	if #v_u_3:WaitForChild("Worlds"):GetChildren() > 0 then
+		table.insert(v16, {
+			["Text"] = "This is not your first time playing is it?",
+			["Weight"] = 1.5
+		})
+	end
+	local v21 = p13:GetWeightedRandom(v16)
+	if v21 then
+		v_u_5.Text = v21.Text
+	else
+		v_u_5.Text = "No splashes found!"
+	end
+	local v22 = 50
+	v_u_5.TextSize = v_u_4.Frame.AbsoluteSize.X / v22
+	while not v_u_5.TextFits do
+		v22 = v22 + 0.5
+		v_u_5.TextSize = v_u_5.AbsoluteSize.X / v22
+	end
+	local v23 = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+	v_u_2:Create(v_u_5, v23, {
+		["TextTransparency"] = 0.5
+	}):Play()
+	v_u_2:Create(v_u_5.UIStroke, v23, {
+		["Transparency"] = 0.5
+	}):Play()
+end
+v6:Run()
+v_u_5:GetPropertyChangedSignal("AbsoluteSize"):Connect(function() -- name: updateTextSize
+	-- upvalues: (copy) v_u_5, (copy) v_u_4
+	local v24 = 50
+	v_u_5.TextSize = v_u_4.Frame.AbsoluteSize.X / v24
+	while not v_u_5.TextFits do
+		v24 = v24 + 0.5
+		v_u_5.TextSize = v_u_5.AbsoluteSize.X / v24
+	end
+end)

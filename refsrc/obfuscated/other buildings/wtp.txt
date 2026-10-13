@@ -1,0 +1,7 @@
+        local v47 = v_u_6:getTemp() * 1.1
+        local v48 = 36000 / v47
+        local v49 = math.clamp(v48, 90, 270)
+        local v50 = math.abs(v47)
+        local v51 = math.sqrt(v50) / 10
+        local v52 = v51 ^ 2 * 16
+        local v53 = math.clamp(v45, 0, v52)

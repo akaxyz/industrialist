@@ -1,0 +1,23 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.OutMainConnector)
+local v5 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_6 = false
+function v5.tick() -- name: tick
+	-- upvalues: (copy) v_u_3, (ref) v_u_6, (copy) v_u_4
+	if v_u_3:hasPower(1) then
+		if v_u_6 == false then
+			v_u_6 = true
+			v_u_4:addPower(1000)
+		end
+	else
+		v_u_6 = false
+	end
+	v_u_3:removePower(1000)
+end
+return v5

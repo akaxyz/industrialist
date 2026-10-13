@@ -1,0 +1,67 @@
+local v1 = game:GetService("Players")
+game:GetService("ReplicatedStorage")
+local v2 = game:GetService("RunService")
+local v3 = v1.LocalPlayer
+local v4 = v3.PlayerGui
+local v5 = require(script.Category)
+local v6 = require(script.Settings)
+require(script.Parent.Parent.UIReferences)
+local v_u_7 = v4:WaitForChild("Worlds").Frame.CreateWorld
+local v8 = Instance.new("Folder", v3)
+v8.Name = "Settings"
+local v_u_9 = {}
+for _, v_u_10 in pairs(v6.Categories) do
+	local v11 = Instance.new("Folder", v8)
+	v11.Name = v_u_10.Display
+	for _, v12 in pairs(v_u_10.Items) do
+		local v13 = v12.Type
+		if v13 == "Slider" then
+			local v14 = Instance.new("NumberValue", v11)
+			v14.Name = v12.Title
+			v14.Value = v12.DefaultValue
+		elseif v13 == "Switch" then
+			local v15 = Instance.new("BoolValue", v11)
+			v15.Name = v12.Title
+			v15.Value = v12.DefaultValue
+		elseif v13 ~= "Toggle" then
+			if v13 == "TextBox" then
+				local v16 = Instance.new("StringValue", v11)
+				v16.Name = v12.Title
+				v16.Value = v12.DefaultValue
+			else
+				warn("unsupported settingtype")
+			end
+		end
+	end
+	local v_u_17 = v5.new(v_u_10, v8)
+	v_u_17:init()
+	v_u_17.categoryButton.Parent = v_u_7.Categories.ButtonsFrame
+	v_u_17.categoryButton.MouseButton1Click:Connect(function()
+		-- upvalues: (copy) v_u_9, (copy) v_u_7, (copy) v_u_17, (copy) v_u_10
+		for _, v18 in pairs(v_u_9) do
+			v18:visibilityUpdate()
+		end
+		for _, v19 in pairs(v_u_9) do
+			v19:status(false, v_u_7.Frame.Container)
+			v19.categoryButton.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+		end
+		v_u_17.categoryButton.BackgroundColor3 = Color3.fromRGB(229, 229, 229)
+		v_u_17:status(true, v_u_7.Frame.Container)
+		v_u_7.Title.Text = ("World Settings | %*"):format(v_u_10.Display)
+	end)
+	table.insert(v_u_9, v_u_17)
+end
+v_u_9[1]:status(true, v_u_7.Frame.Container)
+v_u_9[1].categoryButton.BackgroundColor3 = Color3.fromRGB(229, 229, 229)
+v3.PlayerGui.Worlds:GetPropertyChangedSignal("Enabled"):Connect(function()
+	-- upvalues: (copy) v_u_9
+	for _, v20 in pairs(v_u_9) do
+		v20:visibilityUpdate()
+	end
+end)
+v2.RenderStepped:Connect(function()
+	-- upvalues: (copy) v_u_9
+	for _, v21 in pairs(v_u_9) do
+		v21:render()
+	end
+end)

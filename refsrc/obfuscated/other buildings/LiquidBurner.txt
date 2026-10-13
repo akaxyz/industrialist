@@ -1,0 +1,27 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.MainPipe)
+local _ = game.ReplicatedStorage.Pollution
+local v_u_4 = require(v1.Modules.Achievements)
+local v5 = {}
+local v_u_6 = require(v1.Modules.Waste)
+local v_u_7 = script.Parent.State
+function v5.tick() -- name: tick
+	-- upvalues: (copy) v_u_3, (copy) v_u_4, (copy) v_u_6, (copy) v_u_7
+	local v8 = v_u_3:getBuffer()
+	local v9 = v_u_3:getItem()
+	if v8 == 0 then
+		v_u_7.Value = ""
+	else
+		if v9 ~= "Residue" and (v9 ~= "Water" and (v9 ~= "Filtered Water" and (v9 ~= "Distilled Water" and v9 == "Liquid Gold"))) then
+			v_u_4.giveBadge(1640952538292011)
+		end
+		local v10 = v_u_6.disposeOf(v9, v8)
+		v_u_3:removeItem(v8)
+		v_u_7:SetAttribute("Pollution", v10)
+		v_u_7.Value = v8
+	end
+end
+return v5

@@ -1,0 +1,140 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PowerUtilsV2 = require(ReplicatedStorage.Modules.PowerUtilsV2)
+local PipeUtilsV2 = require(ReplicatedStorage.Modules.PipeUtilsV2)
+local Nuclear = script.Parent.Nuclear
+local ModelData = script.Parent.ModelData
+local v1 = PipeUtilsV2.loadConnector(script.Parent.ItemIn1MainPipe)
+local v2 = PipeUtilsV2.loadConnector(script.Parent.ItemIn2MainPipe)
+local v3 = PowerUtilsV2.loadConnector(script.Parent.DataMainConnector)
+local Container = Nuclear.FuelStorageInfo.SurfaceGui.Frame.Container
+local Container_2 = Nuclear.SteamCondensers.SurfaceGui.Frame.Frame.Container
+local Container_3 = Nuclear.Polishers.SurfaceGui.Frame.Frame.Container
+local t = {}
+function round(p1, p2) --[[ round | Line: 19 ]]
+    local v1 = 10 ^ (p2 or 0)
+    return math.floor(p1 * v1 + 0.5) / v1
+end
+local FX = Nuclear.FX
+local Achievements = require(game.ReplicatedStorage.Modules.Achievements)
+function t.tick() --[[ tick | Line: 28 | Upvalues: ModelData (copy), Achievements (copy), FX (copy), v2 (copy), v1 (copy), Container (copy), v3 (copy), Container_3 (copy), Container_2 (copy), Nuclear (copy) ]]
+    if ModelData.Accident.Value == 1 then
+        if ModelData.Radiation.Value == 0 then
+            Achievements.giveBadge(3607786866123423)
+        end
+        script.Parent:SetAttribute("NoRefund", true)
+        local Radiation = game.ReplicatedStorage.Statistics.Radiation
+        Radiation.Value = Radiation.Value + ModelData.Radiation.Value
+        if FX:FindFirstChild("Radiation") and FX.Radiation:GetAttribute("TweeningDone") < tick() then
+            FX.Radiation.Value = ModelData.Radiation.Value * 10000
+        end
+        local ItemIn2MainPipe = script.Parent.ItemIn2MainPipe
+        ItemIn2MainPipe:SetAttribute("Tip", (("Input for concrete blocks. %* Concrete Blocks left to stop the radiation!"):format((math.round(ModelData.Radiation.Value * 10)))))
+    end
+    if v2:has("Concrete Block") and ModelData.Radiation.Value > 0 then
+        local v22 = v2:getBuffer()
+        v2:setItem(0, "")
+        ModelData.Radiation.Value = math.max(ModelData.Radiation.Value - v22 / 10, 0)
+    end
+    if v1:hasAmount(1) then
+        local v4 = string.gsub(v1:getItem(), " ", "")
+        if ModelData:FindFirstChild(v4) then
+            local v5 = ModelData[v4]
+            v5.Value = v5.Value + 1
+            v1:removeItem(1)
+            if v1:getBuffer() == 0 then
+                v1:setItem(0, "")
+            end
+        end
+    end
+    Container.MOXRods.Text = ("MOX rods: %*x"):format(ModelData.MOXFuelRod.Value)
+    Container.ControlRods.Text = ("Control rods: %*x"):format(ModelData.ControlRod.Value)
+    Container.NormalRods.Text = ("Standard rods: %*x"):format(ModelData.StandardFuelRod.Value)
+    Container.LowEnrichmentRods.Text = ("Low enrich. rods: %*x"):format(ModelData.LowEnrichmentFuelRod.Value)
+    local t = {}
+    local t2 = {}
+    local t3 = {}
+    local t4 = {}
+    for k, v in pairs(v3.folder.Inputs) do
+        local v6 = workspace.Plots[v[1]][v[2]]
+        local v7 = v6:GetAttribute("Name")
+        if v7 == "HeatExchanger" or v7 == "VerticalHeatExchanger" then
+            table.insert(t, v6)
+        elseif v7 == "SteamCondenser" then
+            table.insert(t4, v6)
+        elseif v7 == "TurbineGenerator" then
+            table.insert(t3, v6)
+        elseif v7 == "Polisher" then
+            table.insert(t2, v6)
+        end
+    end
+    table.sort(t, function(p1, p2) --[[ Line: 91 ]]
+        local v2 = tonumber(p1.Name)
+        return v2 < tonumber(p2.Name)
+    end)
+    table.sort(t3, function(p1, p2) --[[ Line: 94 ]]
+        local v2 = tonumber(p1.Name)
+        return v2 < tonumber(p2.Name)
+    end)
+    local sum = 0
+    local sum_2 = 0
+    local sum_3 = 0
+    if #t2 > 0 then
+        for v8, v9 in t2 do
+            sum_3 = sum_3 + v9.CondensateFlow.Value
+            sum_2 = sum_2 + v9.OutTemperature.Value
+            sum = sum + v9.ChemicalUsage.Value
+        end
+        sum = sum / #t2
+        sum_2 = sum_2 / #t2
+        sum_3 = sum_3 / #t2
+    end
+    Container_3.Connected.Text = "Connected Polishers: " .. #t2
+    if #t2 == 0 then
+        Container_3.Chemical.Text = "Average usage: N/A"
+        Container_3.Temp.Text = "Average outflow temp: N/A"
+        Container_3.AverageProduction.Text = "Average flow: N/A"
+        Container_3.Status.Text = "No polishers connected!"
+    else
+        Container_3.Chemical.Text = "Average usage: " .. round(sum, 2) .. "L/s"
+        Container_3.Temp.Text = "Average outflow temp: " .. round(sum_2, 1) .. "\194\176C"
+        Container_3.AverageProduction.Text = "Average flow: " .. round(sum_3, 1) .. "L/s"
+        Container_3.Status.Text = ""
+    end
+    local sum_4 = 0
+    local sum_5 = 0
+    local sum_6 = 0
+    if #t4 > 0 then
+        for v10, v11 in t4 do
+            sum_6 = sum_6 + v11.CoolantFlow.Value
+            sum_4 = sum_4 + v11.ModelData.Temp.Value
+            sum_5 = sum_5 + v11.CondensateProd.Value
+        end
+        sum_6 = sum_6 / #t4
+        sum_4 = sum_4 / #t4
+        sum_5 = sum_5 / #t4
+    end
+    Container_2.Connected.Text = "Connected Condensers: " .. #t4
+    if #t4 == 0 then
+        Container_2.CoolantFlow.Text = "Average flow: N/A"
+        Container_2.Temp.Text = "Average temp: N/A"
+        Container_2.AverageProduction.Text = "Average production: N/A"
+        Container_2.Status.Text = "No condensers connected!"
+    else
+        Container_2.CoolantFlow.Text = "Average flow: " .. round(sum_6, 1) .. "L/s"
+        Container_2.Temp.Text = "Average temp: " .. round(sum_4, 1) .. "\194\176C"
+        Container_2.AverageProduction.Text = "Average production: " .. round(sum_5, 1) .. "L/s"
+        Container_2.Status.Text = ""
+    end
+    for i = 1, 8 do
+        Nuclear.NPPMain.ConnectedEquipment.HeatExchangers[i].Value = t[i]
+    end
+    for j = 1, 4 do
+        Nuclear.NPPMain.ConnectedEquipment.TurbineGenerators[j].Value = t3[j]
+        if t3[j] ~= nil then
+            t3[j].TurbineNumber.Value = j
+            t3[j].ModelData.TurbineColor.Value = 1
+        end
+    end
+    script.Parent.Nuclear.NPPMain.SpawnWater:Fire()
+end
+return t

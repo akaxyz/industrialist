@@ -1,0 +1,69 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v_u_4 = require(v1.Modules.NextTicks).new()
+local v5 = require(v1.Modules.Enums.Items)
+local _ = v5.Water.DisplayName
+local _ = v5.Residue.DisplayName
+local v_u_6 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_7 = v3.loadConnector(script.Parent.MainPipe)
+local v_u_8 = v3.loadConnector(script.Parent.ResidueMainPipe)
+local v_u_9 = script.Parent.State
+local v10 = {}
+local v_u_11 = script.Parent.Base.Generator
+function v10.localUpdate() -- name: localUpdate
+	-- upvalues: (copy) v_u_9, (copy) v_u_11
+	if v_u_9.Value == "idle" then
+		v_u_11:Stop()
+	elseif v_u_9.Value == "run" then
+		v_u_11:Play()
+	end
+end
+local v_u_12 = game.ReplicatedStorage.Pollution
+game.ReplicatedStorage.Pollution:GetAttribute("Max")
+function v10.tick() -- name: tick
+	-- upvalues: (copy) v_u_4, (copy) v_u_8, (copy) v_u_9, (copy) v_u_6, (copy) v_u_7, (copy) v_u_12
+	if v_u_4:tickIsBusy() then
+		return
+	elseif v_u_8:canHoldXMoreOf("Residue", 4) then
+		if v_u_6:hasPower(60000) then
+			local v13 = v_u_7:getItem()
+			if v_u_7:getBuffer() < 2 then
+				v_u_9.Value = "idle"
+			else
+				local v_u_14
+				if v13 == "Water" then
+					v_u_14 = 1
+				elseif v13 == "Filtered Water" then
+					v_u_14 = 1.1
+				elseif v13 == "Residue" then
+					v_u_14 = -2
+				else
+					if v13 ~= "Distilled Water" then
+						v_u_9.Value = "idle"
+						return
+					end
+					v_u_14 = 1.939
+				end
+				v_u_9.Value = "run"
+				v_u_7:removeItem(2)
+				v_u_4:nextTicks(4, function()
+					-- upvalues: (ref) v_u_6, (ref) v_u_8, (ref) v_u_12, (ref) v_u_14
+					v_u_6:removePower(15000)
+					v_u_8:addItem(1, "Residue")
+					local v15 = v_u_12
+					local v16 = v15.Value
+					local v17 = v_u_14 * 450
+					v15.Value = v16 - math.ceil(v17)
+				end)
+			end
+		else
+			v_u_9.Value = "idle"
+			return
+		end
+	else
+		v_u_9.Value = "idle"
+		return
+	end
+end
+return v10

@@ -1,0 +1,92 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.CoolantInMainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.CoolantOutMainPipe)
+local v_u_5 = v2.loadConnector(script.Parent.WaterMainPipe)
+local v_u_6 = v2.loadConnector(script.Parent.SteamMainPipe)
+local v_u_7 = script.Parent.SteamWhistle
+local v_u_8 = script.Parent.ModelData.Temp
+local v_u_9 = require(game.ReplicatedStorage.Modules.Achievements)
+local v_u_10 = 1
+local v11 = {
+	["localUpdate"] = function()
+		-- upvalues: (copy) v_u_7
+		if script.Parent.State.Value == "Whistle" then
+			v_u_7.ParticleEmitter.Enabled = true
+		else
+			v_u_7.ParticleEmitter.Enabled = false
+		end
+	end
+}
+local v_u_12 = 0
+function v11.tick()
+	-- upvalues: (ref) v_u_12, (copy) v_u_8, (copy) v_u_3, (copy) v_u_4, (ref) v_u_10, (copy) v_u_9, (copy) v_u_5, (copy) v_u_6
+	v_u_12 = v_u_12 + 1
+	if v_u_12 % 3 == 0 then
+		local v13 = script.Parent.Model.Thermostat.SurfaceGui.Frame.TextLabel
+		local v14 = v_u_8.Value
+		v13.Text = math.floor(v14) .. "\194\176C"
+	end
+	local v15 = v_u_3:getTemp()
+	if v_u_3:hasAmount(1) and v_u_4:canHoldXMore(1) then
+		local v16 = 25
+		v_u_10 = 1
+		local v17 = v_u_3:getItem()
+		if v17 == "Water" then
+			v16 = 1000
+			v_u_10 = 1
+		elseif v17 == "Hot Crude Oil" then
+			v16 = 80
+			v_u_10 = 1
+		elseif v17 == "Distilled Water" then
+			v_u_9.giveBadge(4119854850772384)
+			v16 = 1000
+			v_u_10 = 1.2
+		elseif v17 == "Filtered Water" then
+			v16 = 1000
+			v_u_10 = 1.1
+		end
+		local _ = v_u_8.Value * 75000
+		local v18 = v15 - v_u_8.Value
+		local v19 = v18 * v16 * v_u_10 / 75000
+		local v20 = v_u_8
+		v20.Value = v20.Value + v19
+		if v_u_5:getTemp() < v15 then
+			local v21 = v_u_4
+			local v22 = v15 - v18 - v15 * 0.1
+			v21:setUsedTemperature((math.clamp(v22, 18, (1 / 0))))
+		else
+			local v23 = v_u_4
+			local v24 = v15 - v18 - v_u_5:getTemp() * 0.1
+			v23:setUsedTemperature((math.clamp(v24, 18, (1 / 0))))
+		end
+		v_u_3:removeItem(1)
+		v_u_4:addItem(1, v17)
+	elseif v_u_8.Value > 18 then
+		v_u_8.Value = v_u_8.Value - 0.25
+	end
+	if v_u_5:hasAmountOf("Water", 1) then
+		if v_u_6:canHoldXMore(30) then
+			script.Parent.State.Value = ""
+			if v_u_8.Value > 100 then
+				local v25 = v_u_5:getTemp()
+				v_u_5:removeItem(1)
+				local v26 = (v_u_8.Value - v25) * 1000
+				v_u_6:setUsedTemperature(v_u_8.Value)
+				if v_u_8.Value >= 500 then
+					v_u_9.giveBadge(4213326512100053)
+				end
+				v_u_6:addItem(30, "Steam")
+				local v27 = v_u_8
+				v27.Value = v27.Value - v26 / 75000
+				v_u_9.giveBadge(2151892350)
+				return
+			end
+		else
+			script.Parent.State.Value = "Whistle"
+		end
+	end
+end
+return v11

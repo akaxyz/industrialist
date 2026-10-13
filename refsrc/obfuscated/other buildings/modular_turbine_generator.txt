@@ -1,0 +1,484 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local v_u_3 = require(v1.Modules.Permissions)
+local v_u_4 = v2.loadConnector(script.Parent.MainConnector)
+local v5 = {}
+local v_u_6 = script.Parent.TurbineRaycast
+local v_u_7 = {}
+local v_u_8 = false
+local v_u_9 = 0
+local v_u_10 = 0
+local v_u_11 = nil
+local v_u_12 = nil
+local v_u_13 = script.Parent.ModelData.RPM
+local v_u_14 = 0
+local v_u_15 = script.Parent.ModelData.Synced
+local v_u_16 = script.Parent.ModelData.Bypass
+local v_u_17 = script.Parent.ModelData.GeneratorClutch
+local v_u_18 = 0
+local v_u_19 = {}
+local v_u_20 = require(v1.Modules.Achievements)
+local v_u_21 = {
+	[0] = {
+		["LPT"] = { Color3.fromRGB(255, 176, 0), Color3.fromRGB(211, 144, 0) },
+		["TurbineGenerator"] = { Color3.fromRGB(82, 124, 174), Color3.fromRGB(59, 90, 125) }
+	},
+	[1] = {
+		["LPT"] = { Color3.fromRGB(255, 176, 0), Color3.fromRGB(211, 144, 0) },
+		["TurbineGenerator"] = { Color3.fromRGB(168, 43, 43), Color3.fromRGB(156, 40, 40) }
+	}
+}
+local function v_u_57()
+	-- upvalues: (copy) v_u_7, (copy) v_u_19, (ref) v_u_18, (copy) v_u_6, (ref) v_u_9, (ref) v_u_10, (ref) v_u_11, (ref) v_u_12, (copy) v_u_21, (ref) v_u_8
+	table.clear(v_u_7)
+	table.clear(v_u_19)
+	v_u_18 = 0
+	local v22 = v_u_6
+	local v23 = workspace:Raycast(v22.Position, v22.CFrame.LookVector * -1 * 100)
+	local v24
+	if v23 and v23.Instance.Name == "TurbineRaycast" then
+		v24 = v23.Instance.Parent
+	else
+		v24 = nil
+	end
+	if v24 and v24:GetAttribute("Name") == "TurbineOutput" then
+		local v25 = v_u_7
+		table.insert(v25, v24)
+	end
+	local v26 = v_u_7
+	local v27 = script.Parent
+	table.insert(v26, v27)
+	local v28 = v_u_6
+	local v29 = false
+	for _ = 1, 50 do
+		local v30 = workspace:Raycast(v28.Position, v28.CFrame.LookVector * (v29 and -1 or 1) * 100)
+		local v31
+		if v30 and v30.Instance.Name == "TurbineRaycast" then
+			v31 = v30.Instance.Parent
+		else
+			v31 = nil
+		end
+		if v31 == nil then
+			break
+		end
+		if table.find(v_u_7, v31) then
+			v29 = true
+		else
+			v28 = v31.TurbineRaycast
+			v31:SetAttribute("Inverted", v29)
+			local v32 = v_u_7
+			table.insert(v32, v31)
+			v29 = false
+		end
+	end
+	v_u_9 = 0
+	v_u_10 = 0
+	v_u_11 = nil
+	v_u_12 = nil
+	local v33 = false
+	local v34 = 0
+	local v35 = true
+	local v36 = false
+	local v37
+	if script.Parent.Base.Orientation.Y == 180 then
+		v37 = true
+	elseif script.Parent.Base.Orientation.Y == 0 or script.Parent.Base.Orientation.Y == 90 then
+		v37 = false
+	else
+		v37 = script.Parent.Base.Orientation.Y == -90 and true or v36
+	end
+	local v38 = v_u_21[script.Parent.ModelData.TurbineColor.Value]
+	for v39 = 1, #v_u_7 do
+		local v40 = v_u_7[v39]
+		local v41 = v_u_19
+		local v42 = v40.Base.Position
+		table.insert(v41, v42)
+		local v43 = v40:GetAttribute("Name")
+		if v43 == "TurbineOutput" and v34 == 0 then
+			v40.ColorScheme.Primary.Color = v38.TurbineGenerator[1]
+			v40.ColorScheme.Secondary.Color = v38.TurbineGenerator[2]
+			v34 = 1
+			v_u_12 = v40
+		elseif v43 == "TurbineGenerator" and v34 == 1 then
+			v_u_18 = v_u_18 + 2000
+			v40.ColorScheme.Primary1.Color = v38.TurbineGenerator[1]
+			v40.ColorScheme.Primary2.Color = v38.TurbineGenerator[1]
+			v40.ColorScheme.Primary3.Color = v38.TurbineGenerator[1]
+			v40.ColorScheme.Primary4.Color = v38.TurbineGenerator[1]
+			v40.ColorScheme.Secondary4.Color = v38.TurbineGenerator[2]
+			v40.ColorScheme.Secondary5.Color = v38.TurbineGenerator[2]
+			v34 = 2
+		elseif v43 == "LowPressureTurbine" and v34 == 2 then
+			v_u_18 = v_u_18 + 1000
+			local v44 = 0
+			if v35 then
+				v35 = false
+				v44 = v40.Base.Orientation.Y == 180 and 1 or (v40.Base.Orientation.Y == 0 and 2 or (v40.Base.Orientation.Y == 90 and 2 or (v40.Base.Orientation.Y == -90 and 1 or v44)))
+				if v37 then
+					if v44 == 1 then
+						v44 = 2
+					elseif v44 == 2 then
+						v44 = 1
+					end
+				end
+			end
+			v40.ColorScheme.Primary1.Color = v38.LPT[1]
+			v40.ColorScheme.Primary2.Color = v38.LPT[1]
+			v40.ColorScheme.Secondary3.Color = v38.LPT[2]
+			v40.ColorScheme.Secondary4.Color = v38.LPT[2]
+			if v40:GetAttribute("_Position") ~= v44 then
+				v40:SetAttribute("_Position", v44)
+				if v44 == 1 then
+					for _, v45 in pairs(v40.OneSide:GetChildren()) do
+						v45.Transparency = 0
+					end
+					for _, v46 in pairs(v40.TwoSide:GetChildren()) do
+						v46.Transparency = 1
+					end
+					for _, v47 in pairs(v40.Middle:GetChildren()) do
+						v47.Transparency = 1
+					end
+				elseif v44 == 2 then
+					for _, v48 in pairs(v40.OneSide:GetChildren()) do
+						v48.Transparency = 1
+					end
+					for _, v49 in pairs(v40.TwoSide:GetChildren()) do
+						v49.Transparency = 0
+					end
+					for _, v50 in pairs(v40.Middle:GetChildren()) do
+						v50.Transparency = 1
+					end
+				elseif v44 == 0 then
+					for _, v51 in pairs(v40.OneSide:GetChildren()) do
+						v51.Transparency = 1
+					end
+					for _, v52 in pairs(v40.TwoSide:GetChildren()) do
+						v52.Transparency = 1
+					end
+					for _, v53 in pairs(v40.Middle:GetChildren()) do
+						v53.Transparency = 0
+					end
+				end
+			end
+			v_u_9 = v_u_9 + 1
+		elseif v43 == "IntermediatePressureTurbine" and v34 == 2 then
+			v_u_18 = v_u_18 + 700
+			v34 = 3
+			v33 = true
+			v35 = true
+		elseif v43 == "HighPressureTurbine" and (v34 == 3 or v34 == 2 and v_u_9 == 0) then
+			v_u_18 = v_u_18 + 1500
+			v_u_10 = v_u_10 + 1
+			v40.Rotator1.Transparency = 0
+			v40.Rotator2.Transparency = 0
+		else
+			if v43 ~= "TurbineInput" or v34 ~= 3 and (v34 ~= 2 or v_u_9 ~= 0) then
+				v34 = -1
+				break
+			end
+			v40.ColorScheme.Primary.Color = v38.LPT[1]
+			if v_u_10 > 0 and v35 == true then
+				local v54 = v_u_7[v39 - 1]
+				v35 = false
+				local v55 = v54.Base.Orientation.Y == 180 and 2 or (v54.Base.Orientation.Y == 0 and 1 or (v54.Base.Orientation.Y == 90 and 1 or (v54.Base.Orientation.Y == -90 and 2 or 0)))
+				if v37 then
+					v55 = v55 == 1 and 2 or (v55 == 2 and 1 or v55)
+				end
+				if v54:GetAttribute("_Position") ~= v55 then
+					v54:GetAttribute("_Position", v55)
+					if v55 == 1 then
+						v54.Rotator1.Transparency = 1
+						v54.Rotator2.Transparency = 0
+					elseif v55 == 2 then
+						v54.Rotator1.Transparency = 0
+						v54.Rotator2.Transparency = 1
+					elseif v55 == 0 then
+						v54.Rotator1.Transparency = 0
+						v54.Rotator2.Transparency = 0
+					end
+				end
+			end
+			v34 = 4
+			v_u_11 = v40
+		end
+	end
+	local v56 = v_u_9 == 0 and (v_u_10 == 0 and v34 == 4) and -1 or v34
+	if (v_u_9 == 0 and (v33 and v56 == 4) and -1 or v56) == 4 then
+		v_u_8 = true
+	else
+		v_u_8 = false
+	end
+end
+local v_u_58 = game.ReplicatedStorage.ScreenShake
+local v_u_59 = false
+if game.Players.LocalPlayer == nil then
+	script.Parent.TurbineTrip.ClickDetector.MouseClick:Connect(function(p60)
+		-- upvalues: (copy) v_u_3, (ref) v_u_59
+		if v_u_3.doesPlayerHavePermission(p60, v_u_3.Levels.MachineInteraction) then
+			local v61 = not v_u_59
+			if v61 ~= v_u_59 then
+				script.Parent.TurbineTrip.Button:Play()
+			end
+			if v61 then
+				script.Parent.TurbineTrip.Size = Vector3.new(0.05, 0.35, 0.35)
+			else
+				script.Parent.TurbineTrip.Size = Vector3.new(0.12, 0.35, 0.35)
+			end
+			v_u_59 = v61
+		end
+	end)
+end
+function round(p62, p63)
+	local v64 = 10 ^ (p63 or 0)
+	local v65 = p62 * v64 + 0.5
+	return math.floor(v65) / v64
+end
+local function v_u_72(p66, p67, p68)
+	local v69 = p68 == nil and 2 or p68
+	local v70 = "MF"
+	local v71
+	if p66 < p67 then
+		v71 = p67
+	else
+		v71 = p66
+	end
+	if v71 / 1000000000000 > 0.99 then
+		return round(p66 / 1000000000000, v69), round(p67 / 1000000000000, v69), "TMF"
+	elseif v71 / 1000000000 > 0.99 then
+		return round(p66 / 1000000000, v69), round(p67 / 1000000000, v69), "GMF"
+	elseif v71 / 1000000 > 0.99 then
+		return round(p66 / 1000000, v69), round(p67 / 1000000, v69), "MMF"
+	elseif v71 / 1000 > 0.99 then
+		return round(p66 / 1000, v69), round(p67 / 1000, v69), "kMF"
+	else
+		return round(p66, 2), round(p67, 2), v70
+	end
+end
+local v_u_73 = 40
+local v_u_74 = script.Parent.Monitor.SurfaceGui
+local v_u_75 = v_u_74.Frame.Container
+game:GetService("Debris")
+local v_u_76 = game.ReplicatedStorage.Events.ExplodeMachine
+local v_u_77 = false
+local function v_u_80(p78)
+	-- upvalues: (ref) v_u_77, (copy) v_u_20, (copy) v_u_7, (copy) v_u_76
+	if not v_u_77 then
+		v_u_20.giveBadge(852826226112572)
+		v_u_77 = true
+		for _, v79 in pairs(v_u_7) do
+			if v79 ~= script.Parent and math.random(1, 2) == 1 then
+				v_u_76:Fire(v79, {
+					["BlastRadius"] = 150 * p78,
+					["BlastPressure"] = 50 * p78,
+					["TimeScale"] = 0.5,
+					["Size"] = 0.5 * p78
+				})
+			end
+		end
+		v_u_76:Fire(script.Parent, {
+			["BlastRadius"] = 150 * p78,
+			["BlastPressure"] = 50 * p78,
+			["TimeScale"] = 0.5,
+			["Size"] = 0.5 * p78
+		})
+	end
+end
+function v5.tick()
+	-- upvalues: (ref) v_u_73, (ref) v_u_8, (copy) v_u_57, (ref) v_u_59, (copy) v_u_74, (ref) v_u_77, (ref) v_u_11, (ref) v_u_12, (copy) v_u_16, (copy) v_u_80, (ref) v_u_10, (ref) v_u_9, (copy) v_u_13, (ref) v_u_18, (copy) v_u_15, (ref) v_u_14, (copy) v_u_4, (copy) v_u_17, (copy) v_u_58, (copy) v_u_19, (copy) v_u_7, (copy) v_u_20, (copy) v_u_75, (copy) v_u_72
+	if v_u_73 > 0 then
+		v_u_73 = v_u_73 - 1
+	end
+	if script.Parent.TurbineNumber.Value == 0 or not v_u_8 then
+		script.Parent.Label.SurfaceGui.TextLabel.Text = ""
+	else
+		script.Parent.Label.SurfaceGui.TextLabel.Text = "0" .. script.Parent.TurbineNumber.Value
+	end
+	v_u_57()
+	if not v_u_8 then
+		v_u_74.Enabled = false
+		v_u_74.Parent.Error.Enabled = true
+		v_u_77 = false
+		return
+	end
+	if not v_u_59 then
+		v_u_74.Enabled = true
+		v_u_74.Parent.Error.Enabled = false
+	end
+	local v81 = v_u_11.ModelData.Steam.Value
+	local v82 = 48000 - v_u_12.ModelData.Steam.Value
+	local v83 = math.clamp(v81, 0, v82)
+	local v84 = v83 * (1 - v_u_16.Value)
+	local v85 = v_u_11.ModelData.Temperature.Value
+	local v86 = v84 * 0.04 * (v85 + 273) / 24000
+	if v85 > 3000 and v83 > 100 then
+		local v87 = task.spawn
+		local v88 = v_u_80
+		local v89 = v85 / 3000
+		v87(v88, (math.clamp(v89, 1, 2)))
+		return
+	end
+	local v90 = v_u_11.ModelData.Steam
+	v90.Value = v90.Value - v83
+	local v91 = v85
+	local v92 = 0
+	for _ = 0, v_u_10 - 1 do
+		if v91 < 150 then
+			break
+		end
+		local v93 = v84 * 0.04 * (v91 + 273) / 24000
+		if v93 > 11.1 then
+			v92 = v92 + 5 * v93 ^ 1.8
+		elseif v93 > 10 then
+			v92 = v92 + 5 * v93 ^ (20 / v93)
+		else
+			v92 = v92 + 5 * v93 ^ 2
+		end
+		v84 = v84 * 0.7
+		v91 = v91 * 0.9
+	end
+	if v84 * 0.04 * (v91 + 273) / 48000 > 2 then
+		v84 = 96000 / (0.04 * (v91 + 273))
+	end
+	for _ = 0, v_u_9 - 1 do
+		if v91 < 150 then
+			break
+		end
+		v92 = v92 + (v84 * 0.04 * (v91 + 273) / 48000 * 10) ^ 2
+		v84 = v84 * 0.8
+		v91 = v91 * 0.9
+	end
+	local v94 = v92 * 240
+	local v95
+	if v_u_59 then
+		if math.random(1, 10) == 1 then
+			v_u_74.Enabled = false
+			v_u_74.Parent.Error.Enabled = true
+		end
+		v95 = 0.1
+		script.Parent.TurbineTrip.Trip:Play()
+		if v_u_13.Value < 300 then
+			v_u_59 = false
+			script.Parent.TurbineTrip.Button:Play()
+			script.Parent.TurbineTrip.Size = Vector3.new(0.12, 0.35, 0.35)
+		end
+	else
+		v95 = 0.002
+	end
+	local v96 = v94 / v_u_18
+	local v97 = v95 * 2.5 * (v_u_13.Value / 60) ^ 2
+	local v98 = math.clamp(v97, 4, (1 / 0))
+	local v99 = -0.001 * v_u_13.Value
+	local v100 = math.exp(v99) * 0.7 * v94 / v_u_18
+	if v_u_15.Value == "Synced" and v94 > 0 then
+		local v101 = v94 * v_u_13.Value / 10
+		local v102 = v_u_4:getMax() - v_u_4:getBuffer() + 0.1
+		v_u_14 = math.clamp(v101, 0, v102)
+		v_u_14 = v_u_14 * v_u_17.Value
+		v98 = v98 * (v_u_14 / 120000000 + 1)
+		if v83 < 6000 then
+			v_u_14 = v_u_14 * (v83 / 6000)
+		end
+		v_u_4:addPower(v_u_14 * 1.1)
+		script.Parent.SyncLights.Material = Enum.Material.Neon
+	else
+		v_u_14 = 0
+		script.Parent.SyncLights.Material = Enum.Material.Glass
+	end
+	local v103 = v96 - v98 - v100
+	if math.abs(v103) > 5 and v_u_73 == 0 then
+		v_u_15.Value = "Spindown"
+	elseif v_u_15.Value == "Spindown" then
+		v_u_15.Value = ""
+	end
+	if math.abs(v103) >= 0.2 and v_u_13.Value > 0 then
+		local v104 = v_u_58
+		local v105 = v103 ^ 2 / 6
+		v104:FireAllClients(1.1, math.clamp(v105, 0, 300), nil, v_u_19, 80)
+	end
+	if v_u_15.Value ~= "Synced" then
+		local v106 = v_u_13
+		local v107 = v_u_13.Value + v103
+		v106.Value = math.clamp(v107, 0, (1 / 0))
+	end
+	local v108 = v_u_13.Value == 0 and 0 or v103
+	local v109 = v_u_12.ModelData.Steam
+	v109.Value = v109.Value + v83
+	v_u_12.ModelData.Temperature.Value = v85 * 0.6
+	script.Parent.Data.Value = v_u_14 * 1.1 .. "|" .. v_u_13.Value .. "|" .. v108 .. "|" .. v94 .. "|" .. v83 * (1 - v_u_16.Value) .. "|" .. v86 .. "|" .. v85 .. "|" .. v83
+	for _, v110 in pairs(v_u_7) do
+		if v110.Base:FindFirstChild("MachineSound") then
+			v110.Tick.Value = tick()
+			if v110:GetAttribute("Name") == "LowPressureTurbine" then
+				v110.Base.MachineSound.Pitch = 1 * (v_u_13.Value / 3600)
+				v110.Base.MachineSound.Volume = 4 * (v_u_13.Value / 3600)
+				v110.Base.MachineSound:Resume()
+			elseif v110:GetAttribute("Name") == "HighPressureTurbine" then
+				v110.Base.MachineSound.Pitch = 2 * (v_u_13.Value / 3600)
+				v110.Base.MachineSound.Volume = 4 * (v_u_13.Value / 3600)
+				v110.Base.MachineSound:Resume()
+			end
+		end
+	end
+	if v108 > 40 then
+		v_u_20.giveBadge(2499294612754805)
+	end
+	if v_u_14 * 1.1 >= 270000000 then
+		v_u_20.giveBadge(4227616394603758)
+	end
+	if v_u_15.Value == "Synced" then
+		v_u_20.giveBadge(1065094643719343)
+	end
+	script.Parent.Base.MachineSound2:Resume()
+	script.Parent.Base.MachineSound2.Pitch = 1 * (v_u_13.Value / 3600)
+	script.Parent.Base.MachineSound2.Volume = 4 * (v_u_13.Value / 3600)
+	script.Parent.Base.Generator:Resume()
+	script.Parent.Base.Generator.Pitch = v_u_14 / 100000000 * 1
+	script.Parent.Base.Generator.Volume = v_u_14 / 100000000 * 4
+	v_u_75.Ratio.Text = ("HPT: %* LPT: %*"):format(v_u_10, v_u_9)
+	if v_u_15.Value == "Synced" then
+		v_u_75.Sync.Visible = true
+		v_u_75.Sync.Text = "TURBINE IS SYNCED"
+		v_u_75.Sync.TextColor3 = Color3.fromRGB(0, 255, 0)
+		local v111, _, v112 = v_u_72(v_u_14 * 1.1, v_u_14, 1)
+		v_u_75.Production.Text = ("Prod.: %*%*/s"):format(v111, v112)
+	else
+		v_u_75.Sync.Text = "TURBINE IS NOT SYNCED"
+		if v_u_75.Sync.Visible == true then
+			v_u_75.Sync.Visible = false
+		else
+			v_u_75.Sync.Visible = true
+		end
+		v_u_75.Sync.TextColor3 = Color3.fromRGB(255, 0, 0)
+		v_u_75.Production.Text = "Prod.: NONE"
+	end
+	local v113 = v_u_75.RPM
+	local v114 = v_u_13.Value
+	v113.Text = ("RPM: %*"):format((math.floor(v114)))
+	v_u_75.Torque.Text = ("Torque: %*KMT"):format((round(v94 / 1000, 1)))
+	local v115 = v_u_75.Generator
+	local v116 = v_u_17.Value * 100
+	local v117 = math.floor(v116)
+	local v118 = v_u_16.Value * 100
+	v115.Text = ("Generator: %*%%, Bypass: %*%%"):format(v117, (math.floor(v118)))
+	v_u_75.Steam.Text = ("@%*C, %*L/s"):format(math.floor(v85), (math.floor(v83)))
+	if v_u_13.Value >= 4000 then
+		if v_u_59 ~= true then
+			script.Parent.TurbineTrip.Button:Play()
+		end
+		script.Parent.TurbineTrip.Size = Vector3.new(0.05, 0.35, 0.35)
+		v_u_59 = true
+		v_u_74.Parent.beep:Play()
+		return
+	elseif v_u_13.Value > 3800 then
+		if v_u_75.HighRPM.Visible == true then
+			v_u_75.HighRPM.Visible = false
+		else
+			v_u_75.HighRPM.Visible = true
+		end
+		v_u_74.Parent.beep:Play()
+	else
+		v_u_75.HighRPM.Visible = false
+	end
+end
+return v5

@@ -1,0 +1,33 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.In1MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.OutMainConnector)
+local v_u_5 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+v_u_5:addSetting(1, script.Parent.ModelData.Minimum, "Minimum value", -9999, 9999)
+v_u_5:addSetting(2, script.Parent.ModelData.LowerMinimum, "Minimum value enable")
+v_u_5:addSetting(1, script.Parent.ModelData.Maximum, "Maximum value", -9999, 9999)
+v_u_5:addSetting(2, script.Parent.ModelData.UpperMaximum, "Maximum value enable")
+script.Parent.Model.Body.Panel.ProximityPrompt.Enabled = true
+script.Parent.Model.Body.Panel.ProximityPrompt.Triggered:Connect(function(p6)
+	-- upvalues: (copy) v_u_5
+	v_u_5:openMenu(p6)
+end)
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_4
+		local v7 = game.ReplicatedStorage.Pollution.Value / 500000
+		if v_u_3:getBuffer() >= 1 then
+			if script.Parent.ModelData.LowerMinimum.Value and v7 < script.Parent.ModelData.Minimum.Value then
+				v_u_4:addPower(v_u_3:getBuffer())
+				v_u_3:removePower(v_u_3:getBuffer())
+			end
+			if script.Parent.ModelData.UpperMaximum.Value and script.Parent.ModelData.Maximum.Value < v7 then
+				v_u_4:addPower(v_u_3:getBuffer())
+				v_u_3:removePower(v_u_3:getBuffer())
+			end
+		end
+	end
+}

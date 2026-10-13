@@ -1,0 +1,55 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_4 = v2.loadConnector(script.Parent.MainConnector)
+if game.Players.LocalPlayer == nil then
+	script.Parent.Base.ProximityPrompt.Enabled = true
+	script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p5)
+		-- upvalues: (copy) v_u_3
+		v_u_3:openMenu(p5)
+	end)
+	v_u_3:addSetting(1, script.Parent.ModelData.Range, "Range of sound", 1, 10000)
+	v_u_3:addSetting(1, script.Parent.ModelData.Sound, "Sound type (1-5)", 1, 5)
+	v_u_3:addSetting(1, script.Parent.ModelData.Volume, "Volume of sound", 1, 5)
+end
+local v6 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local _ = tick() - 5
+script.Parent.ModelData.Sound:GetPropertyChangedSignal("Value"):Connect(function()
+	for _, v7 in pairs(script.Parent.Base.Attachment:GetChildren()) do
+		v7:Stop()
+		v7.Looped = false
+	end
+end)
+local v_u_8 = script.Parent.State
+local v_u_9 = nil
+function v6.tick() -- name: tick
+	-- upvalues: (copy) v_u_4, (ref) v_u_9, (copy) v_u_8
+	if v_u_4:getBuffer() >= 1 then
+		local v10 = script.Parent.Base.Attachment
+		local v11 = script.Parent.ModelData.Sound.Value
+		local v12 = v10[tostring(v11)]
+		v12.RollOffMaxDistance = script.Parent.ModelData.Range.Value
+		v12.Volume = script.Parent.ModelData.Volume.Value
+		v_u_9 = v12
+		if v12.Looped == false then
+			v_u_8.Value = 1
+			v12.Looped = true
+			if v12.Playing == false then
+				v12:Play()
+			end
+		end
+	elseif v_u_9 then
+		if v_u_9.Playing == true then
+			v_u_8.Value = 0
+			v_u_9.Looped = false
+		end
+	elseif v_u_8.Value ~= 0 then
+		v_u_8.Value = 0
+	end
+	v_u_4:removePower(v_u_4:getBuffer())
+end
+return v6

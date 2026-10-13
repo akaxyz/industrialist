@@ -1,0 +1,130 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v2 = {}
+local v_u_3 = 1
+local v_u_4 = {
+	{
+		["sample"] = 1,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["sample"] = 2,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["sample"] = 10,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	}
+}
+local v_u_5 = require(v1.Modules.GraphV2)
+local v_u_6 = nil
+local v_u_7 = script.Parent.Screen
+local v_u_8 = Color3.fromRGB(97, 62, 16)
+local v_u_9 = Color3.fromRGB(255, 166, 42)
+function v2.localStart() -- name: localStart
+	-- upvalues: (ref) v_u_6, (copy) v_u_5, (copy) v_u_7, (copy) v_u_9, (copy) v_u_8, (ref) v_u_3, (copy) v_u_4
+	v_u_6 = v_u_5.new(v_u_7.SurfaceGui.Frame.MainGraph, { v_u_7.SurfaceGui.Frame.MainGraph.Graph.Path2D_1 }, v_u_9)
+	local v_u_10 = v_u_7.SurfaceGui.Frame.Bottom
+	local function v_u_13(p11) -- name: colorChanging
+		-- upvalues: (copy) v_u_10, (ref) v_u_8, (ref) v_u_9
+		for _, v12 in pairs(v_u_10:GetChildren()) do
+			if v12:IsA("TextButton") then
+				v12.BackgroundColor3 = v_u_8
+			end
+		end
+		p11.BackgroundColor3 = v_u_9
+	end
+	v_u_10.short.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_3, (copy) v_u_13, (copy) v_u_10
+		v_u_3 = 1
+		v_u_13(v_u_10.short)
+	end)
+	v_u_10.medium.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_3, (copy) v_u_13, (copy) v_u_10
+		v_u_3 = 2
+		v_u_13(v_u_10.medium)
+	end)
+	v_u_10.long.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_3, (copy) v_u_13, (copy) v_u_10
+		v_u_3 = 3
+		v_u_13(v_u_10.long)
+	end)
+	v_u_10.clear.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_4
+		table.clear(v_u_4[1].data)
+		table.clear(v_u_4[2].data)
+		table.clear(v_u_4[3].data)
+	end)
+end
+local v_u_14 = workspace:GetAttribute("Difficulty")
+local v_u_15 = 9
+function v2.localUpdate() -- name: localUpdate
+	-- upvalues: (ref) v_u_6, (ref) v_u_15, (copy) v_u_14, (copy) v_u_4, (copy) v_u_7, (ref) v_u_3
+	if v_u_6 == nil then
+		print("graph is nil")
+		return
+	else
+		local v16 = script.Parent.State.Value
+		if tonumber(v16) ~= nil then
+			v_u_15 = v_u_15 + 1
+			local v17 = game.ReplicatedStorage.Pollution.Value / game.ReplicatedStorage.Pollution:GetAttribute("Max") * 100
+			local v18 = script.Parent.State.Value
+			local v19 = tonumber(v18) * 100 + 0.5
+			local v20 = math.floor(v19) / 100
+			if v_u_14 == 5 then
+				v17 = math.random(-400000, 400000) / 1000
+				v20 = "N/A"
+			end
+			for _, v21 in pairs(v_u_4) do
+				if v_u_15 % v21.sample == 0 then
+					v21.average = v21.average + v17
+					local v22 = v21.data
+					local v23 = v21.average / v21.sample
+					table.insert(v22, v23)
+					v21.average = 0
+					if #v21.data == 101 then
+						table.remove(v21.data, 1)
+					end
+				else
+					v21.average = v21.average + v17
+				end
+			end
+			local v24 = v_u_7.SurfaceGui.Frame.Top.Number
+			local v25 = v17 * 1000 + 0.5
+			v24.Text = math.floor(v25) / 1000 .. "%" .. "  " .. v20 .. "%/h"
+			local v26 = {}
+			for v27 = 1, #v_u_4[v_u_3].data do
+				v26[v27] = -v_u_4[v_u_3].sample * #v_u_4[v_u_3].data + v_u_4[v_u_3].sample * (v27 - 1)
+			end
+			v_u_6:RefreshNGraphs(v26, { v_u_4[v_u_3].data })
+		end
+	end
+end
+local v_u_28 = game.ReplicatedStorage.Pollution.Value
+local v_u_29 = tick()
+local v_u_30 = 0
+local v_u_31 = tick()
+function v2.tick() -- name: tick
+	-- upvalues: (ref) v_u_29, (ref) v_u_30, (ref) v_u_28, (ref) v_u_31
+	if tick() - v_u_29 > 1 then
+		v_u_29 = tick()
+		local v32 = game.ReplicatedStorage.Pollution.Value
+		v_u_30 = (v32 - v_u_28) / 500000 * 3600
+		v_u_28 = v32
+	end
+	if tick() - v_u_31 >= 1 then
+		v_u_31 = tick()
+		local v33 = script.Parent.State
+		local v34 = v_u_30 + math.random(-100, 100) / 1000000
+		v33.Value = tostring(v34)
+	end
+end
+return v2

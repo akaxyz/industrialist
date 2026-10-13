@@ -1,0 +1,414 @@
+game:GetService("TweenService")
+local v1 = game:GetService("UserInputService")
+local v_u_2 = game:GetService("Players")
+local v3 = game:GetService("ReplicatedStorage")
+local v_u_4 = require(game.ReplicatedStorage.Modules.ModelUtils)
+local v_u_5 = v_u_2.LocalPlayer
+local v_u_6 = v3.PlacementSystem.Buildings.Parent.BindableToast
+local v_u_7 = game.Players.LocalPlayer:GetMouse()
+local v_u_8 = nil
+local v_u_9 = nil
+local v_u_10 = nil
+local v_u_11 = nil
+local v_u_12 = nil
+local v_u_13 = false
+local v_u_14 = false
+local v_u_15 = false
+local v_u_16 = v_u_5.PlayerGui:WaitForChild("TutorialRestrictions"):WaitForChild("NodeSelected")
+local v_u_17 = v_u_5.PlayerGui:WaitForChild("TutorialRestrictions")
+local v_u_18 = v_u_5.PlayerGui:WaitForChild("TutorialRestrictions"):WaitForChild("WireMade")
+local v_u_19 = Instance.new("Highlight", nil)
+v_u_19.Name = "SecondHighlight"
+v_u_19.FillColor = Color3.new(1, 1, 1)
+v_u_19.OutlineColor = Color3.new(1, 1, 1)
+v_u_19.FillTransparency = 0.5
+v_u_19.OutlineTransparency = 0
+workspace.Plots.PipeConnectionDecoration.ChildAdded:Connect(function()
+    -- upvalues: (ref) v_u_15
+    if v_u_15 then
+        for _, v20 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            if v20.Name == "Power" then
+                v20.Transparency = 0.45
+            end
+        end
+    end
+end)
+game:GetService("CollectionService")
+local v_u_21 = {}
+local v_u_22 = v_u_15
+local function v26(p23) -- name: setupModel
+    -- upvalues: (copy) v_u_4, (copy) v_u_21
+    task.wait(1)
+    for _, v24 in pairs(p23:GetChildren()) do
+        if v_u_4.xIsAConnector(v24.Name) then
+            local v25 = v_u_21
+            table.insert(v25, v24)
+        end
+    end
+end
+local function v_u_30() -- name: getMouse
+    -- upvalues: (copy) v_u_7, (copy) v_u_2
+    local v27 = workspace.CurrentCamera:ScreenPointToRay(v_u_7.X, v_u_7.Y)
+    local v28 = Ray.new(v27.Origin, v27.Direction * 1000)
+    local _, v29 = workspace:FindPartOnRayWithIgnoreList(v28, { v_u_2.LocalPlayer.Character })
+    return v29
+end
+local v_u_31 = 40
+local v_u_32 = 40
+for _, v33 in pairs(workspace.Plots:GetChildren()) do
+    if v33 ~= workspace.Plots.PipeConnectionDecoration then
+        v33.ChildAdded:Connect(v26)
+        for _, v34 in pairs(v33:GetChildren()) do
+            task.spawn(v26, v34)
+        end
+    end
+end
+local v_u_35 = nil
+script.Parent.ToolEvent.Event:Connect(function(p36)
+    -- upvalues: (ref) v_u_22, (ref) v_u_13, (ref) v_u_14, (copy) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (copy) v_u_19
+    if p36 == "unequip" then
+        v_u_22 = false
+        for _, v37 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            v37.Transparency = 1
+        end
+        v_u_13 = false
+        pcall(function()
+            -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (ref) v_u_19
+            if v_u_13 == false or v_u_14 then
+                v_u_16.Value = nil
+                v_u_8 = nil
+                v_u_35 = nil
+                v_u_9:Destroy()
+                v_u_10:Destroy()
+                v_u_12:Destroy()
+                v_u_11:Destroy()
+                v_u_19.Parent = nil
+            end
+        end)
+    elseif p36 == "equip" then
+        for _, v38 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            if v38.Name == "Power" then
+                v38.Transparency = 0.45
+            end
+        end
+        v_u_22 = true
+    end
+end)
+local function v_u_50(p39) -- name: getNode
+    -- upvalues: (copy) v_u_7, (copy) v_u_4, (copy) v_u_5, (copy) v_u_21, (copy) v_u_30
+    local v40 = v_u_7.Target
+    local v41 = nil
+    local v42
+    if v40 == nil then
+        v42 = nil
+    elseif v_u_4.xIsAConnector(v40.Name) then
+        v42 = v40
+    else
+        v42 = v_u_4.findOnlyConnectorInModel(v40.Parent)
+        if v42 == nil and v40.Name ~= "Base" then
+            v42 = v_u_4.findClosestPowerConnectorToPoint(v_u_7.Hit.Position, v_u_4.getModelFromPart(v40))
+        elseif v42 == nil and (v40.Name == "Base" and v_u_4.getModelFromPart(v40)) then
+            v41 = {}
+            for _, v43 in pairs(v_u_4.getModelFromPart(v40):GetChildren()) do
+                if v_u_4.xIsAConnector(v43.Name) then
+                    if p39 then
+                        if v43.Power.Output.Value or v43.Power:FindFirstChild("Input") == nil then
+                            table.insert(v41, v43)
+                        end
+                    elseif v43.Power.Output.Value == false then
+                        table.insert(v41, v43)
+                    end
+                end
+            end
+            if #v41 ~= 0 then
+                v42 = v41[1]
+            end
+        end
+    end
+    if v42 == nil and v41 == nil then
+        local v44 = v_u_5.Settings.World:FindFirstChild("Aim Assist Distance")
+        if v44 then
+            local v45 = v44.Value
+            if v45 ~= 0 then
+                local v46 = RaycastParams.new()
+                v46.FilterType = Enum.RaycastFilterType.Include
+                v46.FilterDescendantsInstances = v_u_21
+                local v47 = v_u_30()
+                local v48 = workspace.CurrentCamera.CFrame.Position
+                local v49 = workspace:Spherecast(v48, v45 * 5 / 2, (v47 - v48).Unit * 200, v46)
+                if v49 ~= nil and (v49.Instance and v_u_4.xIsAConnector(v49.Instance.Name)) then
+                    v42 = v49.Instance
+                end
+            end
+        end
+    end
+    if v41 ~= nil then
+        v42 = v41[1]
+    end
+    return v42, v41
+end
+local function v_u_71() -- name: continueConnection
+    -- upvalues: (copy) v_u_50, (ref) v_u_8, (ref) v_u_35, (ref) v_u_13, (ref) v_u_14, (copy) v_u_16, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (copy) v_u_19, (copy) v_u_6, (ref) v_u_31, (copy) v_u_17, (copy) v_u_18
+    local v51, v52 = v_u_50(false)
+    local v53 = {}
+    if v52 ~= nil then
+        if v_u_8 == nil or (v_u_35 ~= nil or #v52 <= 1) then
+            if #v52 > 1 and #v_u_35 ~= 0 then
+                for _, v54 in pairs(v_u_35) do
+                    for _, v55 in pairs(v52) do
+                        if v55.Name == v54.Name then
+                            table.insert(v53, { v54, v55, false })
+                            break
+                        end
+                    end
+                end
+            elseif #v52 == 1 and #v_u_35 ~= 0 then
+                for _, v56 in pairs(v_u_35) do
+                    local v57 = { v56, v52[1], false }
+                    table.insert(v53, v57)
+                end
+            end
+        else
+            for _, v58 in pairs(v52) do
+                local v59 = { v_u_8, v58, false }
+                table.insert(v53, v59)
+            end
+        end
+    end
+    if v_u_35 ~= nil and (v51 ~= nil and (#v53 == 0 and v51.Power.Output.Value == false)) then
+        for _, v60 in pairs(v_u_35) do
+            table.insert(v53, { v60, v51, false })
+        end
+    end
+    if v51 == nil then
+        pcall(function()
+            -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (ref) v_u_19
+            if v_u_13 == false or v_u_14 then
+                v_u_16.Value = nil
+                v_u_8 = nil
+                v_u_35 = nil
+                v_u_9:Destroy()
+                v_u_10:Destroy()
+                v_u_12:Destroy()
+                v_u_11:Destroy()
+                v_u_19.Parent = nil
+            end
+        end)
+    else
+        local v61 = false
+        if #v53 == 0 then
+            if v51:FindFirstChild("Power") then
+                if v51.Power:FindFirstChild("Output").Value == true and v_u_13 == false then
+                    pcall(function()
+                        -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (ref) v_u_19
+                        if v_u_13 == false or v_u_14 then
+                            v_u_16.Value = nil
+                            v_u_8 = nil
+                            v_u_35 = nil
+                            v_u_9:Destroy()
+                            v_u_10:Destroy()
+                            v_u_12:Destroy()
+                            v_u_11:Destroy()
+                            v_u_19.Parent = nil
+                        end
+                    end)
+                    v_u_6:Fire("Unable to connect! That node is Output only!", nil, Color3.new(1, 0, 0))
+                    script.Error:Play()
+                    return
+                end
+                v61 = v_u_13 == true and v51.Power:FindFirstChild("Output").Value == true and true or v61
+            end
+            local v62 = { v_u_8, v51, v61 }
+            table.insert(v53, v62)
+        end
+        for _, v63 in pairs(v53) do
+            local v_u_64 = v63[1]
+            local v_u_65 = v63[2]
+            local v_u_66 = v63[3]
+            if v_u_65.Name == v_u_64.Name or (v_u_65.Name == "Connector" or (string.find(v_u_65.Name, "MainConnector") or (v_u_64.Name == "Connector" or (string.find(v_u_64.Name, "MainConnector") or v_u_64.Name == "HVConnector")))) then
+                local v67 = v_u_64.Position
+                local v68 = Vector2.new(v67.X, v67.Z)
+                local v69 = v_u_65.Position
+                if v_u_31 < (v68 - Vector2.new(v69.X, v69.Z)).magnitude then
+                    v_u_6:Fire("Too far away!", nil, Color3.new(1, 0, 0))
+                    script.Error:Play()
+                    return
+                end
+                task.spawn(function()
+                    -- upvalues: (copy) v_u_66, (copy) v_u_65, (ref) v_u_6, (copy) v_u_64, (ref) v_u_17, (ref) v_u_18
+                    local v70
+                    if v_u_66 then
+                        if v_u_65.Power:FindFirstChild("Output").Value == true then
+                            v_u_6:Fire("Can\'t chain output to output", nil, Color3.new(1, 0, 0))
+                            script.Error:Play()
+                            return
+                        end
+                        v70 = game.ReplicatedStorage.PlacementSystem.WireBind:InvokeServer(v_u_65, v_u_64)
+                    else
+                        v70 = game.ReplicatedStorage.PlacementSystem.WireBind:InvokeServer(v_u_64, v_u_65)
+                    end
+                    if v_u_17.Value ~= 0 then
+                        v_u_18:Fire(v_u_64, v_u_65)
+                    end
+                    if v70 == false then
+                        script.Error:Play()
+                    else
+                        script["Repair Torch Stop"]:Play()
+                    end
+                end)
+            end
+        end
+        pcall(function()
+            -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (ref) v_u_19
+            if v_u_13 == false or v_u_14 then
+                v_u_16.Value = nil
+                v_u_8 = nil
+                v_u_35 = nil
+                v_u_9:Destroy()
+                v_u_10:Destroy()
+                v_u_12:Destroy()
+                v_u_11:Destroy()
+                v_u_19.Parent = nil
+            end
+        end)
+        if v_u_14 then
+            newConnection()
+        end
+    end
+end
+local function v_u_73(p72) -- name: doAttachments
+    -- upvalues: (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_8, (ref) v_u_11
+    script.Select:Play()
+    v_u_9 = Instance.new("Attachment", workspace.Terrain)
+    v_u_9.Position = p72.Position
+    v_u_10 = Instance.new("Attachment", workspace.Terrain)
+    v_u_12 = Instance.new("RopeConstraint", workspace.Terrain)
+    v_u_12.Attachment0 = v_u_9
+    v_u_12.Attachment1 = v_u_10
+    v_u_12.Visible = true
+    v_u_12.Color = v_u_8.BrickColor
+    v_u_11 = Instance.new("Highlight")
+    v_u_11.Name = "FirstHighlight"
+    v_u_11.FillColor = p72.Color
+    v_u_11.OutlineColor = Color3.new(1, 1, 1)
+    v_u_11.FillTransparency = 0.5
+    v_u_11.OutlineTransparency = 0
+    if not p72:FindFirstChild("TutorialHighlight") then
+        v_u_11.Parent = p72
+    end
+end
+function newConnection() -- name: newConnection
+    -- upvalues: (ref) v_u_32, (copy) v_u_50, (ref) v_u_35, (copy) v_u_6, (ref) v_u_8, (copy) v_u_16, (copy) v_u_73, (ref) v_u_31, (copy) v_u_7, (copy) v_u_4, (ref) v_u_10, (copy) v_u_30, (ref) v_u_12, (ref) v_u_9
+    if workspace:GetAttribute("Difficulty") >= 4 then
+        v_u_32 = 60
+    end
+    local v74, v75 = v_u_50(true)
+    if v75 ~= nil then
+        v_u_35 = v75
+    end
+    if v74 == nil then
+        return
+    elseif v74.Power:FindFirstChild("Input") and v74.Power.Input.Value == true then
+        v_u_6:Fire("Unable to connect! That node is Input only!", nil, Color3.new(1, 0, 0))
+        script.Error:Play()
+    else
+        v_u_8 = v74
+        v_u_16.Value = v74
+        v_u_73(v74)
+        v_u_31 = v74:GetAttribute("WireRange") or v_u_32
+        while v_u_8 ~= nil do
+            task.wait()
+            local v76 = v_u_7.Target
+            if v76 ~= nil then
+                if v_u_4.xIsAConnector(v76.Name) then
+                    v_u_10.Position = v76.Position
+                else
+                    v_u_10.Position = v_u_30()
+                end
+            end
+            v_u_12.Length = (v_u_9.Position - v_u_10.Position).magnitude + 0.5
+            local v77 = v_u_9.Position.X
+            local v78 = v_u_9.Position.Z
+            local v79 = Vector3.new(v77, 0, v78)
+            local v80 = v_u_10.Position.X
+            local v81 = v_u_10.Position.Z
+            if v_u_31 < (v79 - Vector3.new(v80, 0, v81)).magnitude then
+                v_u_12.Visible = false
+            else
+                v_u_12.Visible = true
+            end
+        end
+    end
+end
+local v_u_82 = v_u_5.PlayerGui:WaitForChild("Research")
+v1.InputBegan:Connect(function(p83, p84)
+    -- upvalues: (ref) v_u_22, (copy) v_u_82, (ref) v_u_8, (copy) v_u_71, (ref) v_u_13, (ref) v_u_14
+    if v_u_22 == false or p84 then
+        return
+    elseif v_u_82.Enabled then
+        return
+    elseif p83.UserInputType == Enum.UserInputType.MouseButton1 or p83.KeyCode == Enum.KeyCode.ButtonR2 then
+        if v_u_8 == nil then
+            newConnection()
+        else
+            v_u_71()
+        end
+    elseif p83.KeyCode == Enum.KeyCode.LeftShift or p83.KeyCode == Enum.KeyCode.ButtonL2 then
+        v_u_13 = true
+    elseif p83.KeyCode == Enum.KeyCode.LeftControl then
+        v_u_14 = true
+    end
+end)
+v1.TouchTapInWorld:Connect(function(_, p85)
+    -- upvalues: (ref) v_u_22, (ref) v_u_8, (copy) v_u_71
+    if v_u_22 == false then
+        return
+    elseif p85 then
+        return
+    elseif v_u_8 == nil then
+        newConnection()
+    else
+        v_u_71()
+    end
+end)
+v1.InputEnded:Connect(function(p86)
+    -- upvalues: (ref) v_u_13, (ref) v_u_14, (copy) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (copy) v_u_19
+    if p86.KeyCode == Enum.KeyCode.LeftShift then
+        v_u_13 = false
+        pcall(function()
+            -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_16, (ref) v_u_8, (ref) v_u_35, (ref) v_u_9, (ref) v_u_10, (ref) v_u_12, (ref) v_u_11, (ref) v_u_19
+            if v_u_13 == false or v_u_14 then
+                v_u_16.Value = nil
+                v_u_8 = nil
+                v_u_35 = nil
+                v_u_9:Destroy()
+                v_u_10:Destroy()
+                v_u_12:Destroy()
+                v_u_11:Destroy()
+                v_u_19.Parent = nil
+            end
+        end)
+    elseif p86.KeyCode == Enum.KeyCode.LeftControl then
+        v_u_14 = false
+    end
+end)
+task.spawn(function()
+    -- upvalues: (ref) v_u_22, (ref) v_u_8, (copy) v_u_7, (copy) v_u_4, (ref) v_u_11, (copy) v_u_19
+    while task.wait() do
+        if v_u_22 and v_u_8 then
+            local v87 = v_u_7.Target
+            if v87 and not v87:FindFirstChild("TutorialHighlight") then
+                if v_u_4.xIsAConnector(v87.Name) and not v87:FindFirstChild(v_u_11.Name) then
+                    local v88, v89, v90 = v87.Color:ToHSV()
+                    local v91 = Color3.fromHSV((v88 + 0.5) % 1, v89, v90)
+                    v_u_19.Parent = v87
+                    v_u_19.FillColor = v91
+                else
+                    v_u_19.Parent = nil
+                end
+            else
+                v_u_19.Parent = nil
+            end
+        end
+    end
+end)

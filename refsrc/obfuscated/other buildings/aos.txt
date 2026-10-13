@@ -1,0 +1,114 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+local u4 = require(v1.Modules.NextTicks).new()
+local u5 = game.ReplicatedStorage.Pollution
+require(v1.Modules.Enums.Items)
+local u6 = v2.loadConnector(script.Parent.MainConnector)
+local u7 = v3.loadConnector(script.Parent.SteamInMainPipe)
+local u8 = v3.loadConnector(script.Parent.MainInMainPipe)
+local u9 = v3.loadConnector(script.Parent.Out1MainPipe)
+local u10 = v3.loadConnector(script.Parent.Out2MainPipe)
+local u11 = v3.loadConnector(script.Parent.Out3MainPipe)
+local u12 = v3.loadConnector(script.Parent.OutItemMainPipe)
+local u13 = script.Parent.State
+local u14 = ""
+local v15 = {}
+local u16 = false
+function v15.localUpdate() --[[ Line: 30 ]]
+    --[[
+    Upvalues:
+        [1] = u13
+        [2] = u16
+    --]]
+    if u13.Value == "Running" then
+        u16 = true
+        script.Parent.Base.SOUNDS:Play()
+        script.Parent.Smoke.Attachment.ParticleEmitter.Enabled = true
+        script.Parent.Fire.Attachment.Fire.Enabled = true
+    elseif u13.Value == "" then
+        u16 = false
+        script.Parent.Base.SOUNDS:Stop()
+        script.Parent.Smoke.Attachment.ParticleEmitter.Enabled = false
+        script.Parent.Fire.Attachment.Fire.Enabled = false
+    end
+end
+function v15.tick() --[[ Line: 44 ]]
+    --[[
+    Upvalues:
+        [1] = u4
+        [2] = u7
+        [3] = u13
+        [4] = u8
+        [5] = u12
+        [6] = u9
+        [7] = u10
+        [8] = u11
+        [9] = u14
+        [10] = u6
+        [11] = u5
+    --]]
+    if u4:tickIsFree() then
+        if u7:hasAmountOf("Steam", 500) then
+            if u8:hasAmountOf("Crude Oil", 40) and (u12:canHoldXMoreOf("Coke Fuel", 4) and (u9:canHoldXMoreOf("Hydrogen Sulfide", 12) and (u10:canHoldXMoreOf("Light Oil", 20) and u11:canHoldXMoreOf("Residue", 5)))) then
+                u14 = "Crude Oil"
+            elseif u8:hasAmountOf("Heavy Oil", 40) and (u12:canHoldXMoreOf("Coke Fuel", 44) and u11:canHoldXMoreOf("Residue", 10)) then
+                u14 = "Heavy Oil"
+            elseif u8:hasAmountOf("Fracking Oil", 40) and (u10:canHoldXMoreOf("Heavy Oil", 20) and u11:canHoldXMoreOf("Residue", 15)) then
+                u14 = "Fracking Oil"
+            else
+                if not (u8:hasAmountOf("Light Oil", 40) and (u9:canHoldXMoreOf("Hydrogen Sulfide", 6) and (u11:canHoldXMoreOf("Residue", 15) and u10:canHoldXMoreOf("Heavy Oil", 10)))) then
+                    u13.Value = ""
+                    return
+                end
+                u14 = "Light Oil"
+            end
+            if u6:hasPower(25000000) then
+                u7:removeItem(500)
+                u8:removeItem(40)
+                u13.Value = "Running"
+                u4:nextTicks(10, function(p17) --[[ Line: 60 ]]
+                    --[[
+                    Upvalues:
+                        [1] = u14
+                        [2] = u12
+                        [3] = u9
+                        [4] = u10
+                        [5] = u11
+                        [6] = u6
+                        [7] = u5
+                    --]]
+                    if p17 == 1 and (u14 == "Crude Oil" or u14 == "Heavy Oil") then
+                        u12:addItemAmount("Coke Fuel", 4)
+                    end
+                    if u14 == "Crude Oil" then
+                        u9:addItemAmount("Hydrogen Sulfide", 1.2)
+                        u10:addItemAmount("Light Oil", 2)
+                        u11:addItemAmount("Residue", 0.5)
+                    elseif u14 == "Heavy Oil" then
+                        u12:addItemAmount("Coke Fuel", 4)
+                        u11:addItemAmount("Residue", 1)
+                    elseif u14 == "Fracking Oil" then
+                        u11:addItemAmount("Residue", 1.5)
+                        u10:addItemAmount("Heavy Oil", 2)
+                    elseif u14 == "Light Oil" then
+                        u9:addItemAmount("Hydrogen Sulfide", 0.6)
+                        u10:addItemAmount("Heavy Oil", 1)
+                        u11:addItemAmount("Residue", 1.5)
+                    end
+                    u6:removePower(2500000)
+                    local v18 = u5
+                    v18.Value = v18.Value + 90
+                end)
+            else
+                u13.Value = ""
+            end
+        else
+            u13.Value = ""
+            return
+        end
+    else
+        return
+    end
+end
+return v15

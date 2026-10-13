@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industrialist Circuit Builder</title>
+    <link rel="stylesheet" href="src/ui/style.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <!-- Top toolbar -->
+      <header id="toolbar">
+        <nav id="toolbar-menus">
+          <div class="toolbar-menu-container">
+            <button id="file-menu-button" class="toolbar-menu">File</button>
+            <div id="file-menu" class="toolbar-dropdown">
+              <button
+                id="import-blueprint-button"
+                class="toolbar-dropdown-item"
+                type="button"
+              >
+                Import physical blueprint...
+              </button>
+              <button
+                id="export-blueprint-button"
+                class="toolbar-dropdown-item"
+                type="button"
+              >
+                Export physical blueprint
+              </button>
+              <button
+                id="import-project-button"
+                class="toolbar-dropdown-item"
+                type="button"
+              >
+                Import project...
+              </button>
+              <button
+                id="export-project-button"
+                class="toolbar-dropdown-item"
+                type="button"
+              >
+                Export project
+              </button>
+            </div>
+            <input
+              id="blueprint-file-input"
+              type="file"
+              accept=".json,application/json"
+              hidden
+            />
+          </div>
+          <button class="toolbar-menu">Edit</button>
+          <button class="toolbar-menu">View</button>
+          <button class="toolbar-menu">Simulation</button>
+          <button class="toolbar-menu">Settings</button>
+        </nav>
+
+        <div id="editor-view-toggle" role="group" aria-label="Editor view">
+          <button
+            id="physical-view-button"
+            class="toolbar-button"
+            type="button"
+            aria-pressed="true"
+          >
+            Physical
+          </button>
+          <button
+            id="abstract-view-button"
+            class="toolbar-button"
+            type="button"
+            aria-pressed="false"
+          >
+            Abstract
+          </button>
+        </div>
+
+        <div id="simulation-controls">
+          <button id="generate-physical-button" class="toolbar-button" hidden>
+            Generate physical
+          </button>
+          <button id="compile-button" class="toolbar-button">
+            Compile simulation
+          </button>
+          <button id="pause-button" class="toolbar-button" disabled>
+            ▶ Run
+          </button>
+          <button id="step-button" class="toolbar-button" disabled>Step</button>
+        </div>
+      </header>
+
+      <!-- Main editor area -->
+      <main id="editor">
+        <!-- Building palette -->
+        <aside id="building-panel" class="side-panel">
+          <div class="panel-header">
+            <h2 id="building-panel-title">Buildings</h2>
+          </div>
+
+          <div id="building-search">
+            <!-- search box -->
+          </div>
+
+          <div id="abstract-tools" hidden>
+            <p>
+              Use the same building palette below. Connect output/input nodes;
+              each abstract wire has an editable weight.
+            </p>
+            <h3>Weighted connections</h3>
+            <div id="abstract-connection-list"></div>
+          </div>
+
+          <div id="building-list">
+            <!-- building buttons -->
+          </div>
+        </aside>
+
+        <!-- Canvas / viewport -->
+        <section id="viewport">
+          <canvas id="canvas"></canvas>
+          <div id="abstract-view-status" role="status" hidden>
+            <h2>Abstract weighted-signal editor</h2>
+            <p id="abstract-view-message"></p>
+          </div>
+        </section>
+
+        <!-- Properties panel -->
+        <aside id="properties-panel" class="side-panel">
+          <div class="panel-header">
+            <h2 id="properties-title">Properties</h2>
+          </div>
+
+          <div id="properties">
+            <!-- selected building properties -->
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="./src/main-slop.js"></script>
+  </body>
+</html>

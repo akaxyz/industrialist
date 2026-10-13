@@ -1,0 +1,63 @@
+game:GetService("UserInputService")
+local v_u_1 = game:GetService("TweenService")
+local v2 = game:GetService("ReplicatedStorage")
+local _ = game:GetService("Players").LocalPlayer
+local v_u_3 = v2.Values.IsMobile
+local v_u_4 = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.In)
+TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.In)
+function displayToast(p5, p6, p7) -- name: displayToast
+    -- upvalues: (copy) v_u_3, (copy) v_u_1, (copy) v_u_4
+    local v8 = (not p6 or p6 < 1.05) and 5 or p6
+    if typeof(p5) == "string" and (not v8 or typeof(v8) == "number") and (not p7 or typeof(p7) == "Color3") then
+        for _, v9 in pairs(script.Parent.Holder:GetChildren()) do
+            if v9.Name == p5 and not v9:GetAttribute("Expired") then
+                v9:SetAttribute("ExpireDate", tick() + v8)
+                v9:SetAttribute("Count", v9:GetAttribute("Count") + 1)
+                v9.Text = v9.Name .. " (" .. v9:GetAttribute("Count") .. "x)"
+                return
+            end
+        end
+        local v10 = script.Toast:Clone()
+        local v11 = v10:FindFirstChildOfClass("UIStroke")
+        v10.TextColor3 = p7 or Color3.new(1, 1, 1)
+        v10.Text = p5
+        v10.Name = p5
+        v10.Parent = script.Parent.Holder
+        v10:SetAttribute("ExpireDate", tick() + v8)
+        v10:SetAttribute("Count", 1)
+        if v_u_3.Value then
+            local v12 = script.Parent.Holder:GetChildren()
+            for v13, v14 in v12 do
+                if v14:IsA("UIListLayout") then
+                    table.remove(v12, v13)
+                end
+            end
+            if #v12 >= 6 then
+                v12[1]:Destroy()
+            end
+        end
+        while tick() < v10:GetAttribute("ExpireDate") do
+            task.wait(0.1)
+        end
+        if tick() >= v10:GetAttribute("ExpireDate") and (v10 and v10:FindFirstChild("UIStroke")) then
+            v10:SetAttribute("Expired", true)
+            v_u_1:Create(v10, v_u_4, {
+                ["TextTransparency"] = 1
+            }):Play()
+            v_u_1:Create(v11, v_u_4, {
+                ["Transparency"] = 1
+            }):Play()
+            task.wait(1)
+            v10:Destroy()
+        end
+    else
+        warn("Either toast Text, Time, or Color are invalid types.")
+    end
+end
+game.ReplicatedStorage.PlacementSystem.BindableToast.Event:Connect(function(p15, p16, p17)
+    displayToast(("[Client] %*"):format(p15), p16, p17)
+end)
+game.ReplicatedStorage.PlacementSystem.RemoteToast.OnClientEvent:Connect(function(p18, p19, p20)
+    displayToast(("[Server] %*"):format(p18), p19, p20)
+end)
+script.Toast:SetAttribute("OriginalSize", script.Toast.Size)

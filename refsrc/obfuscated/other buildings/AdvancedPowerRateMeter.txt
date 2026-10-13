@@ -1,0 +1,178 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local v3 = {}
+local v_u_4 = script.Parent.Screen
+local v_u_5 = 0
+local v_u_6 = 0
+local v_u_7 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_8 = require(v1.Modules.GraphV2)
+local v_u_9 = nil
+local v_u_10 = 1
+local v_u_11 = {
+	{
+		["average"] = 0,
+		["sample"] = 1,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["average"] = 0,
+		["sample"] = 2,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["average"] = 0,
+		["sample"] = 10,
+		["data"] = nil,
+		["data"] = {}
+	}
+}
+local v_u_12 = Color3.fromRGB(16, 116, 204)
+local v_u_13 = Color3.fromRGB(20, 212, 255)
+function v3.localStart() -- name: localStart
+	-- upvalues: (ref) v_u_9, (copy) v_u_8, (copy) v_u_4, (copy) v_u_12, (copy) v_u_13, (ref) v_u_10, (copy) v_u_11
+	v_u_9 = v_u_8.new(v_u_4.SurfaceGui.Frame.MainGraph, { v_u_4.SurfaceGui.Frame.MainGraph.Graph.Path2D_1, v_u_4.SurfaceGui.Frame.MainGraph.Graph.Path2D_2 })
+	local v_u_14 = v_u_4.SurfaceGui.Frame.Bottom
+	local function v_u_17(p15) -- name: colorChanging
+		-- upvalues: (copy) v_u_14, (ref) v_u_12, (ref) v_u_13
+		for _, v16 in pairs(v_u_14:GetChildren()) do
+			if v16:IsA("TextButton") then
+				v16.BackgroundColor3 = v_u_12
+			end
+		end
+		p15.BackgroundColor3 = v_u_13
+	end
+	v_u_14.short.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_10, (copy) v_u_17, (copy) v_u_14
+		v_u_10 = 1
+		v_u_17(v_u_14.short)
+	end)
+	v_u_14.medium.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_10, (copy) v_u_17, (copy) v_u_14
+		v_u_10 = 2
+		v_u_17(v_u_14.medium)
+	end)
+	v_u_14.long.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_10, (copy) v_u_17, (copy) v_u_14
+		v_u_10 = 3
+		v_u_17(v_u_14.long)
+	end)
+	v_u_14.clear.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_11
+		table.clear(v_u_11[1].data)
+		table.clear(v_u_11[2].data)
+		table.clear(v_u_11[3].data)
+	end)
+end
+local function v_u_37(p18, p19) -- name: convertPower
+	local v20 = "MF"
+	local v21
+	if p18 < p19 then
+		v21 = p19
+	else
+		v21 = p18
+	end
+	if v21 / 1000000000000 > 0.99 then
+		local v22 = p18 / 1000000000000 * 100 + 0.5
+		local v23 = math.floor(v22) / 100
+		local v24 = p19 / 1000000000000 * 100 + 0.5
+		return v23, math.floor(v24) / 100, "TMF"
+	elseif v21 / 1000000000 > 0.99 then
+		local v25 = p18 / 1000000000 * 100 + 0.5
+		local v26 = math.floor(v25) / 100
+		local v27 = p19 / 1000000000 * 100 + 0.5
+		return v26, math.floor(v27) / 100, "GMF"
+	elseif v21 / 1000000 > 0.99 then
+		local v28 = p18 / 1000000 * 100 + 0.5
+		local v29 = math.floor(v28) / 100
+		local v30 = p19 / 1000000 * 100 + 0.5
+		return v29, math.floor(v30) / 100, "MMF"
+	elseif v21 / 1000 > 0.99 then
+		local v31 = p18 / 1000 * 100 + 0.5
+		local v32 = math.floor(v31) / 100
+		local v33 = p19 / 1000 * 100 + 0.5
+		return v32, math.floor(v33) / 100, "kMF"
+	else
+		local v34 = p18 * 1000 + 0.5
+		local v35 = math.floor(v34) / 1000
+		local v36 = p19 * 1000 + 0.5
+		return v35, math.floor(v36) / 1000, v20
+	end
+end
+local v_u_38 = workspace.CurrentCamera
+local v_u_39 = 9
+function v3.localUpdate() -- name: localUpdate
+	-- upvalues: (ref) v_u_9, (ref) v_u_39, (copy) v_u_11, (ref) v_u_10, (copy) v_u_38, (copy) v_u_37, (copy) v_u_4
+	if v_u_9 == nil then
+		return
+	else
+		v_u_39 = v_u_39 + 1
+		local v40 = script.Parent.State.Value
+		local v41 = tonumber(v40)
+		if v41 == nil then
+			return
+		else
+			local v42 = v41 * 10 + 0.5
+			local v43 = math.floor(v42) / 10
+			for _, v44 in pairs(v_u_11) do
+				if v_u_39 % v44.sample == 0 then
+					v44.average = v44.average + v43
+					local v45 = v44.data
+					local v46 = v44.average / v44.sample
+					table.insert(v45, v46)
+					v44.average = 0
+					if #v44.data == 101 then
+						table.remove(v44.data, 1)
+					end
+				else
+					v44.average = v44.average + v43
+				end
+			end
+			local v47 = 0
+			for _, v48 in pairs(v_u_11[v_u_10].data) do
+				v47 = v47 + v48
+			end
+			if (v_u_38.CFrame.Position - script.Parent.Root.Position).Magnitude <= 20 then
+				local v49, v50, v51 = v_u_37(v47 / #v_u_11[v_u_10].data, v43)
+				v_u_4.SurfaceGui.Frame.Top.Number.Text = ("%*%*/s flow, %*%*/s average"):format(v50, v51, v49, v51)
+				local v52 = table.create(#v_u_11[v_u_10].data)
+				for v53 = 1, #v_u_11[v_u_10].data do
+					v52[v53] = v47 / #v_u_11[v_u_10].data
+				end
+				local v54 = {}
+				for v55 = 1, #v_u_11[v_u_10].data do
+					v54[v55] = -v_u_11[v_u_10].sample * #v_u_11[v_u_10].data + v_u_11[v_u_10].sample * (v55 - 1)
+				end
+				v_u_9:RefreshNGraphs(v54, { v_u_11[v_u_10].data, v52 })
+			end
+		end
+	end
+end
+local _ = game.ReplicatedStorage.Pollution.Value
+tick()
+local v_u_56 = tick()
+local v_u_57 = 0
+local v_u_58 = workspace:GetAttribute("Difficulty")
+function v3.tick() -- name: tick
+	-- upvalues: (copy) v_u_7, (ref) v_u_5, (ref) v_u_57, (ref) v_u_6, (ref) v_u_56, (copy) v_u_58
+	v_u_5 = v_u_5 + v_u_7:getFlow()
+	v_u_7:setFlow(0)
+	v_u_57 = v_u_57 + 1
+	if v_u_57 == 30 then
+		v_u_57 = 0
+		v_u_6 = (v_u_6 + v_u_5) / 2
+		v_u_5 = 0
+	end
+	if tick() - v_u_56 >= 1 then
+		v_u_56 = tick()
+		local v59 = script.Parent.State
+		local v60 = v_u_6 + math.random(-100, 100) / 1000000
+		v59.Value = tostring(v60)
+	end
+	if v_u_58 >= 4 then
+		v_u_7:removePower(v_u_7:getBuffer())
+	end
+end
+return v3

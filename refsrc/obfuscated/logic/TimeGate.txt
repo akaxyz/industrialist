@@ -1,0 +1,38 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_4 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.OutMainConnector)
+script.Parent.Base.ProximityPrompt.Enabled = true
+script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p6)
+	-- upvalues: (copy) v_u_3
+	v_u_3:openMenu(p6)
+end)
+local v_u_7 = script.Parent.ModelData.From
+local v_u_8 = script.Parent.ModelData.To
+v_u_3:addSetting(3, v_u_7, "Active from time", 0, 24)
+v_u_3:addSetting(3, v_u_8, "Active to time", 0, 24)
+local v9 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_10 = game.Lighting
+function v9.tick() -- name: tick
+	-- upvalues: (copy) v_u_4, (copy) v_u_10, (copy) v_u_7, (copy) v_u_8, (copy) v_u_5
+	if v_u_4:hasPower(1) then
+		local v11 = false
+		local v12 = v_u_10.ClockTime
+		local v13
+		if v_u_7.Value < v_u_8.Value then
+			v13 = v_u_7.Value < v12 and v12 < v_u_8.Value and true or v11
+		else
+			v13 = v_u_8.Value >= v12 or v12 >= v_u_7.Value
+		end
+		if v13 then
+			v_u_5:addPower(1000)
+		end
+	end
+	v_u_4:removePower(v_u_4:getBuffer())
+end
+return v9

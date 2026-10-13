@@ -1,0 +1,83 @@
+local v1 = {
+	["spentFuelWidth"] = 20,
+	["spentFuelHeight"] = 14,
+	["lookUpTableForIDs"] = {
+		["none"] = 0,
+		["fuel"] = 1,
+		["mox"] = 2,
+		["lowfuel"] = 3,
+		["rod"] = 4
+	},
+	["FuelTypes"] = {
+		{
+			"MOX Fuel Rod",
+			"MOXFuelRod",
+			"mox",
+			Color3.fromRGB(255, 48, 238),
+			Color3.fromRGB(120, 51, 117),
+			300000000,
+			300000000
+		},
+		{
+			"Low Enrch. Fuel Rod",
+			"LowEnrichmentFuelRod",
+			"lowfuel",
+			Color3.fromRGB(198, 255, 155),
+			Color3.fromRGB(86, 120, 88),
+			10000000,
+			8700000
+		},
+		{
+			"Standard Fuel Rod",
+			"StandardFuelRod",
+			"fuel",
+			Color3.fromRGB(0, 255, 0),
+			Color3.fromRGB(120, 120, 120),
+			100000000,
+			100000000
+		},
+		{
+			"Control Rod",
+			"ControlRod",
+			"rod",
+			Color3.fromRGB(134, 134, 134),
+			Color3.fromRGB(255, 89, 89),
+			10,
+			10
+		},
+		{
+			"None",
+			"None",
+			"none",
+			Color3.fromRGB(59, 59, 59),
+			Color3.fromRGB(0, 0, 0),
+			1,
+			1
+		}
+	},
+	["quickAccessColorTable"] = {}
+}
+for _, v2 in ipairs(v1.FuelTypes) do
+	v1.quickAccessColorTable[v2[3]] = v2[4]
+end
+v1.quickAccessCapColorTable = {}
+for _, v3 in ipairs(v1.FuelTypes) do
+	v1.quickAccessCapColorTable[v3[3]] = v3[5]
+end
+v1.quickAccessFullNameTable = {}
+for _, v4 in ipairs(v1.FuelTypes) do
+	v1.quickAccessFullNameTable[v4[3]] = v4[2]
+end
+v1.quickAccessIDToMaxFuel = {}
+for v5, v6 in ipairs(v1.FuelTypes) do
+	v1.quickAccessIDToMaxFuel[tostring(v5)] = v6[6]
+end
+v1.quickAccessIDToSystemName = {}
+for v7, v8 in ipairs(v1.FuelTypes) do
+	v1.quickAccessIDToSystemName[tostring(v7)] = v8[3]
+end
+v1.quickAccessIDTable = {}
+for v9, v10 in ipairs(v1.FuelTypes) do
+	v1.quickAccessIDTable[v10[3]] = v9
+end
+return v1

@@ -1,0 +1,29 @@
+local v_u_1 = game:GetService("ReplicatedStorage")
+local v2 = {}
+script.Parent.Decoration.ProximityPrompt.Enabled = true
+script.Parent.Decoration.ProximityPrompt.Triggered:Connect(function(p3)
+	-- upvalues: (copy) v_u_1
+	v_u_1.ChangeText:FireClient(p3, script.RemoteEvent)
+end)
+local v_u_4 = script.Parent.Sign.SurfaceGui.TextLabel
+local _ = v_u_4.TextSize
+local function v_u_6() -- name: try
+	-- upvalues: (copy) v_u_4, (copy) v_u_6
+	if v_u_4.TextFits == false then
+		local v5 = v_u_4
+		v5.TextSize = v5.TextSize - 1
+		v_u_6()
+	end
+end
+local v_u_7 = game:GetService("TextService")
+script.RemoteEvent.OnServerEvent:Connect(function(p8, p9)
+	-- upvalues: (copy) v_u_7
+	script.Parent.ModelData.Text.Value = v_u_7:FilterStringAsync(p9, p8.UserId):GetNonChatStringForBroadcastAsync()
+end)
+script.Parent.ModelData.Text.Changed:Connect(function()
+	-- upvalues: (copy) v_u_4
+	v_u_4.Text = script.Parent.ModelData.Text.Value
+end)
+v_u_4.Text = script.Parent.ModelData.Text.Value
+function v2.tick() -- name: tick end
+return v2

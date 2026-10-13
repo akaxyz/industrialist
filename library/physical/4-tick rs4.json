@@ -1,0 +1,511 @@
+{
+  "buildings": [
+    {
+      "id": 0,
+      "updateOrder": 2,
+      "name": "ResearchStation4",
+      "positionSite": {
+        "x": 34,
+        "y": 134
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 90,
+      "data": {}
+    },
+    {
+      "id": 6,
+      "updateOrder": 2,
+      "name": "ANDGate",
+      "positionSite": {
+        "x": 38,
+        "y": 130
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 7,
+      "updateOrder": 2,
+      "name": "ANDGate",
+      "positionSite": {
+        "x": 42,
+        "y": 130
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 8,
+      "updateOrder": 2,
+      "name": "ANDGate",
+      "positionSite": {
+        "x": 46,
+        "y": 130
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 9,
+      "updateOrder": 2,
+      "name": "ANDGate",
+      "positionSite": {
+        "x": 50,
+        "y": 130
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 18,
+      "updateOrder": 2,
+      "name": "LogicMemory",
+      "positionSite": {
+        "x": 42,
+        "y": 124
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 19,
+      "updateOrder": 2,
+      "name": "LogicMemory",
+      "positionSite": {
+        "x": 46,
+        "y": 124
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 20,
+      "updateOrder": 2,
+      "name": "LogicMemory",
+      "positionSite": {
+        "x": 50,
+        "y": 124
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 21,
+      "updateOrder": 2,
+      "name": "LogicMemory",
+      "positionSite": {
+        "x": 38,
+        "y": 124
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 25,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 38,
+        "y": 118
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 26,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 42,
+        "y": 118
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 27,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 46,
+        "y": 118
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 28,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 50,
+        "y": 118
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 29,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 40,
+        "y": 112
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 30,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 44,
+        "y": 112
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 31,
+      "updateOrder": 2,
+      "name": "LogicAdder",
+      "positionSite": {
+        "x": 48,
+        "y": 112
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 32,
+      "updateOrder": 2,
+      "name": "LogicClock",
+      "positionSite": {
+        "x": 34,
+        "y": 130
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 33,
+      "updateOrder": 2,
+      "name": "ANDGate",
+      "positionSite": {
+        "x": 34,
+        "y": 124
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 34,
+      "updateOrder": 2,
+      "name": "LogicPulse",
+      "positionSite": {
+        "x": 34,
+        "y": 120
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 0,
+      "data": {}
+    },
+    {
+      "id": 35,
+      "updateOrder": 2,
+      "name": "SevenSegmentDisplay",
+      "positionSite": {
+        "x": 52,
+        "y": 112
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 270,
+      "data": {}
+    }
+  ],
+  "pipes": [],
+  "wires": [
+    {
+      "A": "0.Out4MainConnector",
+      "B": "9.In2MainConnector"
+    },
+    {
+      "A": "0.Out3MainConnector",
+      "B": "8.In2MainConnector"
+    },
+    {
+      "A": "0.Out2MainConnector",
+      "B": "7.In2MainConnector"
+    },
+    {
+      "A": "0.Out1MainConnector",
+      "B": "6.In2MainConnector"
+    },
+    {
+      "A": "6.OutMainConnector",
+      "B": "21.InMainConnector"
+    },
+    {
+      "A": "9.OutMainConnector",
+      "B": "20.InMainConnector"
+    },
+    {
+      "A": "8.OutMainConnector",
+      "B": "19.InMainConnector"
+    },
+    {
+      "A": "7.OutMainConnector",
+      "B": "18.InMainConnector"
+    },
+    {
+      "A": "25.CarryMainConnector",
+      "B": "29.In1MainConnector"
+    },
+    {
+      "A": "26.OutMainConnector",
+      "B": "29.In2MainConnector"
+    },
+    {
+      "A": "26.CarryMainConnector",
+      "B": "30.In1MainConnector"
+    },
+    {
+      "A": "27.OutMainConnector",
+      "B": "30.In2MainConnector"
+    },
+    {
+      "A": "27.CarryMainConnector",
+      "B": "31.In1MainConnector"
+    },
+    {
+      "A": "28.OutMainConnector",
+      "B": "31.In2MainConnector"
+    },
+    {
+      "A": "29.CarryMainConnector",
+      "B": "30.In1MainConnector"
+    },
+    {
+      "A": "30.CarryMainConnector",
+      "B": "31.In1MainConnector"
+    },
+    {
+      "A": "21.OutMainConnector",
+      "B": "25.In1MainConnector"
+    },
+    {
+      "A": "20.OutMainConnector",
+      "B": "28.In1MainConnector"
+    },
+    {
+      "A": "19.OutMainConnector",
+      "B": "27.In1MainConnector"
+    },
+    {
+      "A": "18.OutMainConnector",
+      "B": "26.In1MainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "21.SupplyMainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "18.SupplyMainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "19.SupplyMainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "20.SupplyMainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "32.InMainConnector"
+    },
+    {
+      "A": "32.OutMainConnector",
+      "B": "33.In1MainConnector"
+    },
+    {
+      "A": "0.MachineMainConnector",
+      "B": "33.In2MainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "34.InMainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "18.ResetMainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "19.ResetMainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "21.ResetMainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "20.ResetMainConnector"
+    },
+    {
+      "A": "28.CarryMainConnector",
+      "B": "0.LogicIn5MainConnector"
+    },
+    {
+      "A": "34.OutMainConnector",
+      "B": "0.ClockMainConnector"
+    },
+    {
+      "A": "0.Out2MainConnector",
+      "B": "26.In2MainConnector"
+    },
+    {
+      "A": "0.Out1MainConnector",
+      "B": "25.In2MainConnector"
+    },
+    {
+      "A": "0.Out3MainConnector",
+      "B": "27.In2MainConnector"
+    },
+    {
+      "A": "0.Out4MainConnector",
+      "B": "28.In2MainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "6.In1MainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "7.In1MainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "8.In1MainConnector"
+    },
+    {
+      "A": "33.OutMainConnector",
+      "B": "9.In1MainConnector"
+    },
+    {
+      "A": "25.OutMainConnector",
+      "B": "0.LogicIn1MainConnector"
+    },
+    {
+      "A": "29.OutMainConnector",
+      "B": "0.LogicIn2MainConnector"
+    },
+    {
+      "A": "30.OutMainConnector",
+      "B": "0.LogicIn3MainConnector"
+    },
+    {
+      "A": "31.OutMainConnector",
+      "B": "0.LogicIn4MainConnector"
+    },
+    {
+      "A": "31.CarryMainConnector",
+      "B": "0.LogicIn5MainConnector"
+    },
+    {
+      "A": "26.OutMainConnector",
+      "B": "35.In3MainConnector"
+    },
+    {
+      "A": "27.OutMainConnector",
+      "B": "35.In4MainConnector"
+    },
+    {
+      "A": "25.CarryMainConnector",
+      "B": "35.In1MainConnector"
+    },
+    {
+      "A": "35.Out1MainConnector",
+      "B": "31.In1MainConnector"
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+game:GetService("TweenService")
+local v1 = game:GetService("ReplicatedStorage")
+local v_u_2 = game:GetService("Players").LocalPlayer
+local v_u_3 = v_u_2.PlayerGui
+local v_u_4 = {
+    ["isMobile"] = v1:WaitForChild("Values").IsMobile,
+    ["money"] = v1:WaitForChild("Money"),
+    ["researchPoints"] = v1:WaitForChild("ResearchPoints"),
+    ["worldOwner"] = v1.WorldOwner,
+    ["getCode"] = v1.GetCode,
+    ["codeUpdate"] = v1.CodeUpdate
+}
+local v_u_5 = {
+    ["inventory"] = v_u_3:WaitForChild("Inventory"),
+    ["research"] = v_u_3:WaitForChild("Research"),
+    ["playerPermissions"] = v_u_3:WaitForChild("PlayerPermissions"),
+    ["codeFrameHolder"] = script.Parent:WaitForChild("CodeFrameHolder"),
+    ["sideBar"] = script.Parent.SideBar,
+    ["mobileButtonFrame"] = script.Parent.MobileButtonFrame,
+    ["currencyHolder"] = script.Parent.CurrencyHolder
+}
+local v_u_6 = {
+    ["frame"] = v_u_5.codeFrameHolder.CodeFrame,
+    ["toggleView"] = v_u_5.codeFrameHolder.ToggleView,
+    ["toggleCode"] = v_u_5.codeFrameHolder.ToggleCode,
+    ["codeDisplay"] = v_u_5.codeFrameHolder.CodeFrame.UWJID
+}
+local v_u_7 = {
+    ["sfxLibrary"] = v_u_2.PlayerScripts:WaitForChild("sfxLibrary"),
+    ["animateModule"] = require(v_u_2.PlayerScripts:WaitForChild("uiScripts").Modules:WaitForChild("HandleAnimationVisibility")),
+    ["tweenButtons"] = require(v_u_2.PlayerScripts.uiScripts.Modules:WaitForChild("TweenButtons")),
+    ["cursorTip"] = require(v_u_2.PlayerScripts.uiScripts.Modules.CursorTip),
+    ["formatNumber"] = require(v1.FormatNumber.Main)
+}
+local v_u_8 = v_u_7.formatNumber.NumberFormatter.with()
+TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut)
+local v_u_9 = {
+    ["isCodeLocked"] = false,
+    ["isViewToggled"] = true,
+    ["currentCode"] = "Waiting for Server..",
+    ["researchPointsText"] = "RP"
+}
+local v_u_14 = {
+    ["initialize"] = function() -- name: initialize
+        -- upvalues: (copy) v_u_4, (copy) v_u_9
+        task.spawn(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_9
+            v_u_9.currentCode = v_u_4.getCode:InvokeServer() or "Internal Error"
+        end)
+        v_u_4.codeUpdate.OnClientEvent:Connect(function(p10)
+            -- upvalues: (ref) v_u_9
+            v_u_9.currentCode = p10
+        end)
+    end,
+    ["toggleCodeVisibility"] = function() -- name: toggleCodeVisibility
+        -- upvalues: (copy) v_u_9, (copy) v_u_14
+        v_u_9.isCodeLocked = not v_u_9.isCodeLocked
+        if v_u_9.isCodeLocked then
+            v_u_14.showCode()
+        else
+            v_u_14.hideCode()
+        end
+        v_u_14.updateToggleState()
+    end,
+    ["showCode"] = function() -- name: showCode
+        -- upvalues: (copy) v_u_6, (copy) v_u_9
+        v_u_6.toggleCode.Text = "Hide"
+        v_u_6.frame.BorderStroke.Color = Color3.fromHSV(1, 1, 1)
+        v_u_6.frame.BorderStroke.UIGradient.Enabled = true
+        v_u_6.codeDisplay.Text = v_u_9.currentCode
+    end,
+    ["hideCode"] = function() -- name: hideCode
+        -- upvalues: (copy) v_u_6
+        v_u_6.toggleCode.Text = "Show"
+        v_u_6.frame.BorderStroke.Color = Color3.new(0, 0, 0)
+        v_u_6.frame.BorderStroke.UIGradient.Enabled = false
+        v_u_6.codeDisplay.Text = ""
+    end,
+    ["updateToggleState"] = function() -- name: updateToggleState
+        -- upvalues: (copy) v_u_9, (copy) v_u_4, (copy) v_u_6
+        local v11 = v_u_9.isCodeLocked
+        local v12 = v_u_9.isViewToggled
+        local v13 = v_u_4.isMobile.Value
+        if v11 then
+            v_u_6.frame.Parent.ToggleCode.Visible = true
+            if not v12 then
+                v_u_6.toggleView.BorderStroke.Color = Color3.fromHSV(1, 1, 1)
+                v_u_6.toggleView.BorderStroke.UIGradient.Enabled = true
+                return
+            end
+            if v_u_6.toggleView.GuiState == Enum.GuiState.Press or v_u_6.toggleView.GuiState == Enum.GuiState.Hover then
+                v_u_6.toggleView.BorderStroke.Color = v13 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
+                v_u_6.toggleView.BorderStroke.UIGradient.Enabled = false
+                return
+            end
+        elseif not v12 then
+            v_u_6.frame.Parent.ToggleCode.Visible = false
+            if v_u_6.toggleView.GuiState ~= Enum.GuiState.Press and v_u_6.toggleView.GuiState ~= Enum.GuiState.Hover then
+                v_u_6.toggleView.BorderStroke.Color = Color3.new(0, 0, 0)
+                v_u_6.toggleView.BorderStroke.UIGradient.Enabled = false
+            end
+        end
+    end
+}
+local v_u_20 = {
+    ["setupSideBarButtons"] = function() -- name: setupSideBarButtons
+        -- upvalues: (copy) v_u_5, (copy) v_u_7, (copy) v_u_20
+        for _, v_u_15 in pairs(v_u_5.sideBar:GetChildren()) do
+            if v_u_15:IsA("GuiButton") then
+                v_u_7.cursorTip.Bind(v_u_15, v_u_15.Name)
+                v_u_15.MouseButton1Click:Connect(function()
+                    -- upvalues: (ref) v_u_20, (copy) v_u_15
+                    v_u_20.handleSideBarClick(v_u_15)
+                end)
+            end
+        end
+    end,
+    ["handleSideBarClick"] = function(p16) -- name: handleSideBarClick
+        -- upvalues: (copy) v_u_3, (copy) v_u_7
+        local v17 = v_u_3:FindFirstChild(p16.Name)
+        v_u_7.animateModule.Animate(v17, v17.Enabled and "Close" or "Open")
+    end,
+    ["updateToggleViewImage"] = function() -- name: updateToggleViewImage
+        -- upvalues: (copy) v_u_4, (copy) v_u_9, (copy) v_u_6
+        local v18 = v_u_4.isMobile.Value
+        local v19 = v_u_9.isViewToggled
+        if v18 then
+            v_u_6.toggleView.Image = v19 and "rbxassetid://15422013504" or "rbxassetid://15422015447"
+        else
+            v_u_6.toggleView.Image = v19 and "rbxassetid://15422015447" or "rbxassetid://15422013504"
+        end
+    end
+}
+local v_u_22 = {
+    ["updateVisibility"] = function() -- name: updateVisibility
+        -- upvalues: (copy) v_u_2, (copy) v_u_4, (copy) v_u_5
+        local v21 = v_u_2.UserId == v_u_4.worldOwner.Value
+        v_u_5.codeFrameHolder.Visible = v21
+    end,
+    ["initialize"] = function() -- name: initialize
+        -- upvalues: (copy) v_u_4, (copy) v_u_22
+        v_u_4.worldOwner:GetPropertyChangedSignal("Value"):Connect(v_u_22.updateVisibility)
+        if v_u_4.worldOwner.Value ~= 0 then
+            v_u_22.updateVisibility()
+        end
+    end
+}
+local v_u_29 = {
+    ["updateDisplay"] = function() -- name: updateDisplay
+        -- upvalues: (copy) v_u_4, (copy) v_u_8, (copy) v_u_5, (copy) v_u_9
+        local v23 = v_u_4.money.Value
+        if workspace:GetAttribute("Difficulty") == 6 then
+            local v24 = math.log10(v23)
+            v23 = 10 ^ math.floor(v24)
+        end
+        local v25 = v_u_4.researchPoints.Value
+        local v26 = v_u_8:Format((math.floor(v25)))
+        local v27 = v_u_8:Format((math.floor(v23)))
+        v_u_5.currencyHolder.RP.Text = v26 .. v_u_9.researchPointsText
+        v_u_5.research.Frame.MobileResearch.Text = v26 .. v_u_9.researchPointsText
+        local v28 = workspace:GetAttribute("Difficulty") == 6 and "~$" or "$"
+        v_u_5.currencyHolder.Money.Text = v28 .. v27
+        v_u_5.inventory.Frame.Frame.Container.MobileMoney.Text = v28 .. v27
+    end
+}
+local v30 = {
+    ["setupCodeFrameEvents"] = function() -- name: setupCodeFrameEvents
+        -- upvalues: (copy) v_u_6, (copy) v_u_4, (copy) v_u_9, (copy) v_u_7, (copy) v_u_14, (copy) v_u_20
+        v_u_6.frame.MouseEnter:Connect(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_9, (ref) v_u_6, (ref) v_u_7
+            if not v_u_4.isMobile.Value then
+                if not v_u_9.isCodeLocked then
+                    v_u_6.frame.BorderStroke.Color = Color3.new(1, 1, 1)
+                end
+                if v_u_7.sfxLibrary.Hover then
+                    v_u_7.sfxLibrary.Hover:Play()
+                end
+                v_u_7.tweenButtons.tweenAnimate(v_u_6.frame)
+            end
+        end)
+        v_u_6.frame.MouseLeave:Connect(function()
+            -- upvalues: (ref) v_u_9, (ref) v_u_6, (ref) v_u_7
+            if not v_u_9.isCodeLocked then
+                v_u_6.frame.BorderStroke.Color = Color3.new(0, 0, 0)
+            end
+            v_u_7.tweenButtons.resetTween(v_u_6.frame)
+        end)
+        v_u_6.toggleCode.MouseButton1Click:Connect(v_u_14.toggleCodeVisibility)
+        v_u_6.toggleView.MouseButton1Click:Connect(function()
+            -- upvalues: (ref) v_u_7, (ref) v_u_9, (ref) v_u_6, (ref) v_u_20, (ref) v_u_14
+            if v_u_7.sfxLibrary.Click then
+                v_u_7.sfxLibrary.Click:Play()
+            end
+            v_u_9.isViewToggled = not v_u_9.isViewToggled
+            v_u_6.frame.Visible = v_u_9.isViewToggled
+            v_u_6.frame.Parent.ToggleCode.Visible = v_u_9.isViewToggled
+            v_u_20.updateToggleViewImage()
+            v_u_14.updateToggleState()
+        end)
+        v_u_6.toggleView.MouseEnter:Connect(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_9, (ref) v_u_6, (ref) v_u_7
+            if not v_u_4.isMobile.Value then
+                if not v_u_9.isCodeLocked or v_u_9.isViewToggled then
+                    v_u_6.toggleView.BorderStroke.Color = Color3.new(1, 1, 1)
+                end
+                if v_u_7.sfxLibrary.Hover then
+                    v_u_7.sfxLibrary.Hover:Play()
+                end
+                v_u_7.tweenButtons.tweenAnimate(v_u_6.toggleView)
+            end
+        end)
+        v_u_6.toggleView.MouseLeave:Connect(function()
+            -- upvalues: (ref) v_u_9, (ref) v_u_6, (ref) v_u_7
+            if not v_u_9.isCodeLocked or v_u_9.isViewToggled then
+                v_u_6.toggleView.BorderStroke.Color = Color3.new(0, 0, 0)
+                v_u_7.tweenButtons.resetTween(v_u_6.toggleView)
+            end
+        end)
+    end,
+    ["setupCurrencyEvents"] = function() -- name: setupCurrencyEvents
+        -- upvalues: (copy) v_u_5, (copy) v_u_4, (copy) v_u_9
+        v_u_5.currencyHolder.RP.MouseEnter:Connect(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_9
+            if not v_u_4.isMobile.Value then
+                v_u_9.researchPointsText = "Research Points"
+            end
+        end)
+        v_u_5.currencyHolder.RP.MouseLeave:Connect(function()
+            -- upvalues: (ref) v_u_9
+            v_u_9.researchPointsText = "RP"
+        end)
+    end,
+    ["setupMobileHandling"] = function() -- name: setupMobileHandling
+        -- upvalues: (copy) v_u_4, (copy) v_u_6, (copy) v_u_9, (copy) v_u_20
+        v_u_4.isMobile:GetPropertyChangedSignal("Value"):Connect(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_6, (ref) v_u_9, (ref) v_u_20
+            if v_u_4.isMobile.Value then
+                v_u_6.frame.Visible = false
+                v_u_6.toggleCode.Visible = false
+                v_u_9.isViewToggled = false
+            end
+            v_u_20.updateToggleViewImage()
+        end)
+        if v_u_4.isMobile.Value then
+            v_u_6.frame.Visible = false
+            v_u_6.toggleCode.Visible = false
+            v_u_9.isViewToggled = false
+        end
+    end
+}
+v_u_14.initialize()
+v_u_22.initialize()
+v_u_20.setupSideBarButtons()
+v30.setupCodeFrameEvents()
+v30.setupCurrencyEvents()
+v30.setupMobileHandling()
+task.spawn(function()
+    -- upvalues: (copy) v_u_6, (copy) v_u_4, (copy) v_u_9, (copy) v_u_29
+    while task.wait(0.1) do
+        if v_u_6.codeDisplay.Text ~= "" then
+            if v_u_4.isMobile.Value and not v_u_9.isCodeLocked then
+                v_u_6.codeDisplay.Text = ""
+            else
+                v_u_6.codeDisplay.Text = v_u_9.currentCode
+            end
+        end
+        v_u_29.updateDisplay()
+    end
+end)

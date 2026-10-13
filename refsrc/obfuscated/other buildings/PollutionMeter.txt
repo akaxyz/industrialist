@@ -1,0 +1,33 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.parent.MainConnector)
+local v4 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_5 = workspace:GetAttribute("Difficulty")
+local v_u_6 = 0
+local v_u_7 = 0
+function v4.tick() -- name: tick
+	-- upvalues: (ref) v_u_6, (copy) v_u_5, (ref) v_u_7, (copy) v_u_3
+	v_u_6 = v_u_6 + 1
+	if v_u_5 == 5 and v_u_6 % 30 == 0 then
+		math.randomseed(tick())
+		v_u_7 = math.random(-400, 400)
+	end
+	if v_u_3:hasPower(100) then
+		v_u_3:removePower(100)
+		if v_u_5 >= 5 then
+			script.Parent.Pollution.SurfaceGui.TextLabel.Text = v_u_7 .. "%"
+		else
+			local v8 = script.Parent.Pollution.SurfaceGui.TextLabel
+			local v9 = game.ReplicatedStorage.Pollution.Value / game.ReplicatedStorage.Pollution:GetAttribute("Max") * 100
+			v8.Text = math.floor(v9) .. "%"
+		end
+	else
+		script.Parent.Pollution.SurfaceGui.TextLabel.Text = "No Power"
+		return
+	end
+end
+return v4

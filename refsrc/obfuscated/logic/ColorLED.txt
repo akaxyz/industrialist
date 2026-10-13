@@ -1,0 +1,36 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.GMainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.BMainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.RMainConnector)
+local v_u_6 = script.Parent.Light
+local v_u_7 = 0
+local v_u_8 = 0
+local v_u_9 = 0
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (ref) v_u_7, (copy) v_u_5, (ref) v_u_8, (copy) v_u_4, (ref) v_u_9, (copy) v_u_6
+		if v_u_3:getBuffer() >= 1 then
+			v_u_7 = 255
+			v_u_3:removePower(v_u_3:getBuffer())
+		else
+			v_u_7 = 0
+		end
+		if v_u_5:getBuffer() >= 1 then
+			v_u_8 = 255
+			v_u_5:removePower(v_u_5:getBuffer())
+		else
+			v_u_8 = 0
+		end
+		if v_u_4:getBuffer() >= 1 then
+			v_u_9 = 255
+			v_u_4:removePower(v_u_4:getBuffer())
+		else
+			v_u_9 = 0
+		end
+		v_u_6.Color = Color3.fromRGB(v_u_8, v_u_7, v_u_9)
+	end
+}

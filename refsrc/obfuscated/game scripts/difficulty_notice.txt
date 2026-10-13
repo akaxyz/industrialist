@@ -1,0 +1,146 @@
+local v1 = game:GetService("Players")
+local v_u_2 = game:GetService("UserInputService")
+local v_u_3 = game:GetService("RunService")
+local v4 = v1.LocalPlayer
+workspace:GetAttribute("Difficulty")
+local v_u_5 = v4.PlayerScripts:WaitForChild("sfxLibrary")
+local v_u_6 = {
+    [-1] = {
+        ["Difficulty"] = { "!Load Failed!", Color3.fromRGB(255, 25, 25) },
+        ["Items"] = { "This is most likely a bug!" }
+    },
+    [0] = {
+        ["Difficulty"] = { "\226\128\162Sandbox\226\128\162", Color3.fromRGB(25, 255, 255) },
+        ["Items"] = { "No Badges.", "No Leaderboards.", "Infinite Machines." }
+    },
+    [1] = {
+        ["Difficulty"] = { "\226\128\162Easy\226\128\162", Color3.fromRGB(25, 255, 25) },
+        ["Items"] = { "UNRELEASED" }
+    },
+    [2] = {
+        ["Difficulty"] = { "\226\128\162Normal\226\128\162", Color3.fromRGB(25, 255, 25) },
+        ["Items"] = { "This is most likely a bug!" }
+    },
+    [3] = {
+        ["Difficulty"] = { "\226\128\162Hard\226\128\162", Color3.fromRGB(255, 25, 25) },
+        ["Items"] = {
+            "No Renewables.",
+            "Deleting Residue Causes Pollution.",
+            "Reach -1% Pollution.",
+            "GOAL:"
+        }
+    },
+    [4] = {
+        ["Difficulty"] = { "\226\128\162Insane\226\128\162", Color3.fromRGB(255, 25, 255) },
+        ["Items"] = {
+            "No Renewables.",
+            "Deleting Residue Causes Pollution.",
+            "Density Mode.",
+            "Scrubbers Don\'t Function.",
+            "in under 100% pollution.",
+            "Sell 1 Gearbox",
+            "GOAL:"
+        }
+    },
+    [5] = {
+        ["Difficulty"] = { "\226\128\162Impossible\226\128\162", Color3.fromRGB(77, 77, 77) },
+        ["Items"] = {
+            "No Renewables.",
+            "Deleting Residue Causes Pollution.",
+            "Density Mode.",
+            "Scrubbers Don\'t Function.",
+            "No Gold Tanks.",
+            "No Advanced Drills.",
+            "in under 100% pollution.",
+            "Sell 1 Gearbox",
+            "GOAL:"
+        }
+    },
+    [6] = {
+        ["Difficulty"] = { "\226\128\162Impossible\194\178\226\128\162", Color3.fromRGB(128, 25, 255) },
+        ["Items"] = {
+            "No Renewables.",
+            "Deleting Residue Causes Pollution.",
+            "Density Mode.",
+            "Scrubbers Don\'t Function.",
+            "No Gold Tanks.",
+            "No Advanced Drills.",
+            "Model Count Decreases.",
+            "Complete Within 4 Hours.",
+            "Buildings Randomly Catch Fire.",
+            "Forced Ore Nodes.",
+            "No Deletion Refund.",
+            "in under 200% pollution.",
+            "Sell 1 Purple Gold",
+            "GOAL:"
+        }
+    }
+}
+local v7 = script.Parent.Parent
+local v_u_8 = false
+v7:SetAttribute("OriginalSize", v7.Size)
+v7.MouseEnter:Connect(function()
+    -- upvalues: (copy) v_u_5, (copy) v_u_2, (copy) v_u_6, (ref) v_u_8
+    v_u_5.Hover:Play()
+    if v_u_2:GetLastInputType() ~= Enum.UserInputType.Touch then
+        local v9, v10, v11 = v_u_6[workspace:GetAttribute("Difficulty")].Difficulty[2]:ToHSV()
+        script.Parent.Parent.BorderStroke.Color = Color3.fromHSV(v9, v10 / 2, v11)
+        v_u_8 = true
+    end
+end)
+v7.MouseLeave:Connect(function()
+    -- upvalues: (copy) v_u_2, (copy) v_u_6, (ref) v_u_8
+    if v_u_2:GetLastInputType() ~= Enum.UserInputType.Touch then
+        local v12 = v_u_6[workspace:GetAttribute("Difficulty")]
+        script.Parent.Parent.BorderStroke.Color = v12.Difficulty[2]
+        v_u_8 = false
+    end
+end)
+if workspace:GetAttribute("Difficulty") and workspace:GetAttribute("Difficulty") ~= 2 then
+    local v_u_13 = script.Parent.Position
+    local v_u_14 = script.Parent.Size
+    task.spawn(function()
+        -- upvalues: (copy) v_u_3, (ref) v_u_8, (copy) v_u_6, (copy) v_u_13, (copy) v_u_14
+        v_u_3.RenderStepped:Connect(function(p15)
+            -- upvalues: (ref) v_u_8, (ref) v_u_6, (ref) v_u_13, (ref) v_u_14
+            if script.Parent.Parent.Parent.Parent.Enabled == false then
+                return
+            elseif not v_u_8 then
+                local v16 = #v_u_6[workspace:GetAttribute("Difficulty")].Items + 2
+                script.Parent.Position = UDim2.new(script.Parent.Position.X.Scale, 0, script.Parent.Position.Y.Scale + p15 / 3, 0)
+                local v17 = script.Parent.Size.Y.Scale * script.Item.Size.Y.Scale
+                local v18 = v_u_13.Y.Scale + 0.5 + v_u_14.Y.Scale
+                if v18 < script.Parent.Position.Y.Scale then
+                    script.Parent.Position = UDim2.new(0.5, 0, v18 + 1.5 - v17 * v16, 0)
+                end
+            end
+        end)
+    end)
+    local function v25() -- name: updateDifficulty
+        -- upvalues: (copy) v_u_6
+        local v19 = v_u_6[workspace:GetAttribute("Difficulty")]
+        local v20 = script.Item:Clone()
+        v20.Parent = script.Parent
+        v20.Name = "Difficulty"
+        v20.Text = v19.Difficulty[1]
+        v20.TextColor3 = v19.Difficulty[2]
+        script.Parent.Parent.BorderStroke.Color = v19.Difficulty[2]
+        v20.LayoutOrder = 1
+        for _, v21 in pairs(v19.Items) do
+            local v22 = script.Item:Clone()
+            v22.Parent = script.Parent
+            v22.Name = v21
+            v22.Text = v21
+            v22.LayoutOrder = 0
+        end
+        local v23 = #v19.Items + 2
+        local v24 = script.Parent.Size.Y.Scale * script.Item.Size.Y.Scale
+        script.Parent.Position = UDim2.new(0.5, 0, 6 - v24 * v23, 0)
+    end
+    repeat
+        task.wait(0.05)
+    until game.ReplicatedStorage.LoadingDone.Value or game:GetService("RunService"):IsStudio()
+    v25()
+else
+    script:FindFirstAncestorWhichIsA("ScreenGui").Enabled = false
+end

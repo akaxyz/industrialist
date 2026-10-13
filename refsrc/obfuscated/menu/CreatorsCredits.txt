@@ -1,0 +1,88 @@
+local v1 = {}
+local v2 = {
+	{
+		["Character"] = workspace.Creators.mamytema,
+		["UserId"] = 426189095,
+		["Role"] = "Head Scripter, Head Game Designer",
+		["RoleColor"] = Color3.fromRGB(255, 255, 0)
+	},
+	{
+		["Character"] = workspace.Creators.Chaos_12346,
+		["UserId"] = 796075380,
+		["Role"] = "Head Tester, Game Designer, Scripter",
+		["RoleColor"] = Color3.fromRGB(0, 4, 255)
+	},
+	{
+		["Character"] = workspace.Creators.M_axsters,
+		["UserId"] = 349311355,
+		["Role"] = "UI Designer, Music Composer, Scripter",
+		["RoleColor"] = Color3.fromRGB(255, 0, 0)
+	},
+	{
+		["Character"] = workspace.Creators.BitsForBytes,
+		["UserId"] = 859702674,
+		["Role"] = "Head Asset Maker, Texture Designer",
+		["RoleColor"] = Color3.fromRGB(0, 255, 8)
+	},
+	{
+		["Character"] = workspace.Creators.aistepaiste27,
+		["UserId"] = 142560726,
+		["Role"] = "Asset Maker",
+		["RoleColor"] = Color3.fromRGB(0, 255, 225)
+	},
+	{
+		["Character"] = workspace.Creators.Fort_Techlnd,
+		["UserId"] = 2781606985,
+		["Role"] = "Asset Maker",
+		["RoleColor"] = Color3.fromRGB(255, 132, 0)
+	},
+	{
+		["Character"] = workspace.Creators.noobiethefish,
+		["UserId"] = 497448345,
+		["Role"] = "Texture Designer, Asset Maker, Tester",
+		["RoleColor"] = Color3.fromRGB(157, 0, 255)
+	},
+	{
+		["Character"] = workspace.Creators.savvayy,
+		["UserId"] = 344014905,
+		["Role"] = "Asset Maker",
+		["RoleColor"] = Color3.fromRGB(0, 229, 255)
+	},
+	{
+		["Character"] = workspace.Creators.lmournate,
+		["UserId"] = 56479954,
+		["Role"] = "Scripter",
+		["RoleColor"] = Color3.fromRGB(255, 108, 135)
+	},
+	{
+		["Character"] = workspace.Creators.FromSob,
+		["UserId"] = 422174528,
+		["Role"] = "Asset Maker, Tester",
+		["RoleColor"] = Color3.fromRGB(165, 255, 124)
+	},
+	{
+		["Character"] = workspace.Creators["Special thanks"],
+		["UserId"] = 0,
+		["Role"] = "",
+		["List1"] = {
+			"Play testers:",
+			"@1MifMaf",
+			"@PHARAON956",
+			"@Puszonex_New",
+			"@Karppu_Playys",
+			"@ComradeVane",
+			"@5Vibesss"
+		},
+		["List2"] = {
+			"Play testers:",
+			"@This_awe",
+			"@alp2630",
+			"@sea7479",
+			"@neobl0x",
+			"@occhobencuc"
+		},
+		["RoleColor"] = Color3.fromRGB(255, 255, 255)
+	}
+}
+v1.Creators = v2
+return v1

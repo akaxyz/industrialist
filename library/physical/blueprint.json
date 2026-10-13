@@ -1,0 +1,28 @@
+{
+  "buildings": [
+    {
+      "id": 0,
+      "updateOrder": 2,
+      "name": "ResearchStation4",
+      "positionSite": {
+        "x": 34,
+        "y": 134
+      },
+      "positionGame": {
+        "x": null,
+        "y": null
+      },
+      "rotation": 90,
+      "data": {}
+    }
+  ],
+  "pipes": [],
+  "wires": [],
+  "simData": {
+    "nodes": [],
+    "tick": 1,
+    "time": null,
+    "pollution": null,
+    "windSpeed": null
+  }
+}

@@ -1,0 +1,132 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local _ = script.Parent.State
+local v_u_3 = script.Parent.RS3Move.CFrame
+local function v4()
+	-- upvalues: (copy) v_u_3
+	if script.Parent.Neighbor.Value == nil then
+		script.Parent.RS3Remove.Transparency = 0
+		script.Parent.RS3Move.Position = v_u_3.Position
+	elseif script.Parent.Neighbor.Value ~= nil then
+		script.Parent.RS3Remove.Transparency = 1
+		script.Parent.RS3Move.Position = v_u_3.Position - v_u_3.LookVector * 0.8
+	end
+end
+script.Parent.Neighbor:GetPropertyChangedSignal("Value"):Connect(v4)
+v4()
+local v5 = script.Parent.Detector
+local v6 = RaycastParams.new()
+v6.FilterDescendantsInstances = { workspace.Plots.Misc }
+v6.FilterType = Enum.RaycastFilterType.Include
+local v7 = workspace:Raycast(v5.Position, v5.CFrame.LookVector * 6, v6)
+if v7 and (v7.Instance.Name == "Detector" and v7.Instance.Parent:GetAttribute("Name") == "ResearchStation3") then
+	script.Parent.Neighbor.Value = v7.Instance.Parent
+	v7.Instance.Parent.Neighbor.Value = script.Parent
+end
+local v8 = v2.loadConnector(script.Parent.LogicIn1MainConnector)
+local v9 = v2.loadConnector(script.Parent.LogicIn2MainConnector)
+local v10 = v2.loadConnector(script.Parent.LogicIn3MainConnector)
+local v11 = v2.loadConnector(script.Parent.LogicIn4MainConnector)
+local v12 = v2.loadConnector(script.Parent.LogicIn5MainConnector)
+local v_u_13 = v2.loadConnector(script.Parent.ClockMainConnector)
+local v14 = v2.loadConnector(script.Parent.Out1MainConnector)
+local v15 = v2.loadConnector(script.Parent.Out2MainConnector)
+local v16 = v2.loadConnector(script.Parent.Out3MainConnector)
+local v17 = v2.loadConnector(script.Parent.Out4MainConnector)
+local v_u_18 = v2.loadConnector(script.Parent.MachineMainConnector)
+local v_u_19 = v2.loadConnector(script.Parent.CorrectMainConnector)
+local v_u_20 = {
+	v14,
+	v15,
+	v16,
+	v17,
+	v_u_18,
+	v_u_19
+}
+local v_u_21 = {
+	v8,
+	v9,
+	v10,
+	v11,
+	v12,
+	v_u_13
+}
+local v_u_22 = {
+	v14,
+	v15,
+	v16,
+	v17
+}
+local v_u_23 = script.Parent.ModelData
+local v_u_24 = 0
+local v25 = {}
+local function v_u_28()
+	-- upvalues: (copy) v_u_20, (copy) v_u_21
+	for _, v26 in pairs(v_u_20) do
+		v26:removePower(1000)
+	end
+	for _, v27 in pairs(v_u_21) do
+		v27:removePower(1000)
+	end
+end
+local v_u_29 = require(game.ReplicatedStorage.Modules.Achievements)
+function v25.tick()
+	-- upvalues: (copy) v_u_28, (copy) v_u_20, (copy) v_u_23, (ref) v_u_24, (copy) v_u_18, (copy) v_u_13, (copy) v_u_21, (copy) v_u_29, (copy) v_u_19, (copy) v_u_22
+	if script.Parent.Neighbor.Value then
+		if script.Parent.Neighbor.Value.Parent == nil then
+			script.Parent.Neighbor.Value = nil
+		end
+		for _, v30 in pairs(v_u_20) do
+			v30:removePower(1000)
+		end
+		if v_u_23.ThisValue.Value == -1 then
+			v_u_23.ThisValue.Value = 7
+		end
+		if v_u_24 > 0 then
+			v_u_24 = v_u_24 - 1
+		else
+			v_u_18:addPower(1000)
+		end
+		if v_u_13:hasPower(1) and v_u_24 == 0 then
+			local v31 = 0
+			for v32 = 1, 5 do
+				if v_u_21[v32]:hasPower(1) then
+					v31 = v31 + 2 ^ (v32 - 1)
+				end
+			end
+			local v33 = v_u_23.ThisValue.Value + v_u_23.LastValue.Value
+			v_u_23.LastValue.Value = v_u_23.ThisValue.Value
+			v_u_23.ThisValue.Value = math.random(0, 15)
+			if v33 == v31 then
+				local v34 = script.Parent.Neighbor.Value.ModelData.LogicBuff
+				v34.Value = v34.Value + 5
+				if script.Parent.Neighbor.Value.ModelData.LogicBuff.Value >= 10 then
+					v_u_29.giveBadge(3443837675395313)
+				end
+				workspace:SetAttribute("RS4Logic", (workspace:GetAttribute("RS4Logic") or 0) + 1)
+				script.Parent.LogicBox.Correct:Play()
+				v_u_19:addPower(1000)
+			else
+				script.Parent.Neighbor.Value.ModelData.LogicBuff.Value = -1
+				script.Parent.LogicBox.Wrong:Play()
+				v_u_24 = 90
+			end
+		elseif v_u_13:hasPower(1) then
+			script.Parent.LogicBox.Error2:Play()
+		end
+		local v35 = v_u_23.ThisValue.Value
+		for v36 = 4, 1, -1 do
+			if v35 / 2 ^ (v36 - 1) >= 1 then
+				v35 = v35 - 2 ^ (v36 - 1)
+				v_u_22[v36]:addPower(1000)
+			end
+		end
+		for _, v37 in pairs(v_u_21) do
+			v37:removePower(10000)
+		end
+	else
+		v_u_28()
+	end
+end
+return v25

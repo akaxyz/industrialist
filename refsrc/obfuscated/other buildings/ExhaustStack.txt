@@ -1,0 +1,85 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.FluidInMainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.InMainPipe)
+local v_u_5 = game.ReplicatedStorage.Pollution
+require(v1.Modules.Achievements)
+local v6 = {}
+local v_u_7 = false
+local function v_u_8() -- name: lights
+	-- upvalues: (ref) v_u_7
+	if v_u_7 == false then
+		v_u_7 = true
+		script.Parent.Lights.Light.SurfaceLight.Enabled = false
+		script.Parent.Lights.A.Material = Enum.Material.SmoothPlastic
+		script.Parent.Lights.B.Material = Enum.Material.SmoothPlastic
+	else
+		v_u_7 = false
+		script.Parent.Lights.Light.SurfaceLight.Enabled = true
+		script.Parent.Lights.A.Material = Enum.Material.Neon
+		script.Parent.Lights.B.Material = Enum.Material.Neon
+	end
+end
+local v_u_9 = script.Parent.State
+function v6.localUpdate() -- name: localUpdate
+	-- upvalues: (copy) v_u_9
+	if script.Parent.BigSmokeStack.SFX.Playing == false then
+		script.Parent.BigSmokeStack.SFX:Play()
+	end
+	local v10 = script.Parent.BigSmokeStack.ParticleEmitter
+	local v11 = v_u_9.Value
+	v10.Rate = (tonumber(v11) or 0) / 6000 * 5
+	local v12 = script.Parent.BigSmokeStack.SFX
+	local v13 = v_u_9.Value
+	v12.Volume = (tonumber(v13) or 0) / 12000 * 2
+	local v14 = script.Parent.ModelData.Dirt.Value
+	local v15 = math.clamp(v14, 0, 1)
+	for _, v16 in pairs(script.Parent.Dirt.One:GetChildren()) do
+		v16.Transparency = 1 - v15
+	end
+	for _, v17 in pairs(script.Parent.Dirt.Two:GetChildren()) do
+		v17.Transparency = 1 - v15 + 0.45
+	end
+	for _, v18 in pairs(script.Parent.Dirt.Three:GetChildren()) do
+		v18.Transparency = 1 - v15 + 0.7
+	end
+end
+function v6.localStart() -- name: localStart
+	while task.wait(1) do
+		script.Parent.BigSmokeStack.ParticleEmitter:Emit(script.Parent.BigSmokeStack.ParticleEmitter.Rate)
+	end
+end
+local v_u_19 = 0
+function v6.tick() -- name: tick
+	-- upvalues: (copy) v_u_8, (copy) v_u_3, (copy) v_u_4, (copy) v_u_9, (copy) v_u_5, (ref) v_u_19
+	v_u_8()
+	if v_u_3:has("Exhaust") then
+		v_u_4:getBuffer()
+		local v20 = v_u_3:getBuffer() / 240000
+		local v21
+		if v_u_4:has("Filter") then
+			if v20 <= v_u_4:getBuffer() then
+				v21 = 0.5
+			else
+				local v22 = v20 / v_u_4:getBuffer() / 2
+				v21 = math.clamp(v22, 0.5, 4)
+			end
+			v_u_4:removeItem(v20)
+		else
+			v21 = 4
+		end
+		local v23 = v_u_3:getBuffer() * v21
+		v_u_9.Value = v23
+		local v24 = v_u_5
+		v24.Value = v24.Value + v23
+		v_u_3:removeItem(v_u_3:getBuffer())
+		if v_u_19 % 30 == 0 then
+			local v25 = script.Parent.ModelData.Dirt
+			v25.Value = v25.Value + v23 / 1200000
+		end
+		v_u_19 = v_u_19 + 1
+	end
+end
+return v6

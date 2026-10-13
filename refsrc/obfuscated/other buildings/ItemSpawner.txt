@@ -1,0 +1,58 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v_u_2 = require(v1.Modules.MachineSettingsRelay).new()
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v_u_4 = require(v1.Modules.Enums.Items)
+local v_u_5 = v3.loadConnector(script.Parent.MainPipeOut)
+local v6 = {}
+local v7 = script.Parent.PromptPart.ProximityPrompt
+local v_u_8 = script.Parent.ModelData.Text
+local v_u_9 = ""
+local v_u_10 = script.Parent.ModelData.Rate
+local v_u_11 = script.Parent.ModelData.Amount
+local v_u_12 = v_u_11.Left
+v_u_2:addSetting(4, v_u_8, "Item Name (As shown in Recipe Book)")
+v_u_2:addSetting(1, v_u_10, "How many items per second", 1, 120)
+v_u_2:addSetting(1, v_u_11, "Amount of items to spawn (0 for infinite)", 0, 999999)
+v7.Enabled = true
+v7.Triggered:Connect(function(p13)
+	-- upvalues: (copy) v_u_2
+	v_u_2:openMenu(p13)
+end)
+local function v15() -- name: itemUpdated
+	-- upvalues: (copy) v_u_8, (ref) v_u_9, (copy) v_u_4
+	if v_u_8.Value ~= v_u_9 then
+		local v14 = v_u_4.findItemByClosestDisplayName(v_u_8.Value).DisplayName
+		v_u_9 = v14
+		v_u_8.Value = v14
+	end
+end
+v_u_8:GetPropertyChangedSignal("Value"):Connect(v15)
+if v_u_8.Value ~= v_u_9 then
+	local v16 = v_u_4.findItemByClosestDisplayName(v_u_8.Value).DisplayName
+	v_u_9 = v16
+	v_u_8.Value = v16
+end
+v_u_11:GetPropertyChangedSignal("Value"):Connect(function()
+	-- upvalues: (copy) v_u_12, (copy) v_u_11
+	v_u_12.Value = v_u_11.Value
+end)
+function v6.tick() -- name: tick
+	-- upvalues: (copy) v_u_8, (copy) v_u_10, (copy) v_u_11, (copy) v_u_12, (copy) v_u_5, (copy) v_u_4
+	if v_u_8.Value ~= "" and v_u_8.Value ~= nil then
+		local v17 = v_u_10.Value
+		local v18
+		if v_u_11.Value > 0 and v_u_12.Value > 0 then
+			local v19 = v_u_12.Value
+			local v20 = v_u_5:getMax() - v_u_5:getBuffer()
+			v18 = math.clamp(v19, 0, v20)
+			local v21 = v_u_12
+			v21.Value = v21.Value - v18
+		else
+			v18 = v_u_11.Value > 0 and 0 or v17
+		end
+		if v_u_4.findItemByDisplayName(v_u_8.Value) ~= v_u_4.None then
+			v_u_5:addItemAmount(v_u_8.Value, v18)
+		end
+	end
+end
+return v6

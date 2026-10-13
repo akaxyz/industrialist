@@ -1,0 +1,41 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_4 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.OutMainConnector)
+script.Parent.Base.ProximityPrompt.Enabled = true
+script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p6)
+	-- upvalues: (copy) v_u_3
+	v_u_3:openMenu(p6)
+end)
+v_u_3:addSetting(1, script.Parent.ModelData.TickAmount, "Amount of ticks between signals", 1, 1000)
+v_u_3:addSetting(1, script.Parent.ModelData.SignalLength, "Output signal length in ticks", 1, 60)
+local v_u_7 = 0
+local v_u_8 = 0
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (ref) v_u_7, (ref) v_u_8, (copy) v_u_4, (copy) v_u_5
+		if v_u_7 <= 0 then
+			if v_u_8 <= 0 then
+				if v_u_4:getBuffer() >= 1 then
+					v_u_7 = script.Parent.ModelData.TickAmount.Value
+					v_u_8 = script.Parent.ModelData.SignalLength.Value
+					return
+				end
+			elseif v_u_8 > 0 then
+				v_u_8 = v_u_8 - 1
+				script.Parent.Base.click:Play()
+				local v9 = v_u_4:getBuffer()
+				v_u_5:addPower(v9)
+				v_u_4:removePower(v9)
+				return
+			end
+		elseif v_u_7 > 0 then
+			v_u_7 = v_u_7 - 1
+			script.Parent.Base.quiet:Play()
+		end
+	end
+}

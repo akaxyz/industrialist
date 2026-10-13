@@ -1,0 +1,573 @@
+local v1 = {}
+local v2 = require(game.ReplicatedStorage.Modules.PowerUtilsV2)
+local v3 = require(game.ReplicatedStorage.Modules.PipeUtilsV2)
+local v4 = require(game.ReplicatedStorage.Modules.ModelTweenUtils)
+local u5 = v3.loadConnector(script.Parent.InFuelMainPipe)
+local u6 = v3.loadConnector(script.Parent.InOreMainPipe)
+local u7 = v3.loadConnector(script.Parent.LiquidInMainPipe)
+local u8 = v3.loadConnector(script.Parent.OutMainPipe)
+local u9 = v2.loadConnector(script.Parent.MainConnector)
+local u10 = script.Parent.CalibrationPoint1.Position - script.Parent.CalibrationPoint2.Position
+local _ = script.Parent.CalibrationPoint1.Position - script.Parent.CalibrationPoint3.Position
+local u11 = script.Parent
+local u12 = u11.CraneArm
+local u13 = u11.SideCrane
+local u14 = u11.Crane
+script.Position.Value = u11.Positions.Resting.Position
+v4.new(u13)
+local u15 = 0
+local u16 = u11.LeftCrucible:GetPivot()
+local u17 = u11.RightCrucible:GetPivot()
+local u18 = u11.Molds
+local u19 = v4.new(u18)
+local u20 = false
+local u21 = u18.Mold.CFrame
+local u22 = u18["1"].PrimaryPart.CFrame
+local u23 = 7
+local u24 = game:GetService("TweenService")
+local u25 = false
+local function u30(p26) --[[ Line: 44 ]]
+    --[[
+    Upvalues:
+        [1] = u25
+        [2] = u19
+        [3] = u18
+        [4] = u23
+        [5] = u22
+        [6] = u24
+        [7] = u21
+    --]]
+    u25 = true
+    task.wait(0.03)
+    u19:newTween(TweenInfo.new(0.09000000000000001, Enum.EasingStyle.Quad), u18:GetPivot() + u18:GetPivot().LookVector * 2.278):Play()
+    task.wait(0.1)
+    u18[u23]:PivotTo(u22)
+    u18[u23].Mold.Position = u22.Position - Vector3.new(0, 0.5, 0)
+    local v27 = u23 - 4
+    if v27 < 1 then
+        v27 = v27 + 7
+    end
+    if p26 then
+        local v28 = u18[v27]
+        u24:Create(v28.Mold, TweenInfo.new(0.09000000000000001), {
+            ["Position"] = v28.Mold.Position + Vector3.new(0, 0.67, 0)
+        }):Play()
+    end
+    u23 = u23 - 1
+    local v29
+    if u23 == 0 then
+        u23 = 7
+        u18.Mold.Position = u21.Position
+        u19:PivotTo(u21)
+        v29 = true
+    else
+        v29 = false
+    end
+    task.wait(0.1)
+    if v29 then
+        local _ = u18.Mold.CFrame == u21
+    end
+    u25 = false
+end
+local u31 = 0
+function v1.localStart() --[[ Line: 83 ]]
+    --[[
+    Upvalues:
+        [1] = u24
+        [2] = u11
+        [3] = u25
+        [4] = u30
+        [5] = u31
+        [6] = u12
+        [7] = u10
+        [8] = u14
+        [9] = u13
+        [10] = u15
+    --]]
+    local u32 = nil
+    u32 = game:GetService("RunService").Heartbeat:Connect(function(_) --[[ Line: 85 ]]
+        --[[
+        Upvalues:
+            [1] = u32
+            [2] = u24
+            [3] = u11
+            [4] = u25
+            [5] = u30
+            [6] = u31
+            [7] = u12
+            [8] = u10
+            [9] = u14
+            [10] = u13
+            [11] = u15
+        --]]
+        if script.Parent == nil then
+            u32:Disconnect()
+            return
+        else
+            local v33 = u24
+            local v34 = u11.Lava
+            local v35 = TweenInfo.new(5.041666666666667)
+            local v36 = {}
+            local v37 = 0.5 + script.Liquid.Value / 2000 * 10
+            v36.Size = Vector3.new(v37, 6.4, 6.4)
+            v33:Create(v34, v35, v36):Play()
+            if script.Liquid.Value > 0 and script.Liquid:GetAttribute("Mold") == true then
+                script.Parent.Base.Conveyor:Resume()
+                if not u25 then
+                    task.spawn(u30, true)
+                end
+                u11.MolderLava.Mold1.Transparency = 0
+                u11.MolderLava.Mold2.Transparency = 0
+                u31 = 3
+            else
+                script.Parent.Base.Conveyor:Pause()
+                if not u25 and u31 > 0 then
+                    u31 = u31 - 1
+                    task.spawn(u30, false)
+                end
+                u11.MolderLava.Mold1.Transparency = 1
+                u11.MolderLava.Mold2.Transparency = 1
+            end
+            local v38 = script.Position.Value
+            local v39 = u12
+            local v40 = CFrame.new(v38)
+            local v41 = CFrame.Angles
+            local v42 = script.Parent.Base.Orientation.Y
+            v39:PivotTo(v40 * v41(0, math.rad(v42), 0))
+            local v43 = nil
+            local v44 = nil
+            local v45 = u10.Z
+            if math.floor(v45) == 0 then
+                local v46 = u10.X
+                if math.floor(v46) ~= 0 then
+                    local v47 = v38.X
+                    local v48 = u14:GetPivot().Position.Y
+                    local v49 = u11.CalibrationPoint1.Position.Z
+                    v43 = Vector3.new(v47, v48, v49)
+                    local v50 = v38.X
+                    local v51 = u13:GetPivot().Position.Y
+                    local v52 = v38.Z
+                    v44 = Vector3.new(v50, v51, v52)
+                end
+            else
+                local v53 = u11.CalibrationPoint1.Position.X
+                local v54 = u14:GetPivot().Position.Y
+                local v55 = v38.Z
+                v43 = Vector3.new(v53, v54, v55)
+                local v56 = v38.X
+                local v57 = u13:GetPivot().Position.Y
+                local v58 = v38.Z
+                v44 = Vector3.new(v56, v57, v58)
+            end
+            local v59 = u14
+            local v60 = CFrame.new(v43)
+            local v61 = CFrame.Angles
+            local v62 = script.Parent.Base.Orientation.Y - 90
+            v59:PivotTo(v60 * v61(-1.5707963267948966, 0, (math.rad(v62))))
+            local v63 = u13
+            local v64 = CFrame.new(v44)
+            local v65 = CFrame.Angles
+            local v66 = script.Parent.Base.Orientation.Y - 90
+            v63:PivotTo(v64 * v65(-1.5707963267948966, 0, (math.rad(v66))))
+            if u15 == 1 then
+                local v67 = u11.LeftCrucible
+                local v68 = u12:GetPivot()
+                local v69 = CFrame.Angles
+                local v70 = script.Angle.Value
+                v67:PivotTo(v68 * v69(math.rad(v70), 0, 0))
+            elseif u15 == 2 then
+                local v71 = u11.RightCrucible
+                local v72 = u12:GetPivot()
+                local v73 = CFrame.Angles
+                local v74 = script.Angle.Value
+                v71:PivotTo(v72 * v73(math.rad(v74), 0, 0))
+            end
+        end
+    end)
+end
+local u75 = tick()
+local u76 = script.Parent.State
+function v1.localUpdate() --[[ Line: 148 ]]
+    --[[
+    Upvalues:
+        [1] = u76
+        [2] = u20
+        [3] = u11
+        [4] = u24
+        [5] = u15
+        [6] = u16
+        [7] = u17
+    --]]
+    if u76.Value == "mold" then
+        u20 = true
+    elseif u76.Value ~= "" then
+        script.Parent.CraneArm.Pivot.Motor:Resume()
+        local v77 = string.split(u76.Value, "|")
+        local v78 = u11.Positions[v77[1]].Position
+        local v79 = v77[2]
+        local v80 = v77[3]
+        local v81 = tonumber(v80)
+        u24:Create(script.Position, TweenInfo.new(v81, Enum.EasingStyle.Linear), {
+            ["Value"] = v78
+        }):Play()
+        task.wait(v81)
+        if v79 == "dropoff" then
+            if v77[1] == "Crucible1" or v77[1] == "Crucible2" then
+                u24:Create(script.Position, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+                    ["Value"] = v78 - Vector3.new(0, 6.685, 0)
+                }):Play()
+                task.wait(2)
+                if u15 == 1 then
+                    u11.LeftCrucible:PivotTo(u16)
+                else
+                    u11.RightCrucible:PivotTo(u17)
+                end
+                u15 = 0
+                task.wait(1)
+                u24:Create(script.Position, TweenInfo.new(3, Enum.EasingStyle.Linear), {
+                    ["Value"] = v78
+                }):Play()
+                task.wait(3)
+            end
+        elseif v79 == "pickup" then
+            if v77[1] == "Crucible1" or v77[1] == "Crucible2" then
+                u24:Create(script.Position, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+                    ["Value"] = v78 - Vector3.new(0, 6.685, 0)
+                }):Play()
+                task.wait(2)
+                if v77[1] == "Crucible1" then
+                    u15 = 1
+                else
+                    u15 = 2
+                end
+                task.wait(1)
+                u24:Create(script.Position, TweenInfo.new(3, Enum.EasingStyle.Linear), {
+                    ["Value"] = v78
+                }):Play()
+                task.wait(3)
+            end
+        elseif v79 == "pour" then
+            u24:Create(script.Angle, TweenInfo.new(1.25, Enum.EasingStyle.Linear), {
+                ["Value"] = 100
+            }):Play()
+            if u15 == 1 then
+                u24:Create(u11.LeftCrucible.Lava, TweenInfo.new(0.03, Enum.EasingStyle.Linear), {
+                    ["Transparency"] = 1
+                }):Play()
+            elseif u15 == 2 then
+                u24:Create(u11.RightCrucible.Lava, TweenInfo.new(0.03, Enum.EasingStyle.Linear), {
+                    ["Transparency"] = 1
+                }):Play()
+            end
+            for v82 = 2, 121 do
+                script.Parent.LavaAnimation[v82].Transparency = 0
+                script.Parent.LavaAnimation[v82 - 1].Transparency = 1
+                task.wait(0.041666666666666664)
+            end
+            task.wait(0.45833333333333304)
+            script.Parent.LavaAnimation["121"].Transparency = 1
+            u24:Create(script.Angle, TweenInfo.new(3, Enum.EasingStyle.Linear), {
+                ["Value"] = 0
+            }):Play()
+            task.wait(3.5)
+        end
+        script.Parent.CraneArm.Pivot.Motor:Pause()
+    end
+end
+local u83 = {
+    {
+        { "Raw Copper", 1000 },
+        120,
+        { "Liquid Copper" },
+        Color3.fromRGB(152, 113, 88)
+    },
+    {
+        { "Raw Iron", 1000 },
+        120,
+        { "Liquid Iron" },
+        Color3.fromRGB(152, 152, 152)
+    },
+    {
+        { "Treated Raw Iron", 200 },
+        120,
+        { "Liquid Iron2" },
+        Color3.fromRGB(200, 200, 200)
+    },
+    {
+        { "Treated Raw Copper", 200 },
+        120,
+        { "Liquid Copper2" },
+        Color3.fromRGB(145, 93, 50)
+    },
+    {
+        { "Raw Lead", 1000 },
+        120,
+        { "Liquid Lead" },
+        Color3.fromRGB(65, 65, 65)
+    }
+}
+local v84 = script.Parent.ModelData
+local u85 = v84.RightCrucible
+local u86 = v84.LeftCrucible
+local u87 = script.Parent.State
+local u88 = false
+local u89 = {
+    ["Liquid Copper"] = {
+        { 20, 10, "Copper Ingot" },
+        { 20, 10, "???" },
+        { 20, 10, "???" }
+    },
+    ["Liquid Iron"] = {
+        { 20, 10, "Iron Ingot" },
+        { 20, 10, "???" },
+        { 20, 10, "???" }
+    },
+    ["Liquid Copper2"] = {
+        { 20, 12, "Copper Ingot" },
+        { 20, 10, "???" },
+        { 20, 10, "???" }
+    },
+    ["Liquid Iron2"] = {
+        { 20, 12, "Iron Ingot" },
+        { 20, 10, "???" },
+        { 20, 10, "???" }
+    },
+    ["Liquid Lead"] = {
+        { 20, 10, "Lead Ingot" },
+        { 20, 10, "???" },
+        { 20, 10, "???" }
+    }
+}
+local u90 = script.Parent.SteamVent
+local u91 = game.ReplicatedStorage.Pollution
+local u92 = Color3.fromRGB(255, 77, 42)
+local function u97(p93, p94) --[[ Line: 297 ]]
+    --[[
+    Upvalues:
+        [1] = u92
+        [2] = u85
+        [3] = u90
+    --]]
+    local v95 = 1 - p94:GetAttribute("TimeLeft") / 120
+    for _, v96 in pairs(p93.Ore:GetChildren()) do
+        v96.Transparency = v95 ^ 2
+        v96.Color = p94:GetAttribute("Color"):Lerp(u92, v95)
+    end
+    p93.Lava.Transparency = 1 - v95
+    if p94 == u85 then
+        u90.RightCrucible.ParticleEmitter.Enabled = true
+        u90.RightCrucible.ParticleEmitter.Rate = v95 * 4
+    else
+        u90.LeftCrucible.ParticleEmitter.Enabled = true
+        u90.LeftCrucible.ParticleEmitter.Rate = v95 * 4
+    end
+end
+local function u100(p98, p99) --[[ Line: 315 ]]
+    --[[
+    Upvalues:
+        [1] = u88
+        [2] = u87
+        [3] = u90
+    --]]
+    u88 = true
+    u87.Value = p98 .. "|pickup|2"
+    task.wait(8)
+    u87.Value = "Resting|none|2"
+    task.wait(2.2)
+    u87.Value = "Pouring|pour|1"
+    if p98 == "Crucible2" then
+        u90.RightCrucible.ParticleEmitter.Enabled = false
+    elseif p98 == "Crucible1" then
+        u90.LeftCrucible.ParticleEmitter.Enabled = false
+    end
+    script.Liquid:SetAttribute("Mold", false)
+    script.Item.Value = p99.Value
+    task.wait(2.5)
+    script.Liquid.Value = 1000
+    task.wait(5.041666666666667)
+    script.Liquid:SetAttribute("Mold", true)
+    task.wait(3)
+    u87.Value = "Resting|none|2"
+    task.wait(2.2)
+    u87.Value = p98 .. "|dropoff|2"
+    task.wait(8)
+    p99.Value = ""
+    u88 = false
+end
+local u101 = script.Parent.Monitor.SurfaceGui.Frame.Container
+local function u105(p102, p103) --[[ Line: 350 ]]
+    local v104 = ""
+    for _ = 1, p102 do
+        v104 = v104 .. "|"
+    end
+    for _ = 1, p103 - p102 do
+        v104 = v104 .. "."
+    end
+    return v104
+end
+function round(p106, p107)
+    local v108 = 10 ^ (p107 or 0)
+    local v109 = p106 * v108 + 0.5
+    return math.floor(v109) / v108
+end
+function v1.tick() --[[ Line: 368 ]]
+    --[[
+    Upvalues:
+        [1] = u75
+        [2] = u85
+        [3] = u86
+        [4] = u83
+        [5] = u6
+        [6] = u5
+        [7] = u9
+        [8] = u97
+        [9] = u88
+        [10] = u100
+        [11] = u7
+        [12] = u89
+        [13] = u8
+        [14] = u91
+        [15] = u90
+        [16] = u101
+        [17] = u105
+    --]]
+    if tick() - u75 < 20 then
+        return
+    else
+        if u85.Value == "" or u86.Value == "" then
+            for _, v110 in pairs(u83) do
+                if u6:hasAmountOf(v110[1][1], v110[1][2]) then
+                    if u85.Value == "" then
+                        u85.Value = v110[3][1]
+                        u85:SetAttribute("TimeLeft", v110[2])
+                        u85:SetAttribute("Color", v110[4])
+                        u6:removeItem(v110[1][2])
+                    elseif u86.Value == "" then
+                        u86.Value = v110[3][1]
+                        u86:SetAttribute("TimeLeft", v110[2])
+                        u86:SetAttribute("Color", v110[4])
+                        u6:removeItem(v110[1][2])
+                    end
+                end
+            end
+        end
+        local v111 = u5:getBuffer()
+        local v112 = 0
+        local v113 = 0
+        if not u5:has("Coke Fuel") then
+            v111 = not u5:has("Coal") and 0 or v111 * 0.1
+        end
+        if u85:GetAttribute("TimeLeft") > 0 then
+            v113 = v113 + 1
+        end
+        if u86:GetAttribute("TimeLeft") > 0 then
+            v113 = v113 + 1
+        end
+        if u9:hasPower(3000000) then
+            if u85:GetAttribute("TimeLeft") > 0 and v111 >= 1 then
+                u9:removePower(3000000)
+                v112 = v112 + 0.7
+                u85:SetAttribute("TimeLeft", u85:GetAttribute("TimeLeft") - 1)
+                u97(script.Parent.RightCrucible, u85)
+            elseif u85.Value ~= "" and (u85:GetAttribute("TimeLeft") == 0 and (u88 == false and script.Liquid.Value == 0)) then
+                u9:removePower(3000000)
+                task.spawn(u100, "Crucible2", u85)
+            end
+        end
+        if u9:hasPower(3000000) then
+            if u86:GetAttribute("TimeLeft") > 0 and v111 >= 1 then
+                u9:removePower(3000000)
+                v112 = v112 + 0.7
+                u86:SetAttribute("TimeLeft", u86:GetAttribute("TimeLeft") - 1)
+                u97(script.Parent.LeftCrucible, u86)
+            elseif u86.Value ~= "" and (u86:GetAttribute("TimeLeft") == 0 and (u88 == false and script.Liquid.Value == 0)) then
+                u9:removePower(3000000)
+                task.spawn(u100, "Crucible1", u86)
+            end
+        end
+        if script.Liquid.Value >= 0.01 and u7:hasAmountOf("Water", 50) then
+            script.Liquid:SetAttribute("Mold", true)
+            local v114 = u89[script.Item.Value][1]
+            local v115 = script.Liquid.Value
+            local v116 = v114[1]
+            local v117 = math.clamp(v115, 0, v116) / v114[1]
+            local v118 = script.Liquid
+            v118.Value = v118.Value - v114[1] * v117
+            u8:setUsedTemperature(400)
+            u8:addItemAmount(v114[3], v114[2] * v117)
+            u7:removeItem(35)
+            local v119 = u91
+            v119.Value = v119.Value + 5
+        elseif script.Liquid.Value < 0.01 then
+            script.Liquid.Value = 0
+        elseif script.Liquid.Value >= 0.01 then
+            script.Liquid:SetAttribute("Mold", false)
+        end
+        if v112 == 0 then
+            u90.Attachment.ParticleEmitter.Enabled = false
+            u90.Attachment.ParticleEmitter.Rate = 0
+        else
+            local v120 = u5:has("Coal") and 10 or 1
+            local v121 = u91
+            v121.Value = v121.Value + v112 / 32 * 240 * v120
+            u5:removeItem(v112 * v120)
+            u90.Attachment.ParticleEmitter.Enabled = true
+            u90.Attachment.ParticleEmitter.Rate = v112 * v120
+        end
+        script.Parent.Base.Base.Volume = v113 * 1
+        if u85.Value == "" or u86.Value == "" then
+            script.Parent.Base.furnace:Stop()
+            script.Parent.Base.Base:Stop()
+        else
+            script.Parent.Base.furnace:Resume()
+            script.Parent.Base.Base:Resume()
+        end
+        if u86.Value == "" then
+            u101.Unit1.Text = "U1: " .. u105(0, 20) .. " 0%"
+        else
+            local v122 = u101.Unit1
+            local v123 = (120 - u86:GetAttribute("TimeLeft")) / 120 * 20
+            local v124 = ""
+            local v125 = "U1: "
+            for _ = 1, v123 do
+                v124 = v124 .. "|"
+            end
+            for _ = 1, 20 - v123 do
+                v124 = v124 .. "."
+            end
+            v122.Text = v125 .. v124 .. " " .. round(100 - u86:GetAttribute("TimeLeft") / 120 * 100, 0) .. "%"
+        end
+        if u85.Value == "" then
+            u101.Unit2.Text = "U2: " .. u105(0, 20) .. " 0%"
+        else
+            local v126 = u101.Unit2
+            local v127 = (120 - u85:GetAttribute("TimeLeft")) / 120 * 20
+            local v128 = ""
+            local v129 = "U2: "
+            for _ = 1, v127 do
+                v128 = v128 .. "|"
+            end
+            for _ = 1, 20 - v127 do
+                v128 = v128 .. "."
+            end
+            v126.Text = v129 .. v128 .. " " .. round(100 - u85:GetAttribute("TimeLeft") / 120 * 100, 0) .. "%"
+        end
+        local v130
+        if u86.Value == "" then
+            v130 = u85.Value
+        else
+            v130 = u86.Value
+        end
+        if v130 == "" then
+            u101.Smelting.Text = "Smelting: N/A"
+        else
+            u101.Smelting.Text = "Smelting: " .. v130
+        end
+        if script.Liquid.Value == 0 then
+            u101.Molding.Text = "Molding: N/A"
+        else
+            u101.Molding.Text = "Molding: " .. u89[script.Item.Value][1][3]
+        end
+    end
+end
+return v1

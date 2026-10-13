@@ -1,0 +1,99 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_4 = game:GetService("TweenService")
+local v_u_5 = require(v1.Modules.ModelTweenUtils).new(script.Parent.Fuel)
+local v_u_6 = script.Parent.State
+local v14 = {
+    ["localUpdate"] = function() -- name: localUpdate
+        -- upvalues: (copy) v_u_6, (copy) v_u_4, (copy) v_u_5
+        if v_u_6.Value == "On" then
+            script.Parent.Base.ReactorSound:Play()
+        elseif v_u_6.Value == "no" then
+            script.Parent.Base.RodJump:Play()
+            script.Parent.Base["Radiation Alarm"]:Play()
+            v_u_4:Create(script.Parent.Base["Radiation Alarm"], TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true), {
+                ["Volume"] = 2
+            }):Play()
+            script.Parent.Base["Radiation Counter sound effect 2"]:Play()
+            v_u_4:Create(script.Parent.Base["Radiation Counter sound effect 2"], TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, 0, true), {
+                ["Volume"] = 2
+            }):Play()
+            local v7 = tick()
+            while true do
+                local v8 = math.random(10, 30) / 100
+                if tick() + v8 > v7 + 9 then
+                    break
+                end
+                local v9 = v_u_5
+                local v10 = TweenInfo.new(v8, Enum.EasingStyle.Bounce, Enum.EasingDirection.InOut, 0, true, 0.01)
+                local v11 = v_u_5:GetPivot()
+                local v12 = math.random(-5, 200) / 100
+                local v13 = v9:newTween(v10, v11 + Vector3.new(0, v12, 0))
+                v13:Play()
+                v13.Completed:Wait()
+                if tick() > v7 + 9 then
+                    break
+                end
+            end
+        end
+    end
+}
+local function v_u_27(p15, _, p16) -- name: replaceTerrain
+    local v17 = Vector3.new(1, 1, 1) * p16
+    local v18 = Region3.new(p15 - v17 - Vector3.new(4, 4, 4), p15 + v17 + Vector3.new(4, 4, 4))
+    v18:ExpandToGrid(4)
+    local v19 = workspace.Terrain:WorldToCell(v18.CFrame.Position - v18.Size / 2)
+    local v20, v21 = workspace.Terrain:ReadVoxels(v18, 4)
+    local v22 = { #v21, #v21[1], #v21[1][1] }
+    for v23 = 1, v22[1] do
+        for v24 = 1, v22[2] do
+            for v25 = 1, v22[3] do
+                local v26 = v19 + Vector3.new(v23, v24, v25)
+                if (p15 - workspace.Terrain:CellCenterToWorld(v26.X, v26.Y, v26.Z)).Magnitude < p16 then
+                    v20[v23][v24][v25] = Enum.Material.Mud
+                end
+            end
+        end
+    end
+    workspace.Terrain:WriteVoxels(v18, 4, v20, v21)
+end
+local v_u_28 = game.ReplicatedStorage.Events.ExplodeMachine
+local v_u_29 = false
+function v14.tick() -- name: tick
+    -- upvalues: (ref) v_u_29, (copy) v_u_3, (copy) v_u_6, (copy) v_u_28, (copy) v_u_27
+    if v_u_29 ~= true then
+        v_u_3:addPower(1)
+        v_u_6.Value = "On"
+        if v_u_3:getBuffer() == v_u_3:getMax() then
+            v_u_6.Value = "no"
+            v_u_29 = true
+            task.spawn(function()
+                -- upvalues: (ref) v_u_28, (ref) v_u_27
+                task.wait(8.7)
+                v_u_28:Fire(script.Parent, {
+                    ["BlastRadius"] = 150,
+                    ["BlastPressure"] = 50,
+                    ["TimeScale"] = 0.5,
+                    ["Size"] = 0.5,
+                    ["YeetPlayers"] = 100000
+                })
+                pcall(function()
+                    for _, v30 in pairs(game.Players:GetPlayers()) do
+                        if v30.Character == nil then
+                            return
+                        end
+                        local v31 = (v30.Character.HumanoidRootPart.Position - script.Parent.Base.Position).Magnitude
+                        local v32 = ((script.Parent.Base.Position - v30.Character.HumanoidRootPart.Position).Unit + Vector3.new(0, 0.1, 0)).Unit
+                        if v31 < 80 then
+                            game.ReplicatedStorage.ApplyImpulse:FireClient(v30, -v32 * 100000 / v31)
+                        end
+                    end
+                end)
+                v_u_27(script.Parent.Base.Position, 0, 60)
+            end)
+        end
+    end
+end
+return v14

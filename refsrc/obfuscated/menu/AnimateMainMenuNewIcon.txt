@@ -1,0 +1,73 @@
+local v1 = game:GetService("Players")
+local v_u_2 = game:GetService("TweenService")
+local v3 = v1.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("Menu").Frame:WaitForChild("Logo")
+local v4 = v3.Position
+local v5 = v3.Rotation
+local v6 = v3:Clone()
+v6.Name = "LogoShadow"
+local v7 = v6:FindFirstChild("SplashText")
+if v7 then
+	v7:Destroy()
+end
+v6.ImageColor3 = Color3.new(0, 0, 0)
+v6.ImageTransparency = 0.75
+v6.ZIndex = v3.ZIndex - 1
+local v8 = UDim2.new(v4.X.Scale + -0.01, v4.X.Offset, v4.Y.Scale + 0.0125, v4.Y.Offset)
+v6.Position = v8
+v6.Parent = v3.Parent
+local v9 = Instance.new("ImageLabel")
+v9.Name = "LogoShine"
+v9.Parent = v3
+v9.BackgroundTransparency = 1
+v9.AnchorPoint = Vector2.new(0.5, 0.5)
+v9.Position = UDim2.fromScale(0.5, 0.5)
+v9.Size = UDim2.fromScale(1, 1)
+v9.Image = "rbxassetid://108657650585594"
+v9.ImageTransparency = 0.45
+v9.ZIndex = v3.ZIndex + 1
+local v_u_10 = Instance.new("UIGradient")
+v_u_10.Rotation = 20
+v_u_10.Transparency = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 1),
+	NumberSequenceKeypoint.new(0.42, 1),
+	NumberSequenceKeypoint.new(0.5, 0),
+	NumberSequenceKeypoint.new(0.58, 1),
+	NumberSequenceKeypoint.new(1, 1)
+})
+v_u_10.Offset = Vector2.new(-1, 0)
+v_u_10.Parent = v9
+local v11 = v3:FindFirstChild("SplashText")
+if v11 and v11:IsA("TextLabel") then
+	local v12 = v11.ZIndex
+	local v13 = v9.ZIndex + 1
+	v11.ZIndex = math.max(v12, v13)
+end
+local v14 = TweenInfo.new(3.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+local v15 = TweenInfo.new(4.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+TweenInfo.new(3.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+v_u_2:Create(v3, v14, {
+	["Position"] = UDim2.new(v4.X.Scale + 0, v4.X.Offset, v4.Y.Scale + -0.02, v4.Y.Offset)
+}):Play()
+v_u_2:Create(v3, v15, {
+	["Rotation"] = v5 + 3
+}):Play()
+v_u_2:Create(v6, v14, {
+	["Position"] = UDim2.new(v8.X.Scale + 0, v8.X.Offset, v8.Y.Scale + -0.02, v8.Y.Offset)
+}):Play()
+v_u_2:Create(v6, v15, {
+	["Rotation"] = v5 + 3
+}):Play()
+local function v_u_17() -- name: sweep
+	-- upvalues: (copy) v_u_10, (copy) v_u_2, (copy) v_u_17
+	v_u_10.Offset = Vector2.new(-1, 0)
+	local v16 = v_u_2:Create(v_u_10, TweenInfo.new(2.8, Enum.EasingStyle.Quad), {
+		["Offset"] = Vector2.new(2, 0)
+	})
+	v16.Completed:Connect(function()
+		-- upvalues: (ref) v_u_17
+		task.wait(1.2)
+		v_u_17()
+	end)
+	v16:Play()
+end
+task.delay(0.6, v_u_17)

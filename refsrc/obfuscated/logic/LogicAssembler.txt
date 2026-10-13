@@ -1,0 +1,415 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v4 = require(v1.Modules.ModelTweenUtils)
+local v_u_5 = v4.new(script.Parent.RoboticArm)
+local v_u_6 = v4.new(script.Parent.RoboticArm.Vertical)
+require(v1.Modules.NextTicks).new(script)
+local v_u_7 = v3.loadConnector(script.Parent.In1MainPipe)
+local v_u_8 = v3.loadConnector(script.Parent.In2MainPipe)
+local v_u_9 = v3.loadConnector(script.Parent.In3MainPipe)
+local v_u_10 = v3.loadConnector(script.Parent.In4MainPipe)
+local v_u_11 = v3.loadConnector(script.Parent.Out2MainPipe)
+local v_u_12 = v3.loadConnector(script.Parent.Out1MainPipe)
+local v_u_13 = v2.loadConnector(script.Parent.MainConnector)
+local v14 = v2.loadConnector(script.Parent.Item1LogicMainConnector)
+local v15 = v2.loadConnector(script.Parent.Item2LogicMainConnector)
+local v16 = v2.loadConnector(script.Parent.Item3LogicMainConnector)
+local v17 = v2.loadConnector(script.Parent.Item4LogicMainConnector)
+local v_u_18 = v2.loadConnector(script.Parent.ClockLogicMainConnector)
+local v_u_19 = v2.loadConnector(script.Parent.OutputLogicMainConnector)
+local v_u_20 = v2.loadConnector(script.Parent.Out1MainConnector)
+local v_u_21 = v2.loadConnector(script.Parent.Out2MainConnector)
+local v_u_22 = v3.loadConnector(script.Parent.FluidMainPipe)
+local v23 = {}
+local v_u_24 = script.Parent.State
+local v_u_25 = script.Parent.CalibrationPoint1.Position - script.Parent.CalibrationPoint2.Position
+local v_u_26 = false
+function v23.localStart() -- name: localStart
+	-- upvalues: (copy) v_u_25
+	local v_u_27 = nil
+	v_u_27 = game:GetService("RunService").RenderStepped:Connect(function(_)
+		-- upvalues: (ref) v_u_27, (ref) v_u_25
+		if script.Parent == nil then
+			v_u_27:Disconnect()
+		else
+			local v28 = nil
+			local v29 = v_u_25.Z
+			if math.floor(v29) == 0 then
+				local v30 = v_u_25.X
+				if math.floor(v30) ~= 0 then
+					local v31 = script.Parent.RoboticArm.Calibration.Position.X
+					local v32 = script.Parent.RoboticArm.Calibration.Position.Y
+					local v33 = script.Parent.CalibrationPoint1.Position.Z
+					v28 = Vector3.new(v31, v32, v33)
+				end
+			else
+				local v34 = script.Parent.CalibrationPoint1.Position.X
+				local v35 = script.Parent.RoboticArm.Calibration.Position.Y
+				local v36 = script.Parent.RoboticArm.Calibration.Position.Z
+				v28 = Vector3.new(v34, v35, v36)
+			end
+			local v37 = script.Parent.RoboticArm.Calibration.Orientation
+			local v38 = script.Parent.SecondaryArm
+			local v39 = CFrame.new(v28)
+			local v40 = CFrame.Angles
+			local v41 = v37.Y + 90
+			v38:PivotTo(v39 * v40(0, math.rad(v41), 0))
+		end
+	end)
+end
+local v42 = script.Parent.CalibrationPoint1.Orientation
+local v43 = CFrame.Angles
+local v44 = v42.Y - 90
+local v_u_45 = v43(0, math.rad(v44), 0)
+function v23.localUpdate() -- name: localUpdate
+	-- upvalues: (copy) v_u_24, (copy) v_u_5, (ref) v_u_45, (ref) v_u_26, (copy) v_u_6
+	if v_u_24.Value ~= "" then
+		local v46 = string.split(script.Parent.State.Value, "|")
+		local v47 = v46[1]
+		local v48 = script.Parent[v46[2]]
+		script.Parent.RoboticArm.Calibration.Motor:Play()
+		local v49 = v_u_5
+		local v50 = TweenInfo.new(3 * v47)
+		local v51 = CFrame.new
+		local v52 = v48.Position.X
+		local v53 = v48.Position.Z
+		v49:newTween(v50, v51((Vector3.new(v52, 10.94, v53))) * v_u_45):Play()
+		task.wait(3 * v47)
+		script.Parent.RoboticArm.Calibration.Motor:Stop()
+		v_u_26 = true
+		script.Parent.RoboticArm.Calibration.RoboticArm.PlaybackSpeed = 1
+		script.Parent.RoboticArm.Calibration.RoboticArm:Play()
+		v_u_6:newTween(TweenInfo.new(1 * v47), v_u_6:GetPivot() * CFrame.new(Vector3.new(3, 0, 0))):Play()
+		task.wait(1 * v47)
+		script.Parent.RoboticArm.Calibration.RoboticArm:Stop()
+		script.Parent.RoboticArm.Calibration.FirstClick:Play()
+		script.Parent.RoboticArm.Calibration.RoboticArm.PlaybackSpeed = 0.9
+		script.Parent.RoboticArm.Calibration.RoboticArm:Play()
+		v_u_6:newTween(TweenInfo.new(1 * v47), script.Parent.RoboticArm.Follow.CFrame):Play()
+		task.wait(1 * v47)
+		script.Parent.RoboticArm.Calibration.RoboticArm:Stop()
+		v_u_26 = false
+	end
+end
+local v_u_54 = {}
+local v_u_55 = {
+	["Logic Plate"] = {
+		v_u_7,
+		v14,
+		3,
+		script.Parent.One
+	},
+	["Copper Wire"] = {
+		v_u_8,
+		v15,
+		12,
+		script.Parent.Two
+	},
+	["Semiconductor"] = {
+		v_u_9,
+		v16,
+		3,
+		script.Parent.Three
+	},
+	["Gold Wire"] = {
+		v_u_10,
+		v17,
+		6,
+		script.Parent.Four
+	}
+}
+local v_u_56 = {
+	v14,
+	v15,
+	v16,
+	v17,
+	v_u_18,
+	v_u_19
+}
+local v_u_57 = {
+	"2x Microchip",
+	"4x Microchip",
+	"8x Microchip",
+	"16x Microchip",
+	"32x Microchip",
+	"64x Microchip",
+	"2x64x Microchip",
+	"3x64x Microchip",
+	"4x64x Microchip",
+	"5x64x Microchip",
+	"6x64x Microchip",
+	"7x64x Microchip",
+	"8x64x Microchip"
+}
+local function v_u_64() -- name: checkOrder
+	-- upvalues: (ref) v_u_54
+	local v58 = 0
+	local v59 = 0
+	local v60 = false
+	for _, v61 in ipairs(v_u_54) do
+		if v61 == "Logic Plate" and v58 == 0 then
+			v58 = 1
+		elseif v61 == "Copper Wire" and v58 == 1 then
+			v58 = 2
+		elseif v61 == "Semiconductor" and v58 == 2 then
+			v58 = 3
+		else
+			if v61 ~= "Gold Wire" or v58 ~= 3 then
+				v60 = true
+				break
+			end
+			v58 = 0
+			if v59 >= 48 then
+				v60 = true
+				break
+			end
+			v59 = v59 + 1
+		end
+	end
+	local v62
+	if v59 > 6 then
+		local v63 = (v59 - 6) / 6
+		v62 = math.floor(v63) + 6
+	else
+		v62 = v59
+	end
+	return v62, not v60, v59
+end
+local v_u_65 = false
+local v_u_66 = 1
+local v_u_67 = script.Parent.Monitor.Screen.SurfaceGui.Frame
+local v_u_68 = {}
+local function v_u_70() -- name: update
+	-- upvalues: (copy) v_u_67, (copy) v_u_68
+	for _, v69 in pairs(v_u_67.Container:GetChildren()) do
+		if v69:IsA("TextLabel") and table.find(v_u_68, v69) == nil then
+			v69:Destroy()
+		end
+	end
+end
+local function v_u_75(p71, p72) -- name: addLog
+	-- upvalues: (copy) v_u_68, (copy) v_u_67, (copy) v_u_70
+	if #v_u_68 > 9 then
+		table.remove(v_u_68, 1)
+	end
+	local v73 = script.TextLabel:Clone()
+	v73.Text = p71
+	v73.Name = tick()
+	v73.Parent = v_u_67.Container
+	local v74 = v_u_68
+	table.insert(v74, v73)
+	if p72 then
+		v_u_67.Parent.Parent.Error:Play()
+		v73.TextColor3 = Color3.fromRGB(255, 77, 32)
+	else
+		v_u_67.Parent.Parent.Log:Play()
+	end
+	v_u_70()
+end
+if game.Players.LocalPlayer == nil then
+	if #v_u_68 > 9 then
+		table.remove(v_u_68, 1)
+	end
+	local v76 = script.TextLabel:Clone()
+	v76.Text = "Hello world!"
+	v76.Name = tick()
+	v76.Parent = v_u_67.Container
+	table.insert(v_u_68, v76)
+	v_u_67.Parent.Parent.Log:Play()
+	v_u_70()
+end
+function v23.tick() -- name: tick
+	-- upvalues: (ref) v_u_54, (copy) v_u_68, (copy) v_u_67, (copy) v_u_70, (copy) v_u_13, (copy) v_u_22, (ref) v_u_66, (copy) v_u_64, (copy) v_u_19, (ref) v_u_65, (copy) v_u_57, (copy) v_u_24, (copy) v_u_12, (copy) v_u_11, (copy) v_u_18, (copy) v_u_55, (copy) v_u_75, (copy) v_u_7, (copy) v_u_8, (copy) v_u_9, (copy) v_u_10, (copy) v_u_20, (copy) v_u_21, (copy) v_u_56
+	if #v_u_54 == 0 and script.Parent.ModelData.History.Value ~= "" then
+		v_u_54 = string.split(script.Parent.ModelData.History.Value, "|")
+		if #v_u_68 > 9 then
+			table.remove(v_u_68, 1)
+		end
+		local v77 = script.TextLabel:Clone()
+		v77.Text = "Loaded old data!"
+		v77.Name = tick()
+		v77.Parent = v_u_67.Container
+		local v78 = v_u_68
+		table.insert(v78, v77)
+		v_u_67.Parent.Parent.Log:Play()
+		v_u_70()
+	end
+	if not v_u_13:hasPower(500000) then
+		return
+	end
+	v_u_13:removePower(500000)
+	if v_u_22:hasAmountOf("Filtered Water", 1) then
+		v_u_66 = 2
+		v_u_22:removeItem(1)
+	elseif v_u_22:hasAmountOf("Machine Oil", 0.05) then
+		v_u_66 = 5
+		v_u_22:removeItem(0.05)
+	else
+		v_u_66 = 1
+	end
+	local v79, v80, _ = v_u_64()
+	if v_u_19:hasPower(1) and (v80 and (v79 ~= 0 and not v_u_65)) then
+		local v_u_81 = v_u_57[v79]
+		table.clear(v_u_54)
+		script.Parent.ModelData.History.Value = ""
+		v_u_65 = true
+		if #v_u_68 > 9 then
+			table.remove(v_u_68, 1)
+		end
+		local v82 = script.TextLabel:Clone()
+		v82.Text = ">output item"
+		v82.Name = tick()
+		v82.Parent = v_u_67.Container
+		local v83 = v_u_68
+		table.insert(v83, v82)
+		v_u_67.Parent.Parent.Log:Play()
+		v_u_70()
+		task.spawn(function()
+			-- upvalues: (ref) v_u_24, (ref) v_u_12, (copy) v_u_81, (ref) v_u_68, (ref) v_u_67, (ref) v_u_70, (ref) v_u_65
+			v_u_24.Value = "1|Center"
+			task.wait(5)
+			v_u_24.Value = "1|Normal"
+			task.wait(5)
+			v_u_12:addItemAmount(v_u_81, 1)
+			local v84 = ("%* has been output!"):format(v_u_81)
+			if #v_u_68 > 9 then
+				table.remove(v_u_68, 1)
+			end
+			local v85 = script.TextLabel:Clone()
+			v85.Text = v84
+			v85.Name = tick()
+			v85.Parent = v_u_67.Container
+			local v86 = v_u_68
+			table.insert(v86, v85)
+			v_u_67.Parent.Parent.Log:Play()
+			v_u_70()
+			v_u_65 = false
+		end)
+	elseif v_u_19:hasPower(1) and not (v80 or v_u_65) then
+		local _, _, v87 = v_u_64()
+		table.clear(v_u_54)
+		script.Parent.ModelData.History.Value = ""
+		v_u_65 = true
+		if #v_u_68 > 9 then
+			table.remove(v_u_68, 1)
+		end
+		local v88 = script.TextLabel:Clone()
+		v88.Text = ">output item"
+		v88.Name = tick()
+		v88.Parent = v_u_67.Container
+		local v89 = v_u_68
+		table.insert(v89, v88)
+		v_u_67.Parent.Parent.Log:Play()
+		v_u_70()
+		v_u_11:addItemAmount("Microchip Scrap", v87)
+		task.spawn(function()
+			-- upvalues: (ref) v_u_24, (ref) v_u_68, (ref) v_u_67, (ref) v_u_70, (ref) v_u_65
+			v_u_24.Value = "1|Center"
+			task.wait(5)
+			v_u_24.Value = "1|FailedOut"
+			task.wait(5)
+			if #v_u_68 > 9 then
+				table.remove(v_u_68, 1)
+			end
+			local v90 = script.TextLabel:Clone()
+			v90.Text = "Scrap has been output!"
+			v90.Name = tick()
+			v90.Parent = v_u_67.Container
+			local v91 = v_u_68
+			table.insert(v91, v90)
+			v_u_67.Parent.Parent.Log:Play()
+			v_u_70()
+			v_u_65 = false
+		end)
+	end
+	if v_u_18:hasPower(1) and not v_u_65 then
+		for v_u_92, v_u_93 in pairs(v_u_55) do
+			if v_u_93[2]:hasPower(1) and v_u_93[1]:hasAmountOf(v_u_92, v_u_93[3]) then
+				v_u_93[1]:removeItem(v_u_93[3])
+				v_u_65 = true
+				local v94 = (">add %*"):format(v_u_92)
+				if #v_u_68 > 9 then
+					table.remove(v_u_68, 1)
+				end
+				local v95 = script.TextLabel:Clone()
+				v95.Text = v94
+				v95.Name = tick()
+				v95.Parent = v_u_67.Container
+				local v96 = v_u_68
+				table.insert(v96, v95)
+				v_u_67.Parent.Parent.Log:Play()
+				v_u_70()
+				task.spawn(function()
+					-- upvalues: (ref) v_u_66, (ref) v_u_24, (copy) v_u_93, (ref) v_u_54, (copy) v_u_92, (ref) v_u_68, (ref) v_u_67, (ref) v_u_70, (ref) v_u_64, (ref) v_u_75, (ref) v_u_57, (ref) v_u_65
+					math.randomseed(tick())
+					local v97 = math.random(33, 300) / 100 / v_u_66
+					v_u_24.Value = v97 .. "|" .. v_u_93[4].Name
+					task.wait(6 * v97)
+					math.randomseed(tick())
+					local v98 = math.random(33, 300) / 100 / v_u_66
+					v_u_24.Value = v98 .. "|" .. script.Parent.Center.Name
+					local v99 = v_u_54
+					local v100 = v_u_92
+					table.insert(v99, v100)
+					local v101 = ("Added %*!"):format(v_u_92)
+					if #v_u_68 > 9 then
+						table.remove(v_u_68, 1)
+					end
+					local v102 = script.TextLabel:Clone()
+					v102.Text = v101
+					v102.Name = tick()
+					v102.Parent = v_u_67.Container
+					local v103 = v_u_68
+					table.insert(v103, v102)
+					v_u_67.Parent.Parent.Log:Play()
+					v_u_70()
+					local v104, v105, v106 = v_u_64()
+					if v105 then
+						if v_u_92 == "Gold Wire" then
+							local v107 = ("Current item: %* (stage %*)"):format(v_u_57[v104], v106)
+							if #v_u_68 > 9 then
+								table.remove(v_u_68, 1)
+							end
+							local v108 = script.TextLabel:Clone()
+							v108.Text = v107
+							v108.Name = tick()
+							v108.Parent = v_u_67.Container
+							local v109 = v_u_68
+							table.insert(v109, v108)
+							v_u_67.Parent.Parent.Log:Play()
+							v_u_70()
+						end
+					else
+						v_u_75("This was not the right order!", true)
+					end
+					task.wait(6 * v98)
+					v_u_65 = false
+				end)
+				break
+			end
+		end
+	end
+	if v_u_65 == false and (v_u_7:hasAmount(3) and (v_u_8:hasAmount(12) and (v_u_9:hasAmount(3) and v_u_10:hasAmount(6)))) then
+		v_u_20:addPower(1000)
+	else
+		v_u_20:removePower(1000)
+	end
+	local v110, v111, _ = v_u_64()
+	if v110 == 0 then
+		script.Parent.Center.SurfaceGui.TextLabel.Text = ""
+	else
+		script.Parent.Center.SurfaceGui.TextLabel.Text = v_u_57[v110]
+	end
+	if v111 == false then
+		v_u_21:addPower(1000)
+		script.Parent.Center.SurfaceGui.TextLabel.Text = "Scrap"
+	else
+		v_u_21:removePower(1000)
+	end
+	for _, v112 in pairs(v_u_56) do
+		v112:removePower(6000)
+	end
+	script.Parent.ModelData.History.Value = table.concat(v_u_54, "|")
+end
+return v23

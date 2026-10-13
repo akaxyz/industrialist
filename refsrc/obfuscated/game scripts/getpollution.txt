@@ -1,0 +1,11 @@
+local GetPollution = function(v)
+    local v57 = v / 100
+    local v56 = 1
+    if v57 > 0 then
+        v56 = 1 + 0.5 * v57 - v57 ^ 2
+    elseif v57 < -0.6 then
+        v56 = v57 / 2 + 1.25
+    end
+    local v58 = math.clamp(v56, 0.5, 1.2)
+    return 4500 / v58 * 3
+end

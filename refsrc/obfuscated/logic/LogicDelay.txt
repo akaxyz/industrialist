@@ -1,0 +1,35 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.OutMainConnector)
+local v_u_5 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+script.Parent.Base.ProximityPrompt.Enabled = true
+script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p6)
+	-- upvalues: (copy) v_u_5
+	v_u_5:openMenu(p6)
+end)
+v_u_5:addSetting(1, script.Parent.ModelData.Delay, "Amount of ticks to delay signals by", 1, 1000)
+local v7 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_8 = {}
+function v7.tick() -- name: tick
+	-- upvalues: (copy) v_u_3, (copy) v_u_8, (copy) v_u_4
+	if v_u_3:getBuffer() >= 1 then
+		local v9 = v_u_8
+		local v10 = { v_u_3:getBuffer(), script.Parent.ModelData.Delay.Value - 1 }
+		table.insert(v9, v10)
+	end
+	for v11, v12 in ipairs(v_u_8) do
+		if v12[2] > 0 then
+			v12[2] = v12[2] - 1
+		else
+			v_u_4:addPower(v12[1])
+			table.remove(v_u_8, v11)
+		end
+	end
+	v_u_3:removePower(v_u_3:getBuffer())
+end
+return v7

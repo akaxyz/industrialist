@@ -1,0 +1,28 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.MainConnector2)
+local v_u_5 = false
+script.Parent.Base.ProximityPrompt.Enabled = true
+script.Parent.Base.ProximityPrompt.Triggered:Connect(function()
+	-- upvalues: (ref) v_u_5
+	v_u_5 = true
+end)
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (ref) v_u_5, (copy) v_u_3, (copy) v_u_4
+		if v_u_5 then
+			v_u_5 = false
+			if v_u_3:getBuffer() >= 1000 then
+				v_u_4:addPower(1000)
+				v_u_3:removePower(1000)
+				script.Parent.Base.click:Play()
+			end
+		else
+			return
+		end
+	end
+}

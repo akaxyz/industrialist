@@ -1,0 +1,74 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+require(ReplicatedStorage.Modules.PowerUtilsV2)
+local PipeUtilsV2 = require(ReplicatedStorage.Modules.PipeUtilsV2)
+require(ReplicatedStorage.Modules.Enums.Items)
+local v1 = PipeUtilsV2.loadConnector(script.Parent.FluidInMainPipe)
+local v2 = PipeUtilsV2.loadConnector(script.Parent.InMainPipe)
+local Pollution = game.ReplicatedStorage.Pollution
+require(ReplicatedStorage.Modules.Achievements)
+local t = {}
+local v3 = false
+local function lights() --[[ lights | Line: 18 | Upvalues: v3 (ref) ]]
+    if v3 == false then
+        v3 = true
+        script.Parent.Lights.Light.SurfaceLight.Enabled = false
+        script.Parent.Lights.A.Material = Enum.Material.SmoothPlastic
+        script.Parent.Lights.B.Material = Enum.Material.SmoothPlastic
+    else
+        v3 = false
+        script.Parent.Lights.Light.SurfaceLight.Enabled = true
+        script.Parent.Lights.A.Material = Enum.Material.Neon
+        script.Parent.Lights.B.Material = Enum.Material.Neon
+    end
+end
+local State = script.Parent.State
+function t.localUpdate() --[[ localUpdate | Line: 33 | Upvalues: State (copy) ]]
+    if script.Parent.BigSmokeStack.SFX.Playing == false then
+        script.Parent.BigSmokeStack.SFX:Play()
+    end
+    local ParticleEmitter = script.Parent.BigSmokeStack.ParticleEmitter
+    ParticleEmitter.Rate = (tonumber(State.Value) or 0) / 6000 * 5
+    local SFX = script.Parent.BigSmokeStack.SFX
+    SFX.Volume = (tonumber(State.Value) or 0) / 12000 * 2
+    local v3 = math.clamp(script.Parent.ModelData.Dirt.Value, 0, 1)
+    for k, v in pairs(script.Parent.Dirt.One:GetChildren()) do
+        v.Transparency = 1 - v3
+    end
+    for k, v in pairs(script.Parent.Dirt.Two:GetChildren()) do
+        v.Transparency = 1 - v3 + 0.45
+    end
+    for k, v in pairs(script.Parent.Dirt.Three:GetChildren()) do
+        v.Transparency = 1 - v3 + 0.7
+    end
+end
+function t.localStart() --[[ localStart | Line: 59 ]]
+    while task.wait(1) do
+        script.Parent.BigSmokeStack.ParticleEmitter:Emit(script.Parent.BigSmokeStack.ParticleEmitter.Rate)
+    end
+end
+local v4 = 0
+function t.tick() --[[ tick | Line: 67 | Upvalues: lights (copy), v1 (copy), v2 (copy), State (copy), Pollution (copy), v4 (ref) ]]
+    lights()
+    if v1:has("Exhaust") then
+        v2:getBuffer()
+        local v12 = v1:getBuffer() / 240000
+        local v22
+        if v2:has("Filter") then
+            v22 = if v12 <= v2:getBuffer() then 0.5 else math.clamp(v12 / v2:getBuffer() / 2, 0.5, 4)
+            v2:removeItem(v12)
+        else
+            v22 = 4
+        end
+        local v5 = v1:getBuffer() * v22
+        State.Value = v5
+        local v6 = Pollution
+        v6.Value = v6.Value + v5
+        v1:removeItem(v1:getBuffer())
+        if v4 % 30 == 0 then
+            local Dirt = script.Parent.ModelData.Dirt
+            Dirt.Value = Dirt.Value + v5 / 1200000
+        end
+        v4 = v4 + 1
+    end
+end
+return t

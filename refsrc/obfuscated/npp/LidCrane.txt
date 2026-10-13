@@ -1,0 +1,173 @@
+local v1 = script.Parent.Parent.Parent
+local v_u_2 = v1.Parent.ModelData
+local v_u_3 = game:GetService("TweenService")
+local v_u_4 = v1.FullCrane
+local v_u_5 = v_u_4.Crane:GetPivot().Position.Y
+local v_u_6 = v1.CoreRefPoint
+local v_u_7 = v1.ReactorLid
+local v_u_8 = false
+local v_u_9 = false
+function script.Parent.Parent.LidControl.OnInvoke(p10)
+	-- upvalues: (ref) v_u_9, (copy) v_u_2, (copy) v_u_4, (copy) v_u_3, (copy) v_u_6, (ref) v_u_8
+	if v_u_9 then
+		return false
+	end
+	script.Parent.BigLidOperating.Value = true
+	if v_u_2.ReactorLidOpen.Value == false and p10 == true then
+		task.spawn(function()
+			for _ = 1, 95 do
+				local v11 = script.Parent.MainCranePowerDebt
+				v11.Value = v11.Value + 300
+				task.wait(1)
+			end
+		end)
+		v_u_9 = true
+		v_u_4.Attachment.Moving.PlaybackSpeed = 0.5
+		v_u_4.Attachment.Start:Play()
+		v_u_4.Attachment.Moving:Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(8, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Key1.WorldCFrame
+		}):Play()
+		task.wait(8)
+		v_u_4.Attachment.Start:Stop()
+		v_u_4.Attachment.Stop:Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(8, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Closed.WorldCFrame
+		}):Play()
+		task.wait(8)
+		v_u_4.Attachment.Attach:Play()
+		v_u_8 = true
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 2
+		}):Play()
+		task.wait(0.1)
+		v_u_3:Create(script.CranePosition, TweenInfo.new(40, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Key1.WorldCFrame
+		}):Play()
+		v_u_6.Air:Play()
+		v_u_6.Particles.Water:Emit(150)
+		task.wait(40)
+		v_u_4.Attachment.Start:Play()
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 0.5
+		}):Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(20, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Key2.WorldCFrame
+		}):Play()
+		script.Parent.BigLidOperating.Value = false
+		v_u_2.ReactorLidOpen.Value = true
+		task.wait(20)
+		v_u_4.Attachment.Start:Stop()
+		v_u_4.Attachment.Stop:Play()
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 2
+		}):Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(10, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Open.WorldCFrame
+		}):Play()
+		task.wait(9.7)
+		v_u_4.Attachment.Impact:Play()
+		v_u_8 = false
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 0.5
+		}):Play()
+		task.wait(1)
+		v_u_3:Create(script.CranePosition, TweenInfo.new(8, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Key3.WorldCFrame
+		}):Play()
+		task.wait(8)
+		v_u_4.Attachment.Moving:Stop()
+		v_u_9 = false
+		return true
+	end
+	if v_u_2.ReactorLidOpen.Value == true and p10 == false then
+		task.spawn(function()
+			for _ = 1, 92 do
+				local v12 = script.Parent.MainCranePowerDebt
+				v12.Value = v12.Value + 300
+				task.wait(1)
+			end
+		end)
+		v_u_9 = true
+		v_u_2.ReactorLidOpen.Value = false
+		v_u_4.Attachment.Moving.PlaybackSpeed = 0.5
+		v_u_4.Attachment.Start:Play()
+		v_u_4.Attachment.Moving:Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(8, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Key2.WorldCFrame
+		}):Play()
+		task.wait(8)
+		v_u_4.Attachment.Start:Stop()
+		v_u_4.Attachment.Stop:Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Open.WorldCFrame
+		}):Play()
+		task.wait(1)
+		v_u_4.Attachment.Attach:Play()
+		v_u_8 = true
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 2
+		}):Play()
+		task.wait(0.1)
+		v_u_3:Create(script.CranePosition, TweenInfo.new(8, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Key2.WorldCFrame
+		}):Play()
+		task.wait(8)
+		v_u_4.Attachment.Start:Play()
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 0.5
+		}):Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(20, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Key1.WorldCFrame
+		}):Play()
+		task.wait(20)
+		v_u_4.Attachment.Start:Stop()
+		v_u_4.Attachment.Stop:Play()
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 2
+		}):Play()
+		v_u_3:Create(script.CranePosition, TweenInfo.new(40, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+			["Value"] = v_u_6.Closed.WorldCFrame
+		}):Play()
+		task.wait(39)
+		v_u_4.Attachment.Impact:Play()
+		v_u_8 = false
+		v_u_3:Create(v_u_4.Attachment.Moving, TweenInfo.new(2), {
+			["PlaybackSpeed"] = 0.5
+		}):Play()
+		task.wait(2)
+		v_u_3:Create(script.CranePosition, TweenInfo.new(14, Enum.EasingStyle.Linear), {
+			["Value"] = v_u_6.Key4.WorldCFrame
+		}):Play()
+		task.wait(14)
+		v_u_4.Attachment.Moving:Stop()
+		v_u_9 = false
+		script.Parent.BigLidOperating.Value = false
+		return true
+	end
+end
+local function v23() -- name: update
+	-- upvalues: (copy) v_u_5, (copy) v_u_4, (ref) v_u_8, (copy) v_u_7
+	local v13 = script.CranePosition.Value.Position.Y - v_u_5
+	v_u_4.Crane:PivotTo(script.CranePosition.Value - Vector3.new(0, v13, 0))
+	v_u_4.Attachment:PivotTo(script.CranePosition.Value)
+	local v14 = math.abs(v13)
+	local v15 = v14 - 0.5
+	local v16 = v14 + 0.5
+	v_u_4.Crane.RopeShort.Size = Vector3.new(2.05, v15, 0.125)
+	local v17 = v_u_4.Crane.RopeShort
+	local v18 = v_u_4.Crane.CraneBase.RopeShortAttachment.WorldCFrame
+	local v19 = v15 / 2
+	v17:PivotTo(v18 - Vector3.new(0, v19, 0))
+	v_u_4.Crane.RopeLong.Size = Vector3.new(2.05, v16, 0.125)
+	local v20 = v_u_4.Crane.RopeLong
+	local v21 = v_u_4.Crane.CraneBase.RopeLongAttachment.WorldCFrame
+	local v22 = v16 / 2
+	v20:PivotTo(v21 - Vector3.new(0, v22, 0))
+	if v_u_8 then
+		v_u_7:PivotTo(script.CranePosition.Value * CFrame.Angles(0, 1.5707963267948966, 1.5707963267948966))
+	end
+end
+script.CranePosition.Value = v_u_4.Attachment:GetPivot()
+script.CranePosition:GetPropertyChangedSignal("Value"):Connect(v23)
+return {}

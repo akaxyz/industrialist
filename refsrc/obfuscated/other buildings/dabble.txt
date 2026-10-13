@@ -1,0 +1,93 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local u3 = v2.loadConnector(script.Parent.In1MainConnector)
+local u4 = v2.loadConnector(script.Parent.In2MainConnector)
+local u5 = v2.loadConnector(script.Parent.In3MainConnector)
+local u6 = v2.loadConnector(script.Parent.In4MainConnector)
+local u7 = v2.loadConnector(script.Parent.Out4MainConnector)
+local u8 = v2.loadConnector(script.Parent.Out3MainConnector)
+local u9 = v2.loadConnector(script.Parent.Out2MainConnector)
+local u10 = v2.loadConnector(script.Parent.Out1MainConnector)
+local u11 = {
+    ["0000"] = { "0000" },
+    ["0001"] = { "0001" },
+    ["0010"] = { "0010" },
+    ["0011"] = { "0011" },
+    ["0100"] = { "0100" },
+    ["0101"] = { "1000" },
+    ["0110"] = { "1001" },
+    ["0111"] = { "1010" },
+    ["1000"] = { "1011" },
+    ["1001"] = { "1100" },
+    ["1010"] = { "0000" },
+    ["1011"] = { "0000" },
+    ["1100"] = { "0000" },
+    ["1101"] = { "0000" },
+    ["1110"] = { "0000" },
+    ["1111"] = { "0000" }
+}
+return {
+    ["localUpdate"] = function() --[[ Name: localUpdate, Line 72 ]] end,
+    ["tick"] = function() --[[ Name: tick, Line 75 ]]
+        --[[
+        Upvalues:
+            [1] = u3
+            [2] = u4
+            [3] = u5
+            [4] = u6
+            [5] = u11
+            [6] = u7
+            [7] = u8
+            [8] = u9
+            [9] = u10
+        --]]
+        local v12 = ""
+        local v13
+        if u3:hasPower(1) then
+            u3:removePower(u3:getBuffer())
+            v13 = v12 .. "1"
+        else
+            v13 = v12 .. "0"
+        end
+        local v14
+        if u4:hasPower(1) then
+            u4:removePower(u4:getBuffer())
+            v14 = v13 .. "1"
+        else
+            v14 = v13 .. "0"
+        end
+        local v15
+        if u5:hasPower(1) then
+            u5:removePower(u5:getBuffer())
+            v15 = v14 .. "1"
+        else
+            v15 = v14 .. "0"
+        end
+        local v16
+        if u6:hasPower(1) then
+            u6:removePower(u6:getBuffer())
+            v16 = v15 .. "1"
+        else
+            v16 = v15 .. "0"
+        end
+        local v17 = u11[v16]
+        if v17[1] ~= "0000" then
+            local v18 = string.split(v17[1], "")
+            for v19, v20 in ipairs(v18) do
+                if v20 == "1" then
+                    if v19 == 1 then
+                        u7:addPower(1000)
+                    elseif v19 == 2 then
+                        u8:addPower(1000)
+                    elseif v19 == 3 then
+                        u9:addPower(1000)
+                    elseif v19 == 4 then
+                        u10:addPower(1000)
+                    end
+                end
+            end
+        end
+    end
+}

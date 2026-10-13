@@ -1,0 +1,565 @@
+local v1 = {}
+local u2 = require(game.ReplicatedStorage.Modules.Achievements)
+local v3 = require(game.ReplicatedStorage.Modules.PipeUtilsV2)
+local v4 = require(game.ReplicatedStorage.Modules.PowerUtilsV2)
+require(game.ReplicatedStorage.Modules.Permissions)
+local u5 = v4.loadConnector(script.Parent.MainConnector)
+local u6 = v3.loadConnector(script.Parent.ItemInMainPipe)
+local u7 = v3.loadConnector(script.Parent.ItemIn2MainPipe)
+local u8 = v3.loadConnector(script.Parent.FluidIn1MainPipe)
+local u9 = v3.loadConnector(script.Parent.FluidIn2MainPipe)
+local u10 = {
+    v3.loadConnector(script.Parent.ItemOut1MainPipe),
+    v3.loadConnector(script.Parent.ItemOut2MainPipe),
+    v3.loadConnector(script.Parent.ItemOut3MainPipe),
+    v3.loadConnector(script.Parent.ItemOut4MainPipe)
+}
+local u11 = script.Parent.State
+local u12 = script.Parent.ModelData
+local u13 = u12.Durability
+local u14 = u12.Type
+local u15 = script.Parent.Drill.Drill
+require(game.ReplicatedStorage.Modules.ModelTweenUtils)
+local u16 = nil
+local u17 = nil
+game:GetService("TweenService")
+local u18 = 0
+local u19 = 0
+local u20 = 0
+local u21 = 0
+local u22 = script.Parent.GrinderParticles
+function v1.localStart() --[[ Line: 48 ]]
+    --[[
+    Upvalues:
+        [1] = u16
+        [2] = u15
+        [3] = u17
+        [4] = u12
+        [5] = u20
+        [6] = u18
+        [7] = u19
+        [8] = u21
+        [9] = u22
+    --]]
+    u16 = u15:GetPivot()
+    u17 = u16 - Vector3.new(0, 10, 0)
+    local u23 = 0
+    local u24 = nil
+    u24 = game:GetService("RunService").RenderStepped:Connect(function(p25) --[[ Line: 54 ]]
+        --[[
+        Upvalues:
+            [1] = u12
+            [2] = u24
+            [3] = u20
+            [4] = u18
+            [5] = u15
+            [6] = u19
+            [7] = u21
+            [8] = u16
+            [9] = u17
+            [10] = u22
+            [11] = u23
+        --]]
+        if u12 == nil then
+            u24:Disconnect()
+            return
+        elseif u12.Parent == nil then
+            u24:Disconnect()
+        else
+            if u20 >= 1 and u18 < 60 then
+                local v26 = u18 + 6 * p25
+                u18 = math.clamp(v26, 0, 60)
+                for _, v27 in pairs(u15.Drills:GetChildren()) do
+                    local v28 = u18
+                    v27:PivotTo(v27:GetPivot() * CFrame.Angles(0, 0, (math.rad(v28))))
+                end
+            elseif u20 == -1 and u18 > 0 then
+                local v29 = u18 - 20 * p25
+                u18 = math.clamp(v29, 0, 60)
+                for _, v30 in pairs(u15.Drills:GetChildren()) do
+                    local v31 = u18
+                    v30:PivotTo(v30:GetPivot() * CFrame.Angles(0, 0, (math.rad(v31))))
+                end
+            end
+            if u20 == 2 and u19 < 100 then
+                u21 = u21 + p25
+                local v32 = u19 + 40 * p25
+                u19 = math.clamp(v32, 0, 100)
+                local v33 = u15
+                local v34 = u16:Lerp(u17, u19 / 100)
+                local v35 = CFrame.Angles
+                local v36 = u19 ^ 1.3 * u21
+                v33:PivotTo(v34 * v35(math.rad(v36), 0, 0))
+            elseif u20 == -1 and u19 > 0 then
+                u21 = u21 - p25
+                local v37 = u19 - 40 * p25
+                u19 = math.clamp(v37, 0, 100)
+                local v38 = u15
+                local v39 = u16:Lerp(u17, u19 / 100)
+                local v40 = CFrame.Angles
+                local v41 = u19 ^ 1.3 * u21
+                v38:PivotTo(v39 * v40(math.rad(v41), 0, 0))
+            end
+            if u12.Output.Value and u12.Depth.Value == u12.TargetDepth.Value then
+                if u22.GrinderLoop.Playing == false then
+                    u22.GrinderLoop:Play()
+                    u22.dust2.Enabled = true
+                    local v42 = ColorSequence.new(Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(38, 38, 38), u12.Depth.Value / 12000))
+                    script.Parent.Hole.Debri1.debri.Color = v42
+                    script.Parent.Hole.Debri2.debri.Color = v42
+                    script.Parent.Hole.Debri1.debri.Enabled = true
+                    script.Parent.Hole.Debri2.debri.Enabled = true
+                end
+                u23 = u23 + 1
+                if u23 % 2 == 0 then
+                    script.Parent.Shredder.ShredderIn.CFrame = script.Parent.Shredder.ShredderIn.CFrame * CFrame.Angles(0, 0, 0.17453292519943295)
+                    script.Parent.Shredder.ShredderOut.CFrame = script.Parent.Shredder.ShredderOut.CFrame * CFrame.Angles(0, 0, 0.17453292519943295)
+                    return
+                end
+            elseif u22.GrinderLoop.Playing == true then
+                u22.GrinderLoop:Stop()
+                u22.dust2.Enabled = false
+                script.Parent.Hole.Debri1.debri.Enabled = false
+                script.Parent.Hole.Debri2.debri.Enabled = false
+            end
+        end
+    end)
+end
+function v1.localUpdate() --[[ Line: 117 ]]
+    --[[
+    Upvalues:
+        [1] = u11
+        [2] = u21
+        [3] = u20
+    --]]
+    if u11.Value == "0" or u11.Value == "" then
+        if u11.Value == "0" then
+            u20 = -1
+        end
+    else
+        u21 = 0
+        u20 = 1
+        task.wait(4)
+        u20 = 2
+    end
+end
+local u43 = script.Parent.Monitors.MainMonitor.SurfaceGui.Display
+local u44 = {
+    300,
+    900,
+    1200,
+    1500,
+    1800
+}
+if game.Players.LocalPlayer == nil then
+    u43.Buttons.AddDepth.MouseButton1Click:Connect(function(...) --[[ Line: 141 ]]
+        --[[
+        Upvalues:
+            [1] = u12
+            [2] = u44
+        --]]
+        local v45 = u12.TargetDepth.Value
+        for _, v46 in pairs(u44) do
+            if v46 >= v45 then
+                if v45 < v46 then
+                    u12.TargetDepth.Value = v46
+                    return
+                end
+            end
+        end
+        local v47 = u12.TargetDepth
+        local v48 = u12.TargetDepth.Value + 200
+        v47.Value = math.clamp(v48, 0, 9000)
+    end)
+    u43.Buttons.MinusDepth.MouseButton1Click:Connect(function() --[[ Line: 156 ]]
+        --[[
+        Upvalues:
+            [1] = u12
+            [2] = u44
+        --]]
+        local v49 = u12.TargetDepth.Value
+        for v50 = #u44, 1, -1 do
+            local v51 = u44[v50]
+            if v49 >= v51 then
+                if v51 < v49 then
+                    local v52 = v49 - v51
+                    if math.abs(v52) <= 1500 then
+                        u12.TargetDepth.Value = v51
+                        return
+                    end
+                end
+            end
+        end
+        local v53 = u12.TargetDepth
+        local v54 = u12.TargetDepth.Value - 200
+        v53.Value = math.clamp(v54, 0, 9000)
+    end)
+    u43.Buttons.Output.MouseButton1Click:Connect(function() --[[ Line: 172 ]]
+        --[[
+        Upvalues:
+            [1] = u43
+            [2] = u12
+        --]]
+        if u43.Buttons.Output.Text == "NOT AT TARGET" then
+            return
+        elseif u12.Output.Value or u12.Depth.Value ~= u12.TargetDepth.Value then
+            if u12.Output.Value then
+                u43.Buttons.Output.Text = "OUTPUT IS OFF"
+                u12.Output.Value = false
+            else
+                u43.Buttons.Output.Text = "NOT AT TARGET"
+                task.wait(1)
+                u43.Buttons.Output.Text = "OUTPUT IS OFF"
+            end
+        else
+            u43.Buttons.Output.Text = "OUTPUT IS ON"
+            u12.Output.Value = true
+            return
+        end
+    end)
+    u43.Buttons.Void.MouseButton1Click:Connect(function() --[[ Line: 187 ]]
+        --[[
+        Upvalues:
+            [1] = u10
+            [2] = u8
+        --]]
+        for _, v55 in pairs(u10) do
+            v55:removeItem(5000)
+        end
+        u8:setItem(0, "")
+    end)
+    if u12.Type.Value == 0 then
+        for _, v56 in pairs(script.Parent.Drill.Drill:GetDescendants()) do
+            if v56:IsA("BasePart") then
+                v56.Transparency = 1
+            end
+        end
+    end
+end
+if u12.Output.Value then
+    u43.Buttons.Output.Text = "OUTPUT IS ON"
+else
+    u43.Buttons.Output.Text = "OUTPUT IS OFF"
+end
+local v57 = u12.Type.Value
+for _, v58 in pairs(script.Parent.Drill.Drill:GetDescendants()) do
+    if v58:IsA("BasePart") then
+        v58.Material = Enum.Material.Metal
+        if v57 == 1 then
+            v58.Color = Color3.fromRGB(220, 112, 35)
+        elseif v57 == 2 then
+            v58.Color = Color3.fromRGB(220, 220, 220)
+        elseif v57 == 3 then
+            v58.Color = Color3.fromRGB(168, 144, 127)
+        elseif v57 == 4 then
+            v58.Color = Color3.fromRGB(89, 89, 89)
+        elseif v57 == 5 then
+            v58.Color = Color3.fromRGB(74, 89, 79)
+        end
+    end
+end
+local u59 = require(game.ReplicatedStorage.Modules.DepthProceduralPregenerator).lootTable
+local v60 = u12.Depth.Value
+local u61 = {
+    0,
+    10,
+    3,
+    1,
+    1.5
+}
+for v62 = #u59, 1, -1 do
+    u124 = u59[v62]
+    if u124[1] <= v60 then
+        ::l28::
+        local u63 = 0
+        local u64 = game.ReplicatedStorage.Pollution
+        local u65 = 0
+        local u66 = tick()
+        local u67 = false
+        function v1.tick() --[[ Line: 263 ]]
+            --[[
+            Upvalues:
+                [1] = u5
+                [2] = u43
+                [3] = u63
+                [4] = u6
+                [5] = u8
+                [6] = u124
+                [7] = u12
+                [8] = u59
+                [9] = u9
+                [10] = u14
+                [11] = u61
+                [12] = u10
+                [13] = u64
+                [14] = u7
+                [15] = u66
+                [16] = u67
+                [17] = u11
+                [18] = u13
+                [19] = u2
+                [20] = u65
+            --]]
+            if u5:hasPower(100000) then
+                u5:removePower(100000)
+                if u43.Parent.Enabled == false then
+                    u43.Parent.Enabled = true
+                    script.Parent.Monitors.Depth.SurfaceGui.Enabled = true
+                end
+            elseif u43.Parent.Enabled == true then
+                u43.Parent.Enabled = false
+                script.Parent.Monitors.Depth.SurfaceGui.Enabled = false
+            end
+            u63 = u63 + 1
+            if u6:getBuffer() == 0 then
+                u6:setItem(0, "")
+            end
+            if u8:getBuffer() == 0 then
+                u8:setItem(0, "")
+            end
+            local v68 = u12.Depth.Value
+            for v69 = #u59, 1, -1 do
+                v70 = u59[v69]
+                if v70[1] <= v68 then
+                    goto l14
+                end
+            end
+            local v70 = u59[1]
+            ::l14::
+            u124 = v70
+            local v71, v72
+            if u9:hasAmountOf("Machine Oil", 2) then
+                v71 = 2
+                v72 = 1.1
+            else
+                v71 = 1
+                v72 = 1
+            end
+            local v73 = u14.Value
+            if v73 == 0 then
+                if u67 == false and u5:hasPower(500000) then
+                    u5:removePower(500000)
+                    local v74 = u12.Depth
+                    local v75 = u12.Depth.Value
+                    local v76 = u12.Depth.Value
+                    local v77 = v71 * -50
+                    local v78 = v71 * 50
+                    v74.Value = v75 - math.clamp(v76, v77, v78)
+                    u43.Body.Status.Text = "MOVING UP FOR REPLACEMENT"
+                    if v71 == 2 then
+                        u9:removeItem(2)
+                    end
+                    if u12.Depth.Value == 0 and u67 == false then
+                        u43.Body.Status.Text = "REPLACING DRILL"
+                        local u79 = u6:hasAmountOf("Tungsten Carbide Drill Head", 1) and 5 or (u6:hasAmountOf("Steel Drill Head", 1) and 4 or (u6:hasAmountOf("Iron Drill Head", 1) and 3 or (u6:hasAmountOf("Aluminium Drill Head", 1) and 2 or (u6:hasAmountOf("Copper Drill Head", 1) and 1 or 0))))
+                        if u79 ~= 0 then
+                            u6:removeItem(1)
+                            u67 = true
+                            u11.Value = "0"
+                            task.spawn(function() --[[ Line: 465 ]]
+                                --[[
+                                Upvalues:
+                                    [1] = u79
+                                    [2] = u11
+                                    [3] = u67
+                                    [4] = u13
+                                    [5] = u14
+                                --]]
+                                task.wait(4)
+                                for _, v80 in pairs(script.Parent.Drill.Drill:GetDescendants()) do
+                                    if v80:IsA("BasePart") then
+                                        v80.Transparency = 1
+                                        v80.Material = Enum.Material.Metal
+                                        if u79 == 1 then
+                                            v80.Color = Color3.fromRGB(220, 112, 35)
+                                        elseif u79 == 2 then
+                                            v80.Color = Color3.fromRGB(220, 220, 220)
+                                        elseif u79 == 3 then
+                                            v80.Color = Color3.fromRGB(168, 144, 127)
+                                        elseif u79 == 4 then
+                                            v80.Color = Color3.fromRGB(89, 89, 89)
+                                        elseif u79 == 5 then
+                                            v80.Color = Color3.fromRGB(74, 89, 79)
+                                        end
+                                    end
+                                end
+                                task.wait(2)
+                                for _, v81 in pairs(script.Parent.Drill.Drill:GetDescendants()) do
+                                    if v81:IsA("BasePart") then
+                                        v81.Transparency = 0
+                                    end
+                                end
+                                u11.Value = "1"
+                                task.wait(6)
+                                u67 = false
+                                u13.Value = 100
+                                u14.Value = u79
+                            end)
+                        end
+                    end
+                end
+            else
+                local v82 = u12.TargetDepth.Value
+                if u12.Depth.Value < u12.DrillDepth.Value and (u12.Depth.Value < v82 and u5:hasPower(500000)) then
+                    u5:removePower(500000)
+                    local v83 = u12.Depth
+                    local v84 = u12.Depth.Value + v71 * 50
+                    local v85 = u12.DrillDepth.Value
+                    v83.Value = math.clamp(v84, 0, v85)
+                    u43.Body.Status.Text = "MOVING DOWN"
+                    if v71 == 2 then
+                        u9:removeItem(2)
+                    end
+                    if script.Parent.Hole["Buzzing lights"].Playing == true and script.Parent.Hole["Buzzing lights (other)"].Playing == false then
+                        script.Parent.Hole["Buzzing lights"]:Pause()
+                        script.Parent.Hole["Drill Loop"]:Pause()
+                        script.Parent.Hole["Buzzing lights (other)"]:Resume()
+                    end
+                elseif u12.Durability.Value >= 0 and (u12.Depth.Value <= v82 and (v82 ~= 0 and u5:hasPower(2000000))) then
+                    local v86 = u8:getItem()
+                    local v87 = u8:getBuffer()
+                    local v88 = v86 == "Water" and 2 or (v86 == "Acetic Acid" and 3 or (v86 == "Sulfuric Acid" and 4 or (v86 == "Hydrochloric Acid" and 5 or 1)))
+                    local v89 = v87 < u61[v88] and 1 or v88
+                    local v90 = u124[2][v73] * u124[3][v89] * 0.5
+                    if u12.Depth.Value == v82 and u12.Output.Value == true then
+                        local v91 = v90 * v72
+                        u5:removePower(2000000)
+                        for v92, v93 in ipairs(u124[4]) do
+                            u10[v92]:addItemAmount(v93[1], v93[2] * v72)
+                        end
+                        u43.Body.Status.Text = "SCAVENGING"
+                        if v71 == 2 then
+                            u9:removeItem(2)
+                        end
+                        u8:removeItem(u61[v89])
+                        local v94 = u12.Durability
+                        v94.Value = v94.Value - v91
+                        local v95 = u64
+                        v95.Value = v95.Value + v82 / 100
+                        if u63 % 3 == 0 then
+                            script.Parent.Hole.Drill:Play()
+                        end
+                        if script.Parent.Hole["Buzzing lights"].Playing == false then
+                            script.Parent.Hole["Buzzing lights"]:Play()
+                            script.Parent.Hole["Drill Loop"]:Resume()
+                            script.Parent.Hole["Buzzing lights (other)"]:Pause()
+                        end
+                    elseif u12.Depth.Value < v82 then
+                        local v96 = v90 * v71
+                        u5:removePower(2000000)
+                        if v71 == 2 then
+                            u9:removeItem(2)
+                        end
+                        if u7:hasAmountOf("Dynamite", 1) and tick() - u66 >= 4 then
+                            u7:removeItem(1)
+                            u66 = tick()
+                            script.Parent.Hole.explosion:Play()
+                            local v97 = u12.Depth
+                            v97.Value = v97.Value + 24
+                            local v98 = u12.DrillDepth
+                            v98.Value = v98.Value + 24
+                        end
+                        local v99 = u12.Depth
+                        v99.Value = v99.Value + v71 * 1
+                        local v100 = u12.DrillDepth
+                        v100.Value = v100.Value + v71 * 1
+                        u43.Body.Status.Text = "DRILLING DOWN"
+                        u8:removeItem(u61[v89])
+                        local v101 = u12.Durability
+                        v101.Value = v101.Value - v96
+                        if u63 % 3 == 0 then
+                            script.Parent.Hole.Drill:Play()
+                        end
+                        if script.Parent.Hole["Buzzing lights"].Playing == false then
+                            script.Parent.Hole["Buzzing lights"]:Play()
+                            script.Parent.Hole["Drill Loop"]:Resume()
+                            script.Parent.Hole["Buzzing lights (other)"]:Pause()
+                        end
+                    else
+                        u43.Body.Status.Text = "IDLE"
+                    end
+                elseif u12.Durability.Value >= 0 and (u5:hasPower(500000) and v82 < u12.Depth.Value) then
+                    u5:removePower(500000)
+                    if script.Parent.Hole["Buzzing lights"].Playing == true and script.Parent.Hole["Buzzing lights (other)"].Playing == false then
+                        script.Parent.Hole["Buzzing lights"]:Pause()
+                        script.Parent.Hole["Drill Loop"]:Pause()
+                        script.Parent.Hole["Buzzing lights (other)"]:Resume()
+                    end
+                    if v71 == 2 then
+                        u9:removeItem(2)
+                    end
+                    local v102 = u12.Depth
+                    local v103 = u12.Depth.Value
+                    local v104 = u12.Depth.Value - v82
+                    local v105 = v71 * -50
+                    local v106 = v71 * 50
+                    v102.Value = v103 - math.clamp(v104, v105, v106)
+                    u43.Body.Status.Text = "MOVING UP"
+                else
+                    u43.Body.Status.Text = "UNKNOWN"
+                    script.Parent.Hole["Buzzing lights"]:Pause()
+                    script.Parent.Hole["Drill Loop"]:Pause()
+                    script.Parent.Hole["Buzzing lights (other)"]:Resume()
+                end
+                if u12.Durability.Value <= 0 then
+                    for _, v107 in pairs(script.Parent.Drill.Drill:GetDescendants()) do
+                        if v107:IsA("BasePart") then
+                            v107.Material = Enum.Material.CorrodedMetal
+                        end
+                    end
+                    for _, v108 in pairs(script.Parent.Drill.Drill.Drills:GetChildren()) do
+                        v108.Transparency = 1
+                    end
+                    u14.Value = 0
+                    script.Parent.Hole.DrillBreak:Play()
+                    script.Parent.Hole["Buzzing lights"]:Pause()
+                    script.Parent.Hole["Drill Loop"]:Pause()
+                    script.Parent.Hole["Buzzing lights (other)"]:Resume()
+                end
+            end
+            if u13.Value >= 0 and u11.Value == "" then
+                u11.Value = "1"
+            end
+            if u12.DrillDepth.Value >= 9000 then
+                u2.giveBadge(3690428393496648)
+            end
+            script.Parent.Hole.Drill.EqualizerSoundEffect.HighGain = -u12.Depth.Value / 2000
+            script.Parent.Hole.Drill.EqualizerSoundEffect.MidGain = -u12.Depth.Value / 4000
+            script.Parent.Hole["Drill Loop"].EqualizerSoundEffect.HighGain = -u12.Depth.Value / 2000
+            script.Parent.Hole["Drill Loop"].EqualizerSoundEffect.MidGain = -u12.Depth.Value / 4000
+            script.Parent.Hole.DrillBreak.EqualizerSoundEffect.HighGain = -u12.Depth.Value / 2000
+            script.Parent.Hole.DrillBreak.EqualizerSoundEffect.MidGain = -u12.Depth.Value / 4000
+            script.Parent.Hole.explosion.EqualizerSoundEffect.HighGain = -u12.Depth.Value / 2000
+            script.Parent.Hole.explosion.EqualizerSoundEffect.MidGain = -u12.Depth.Value / 4000
+            script.Parent.Monitors.Depth.SurfaceGui.TextLabel.Text = u12.Depth.Value
+            local v109 = u65 - u12.Durability.Value
+            u65 = u12.Durability.Value
+            local v110 = math.clamp(v109, 0, (1 / 0)) * 1000
+            local v111 = math.round(v110) / 1000
+            local v112 = u12.Durability.Value
+            local v113 = math.clamp(v112, 0, 100) * 10
+            local v114 = math.round(v113) / 10
+            u43.Body.Durability.Text = "DURABILITY: " .. v114 .. "% (" .. v111 .. "%/s)"
+            u43.Body.Depth.Text = "TARGET DEPTH: " .. u12.TargetDepth.Value .. "M"
+            u43.Body.HoleDepth.Text = "HOLE DEPTH: " .. u12.DrillDepth.Value .. "M"
+            for v115, v116 in ipairs(u124[4]) do
+                local v117 = v116[1]
+                local v118 = string.sub(v117, 1, 19)
+                local v119 = string.len(v118)
+                local v120 = v116[1]
+                if v119 < string.len(v120) then
+                    v118 = v118 .. "."
+                end
+                local v121 = u43.Body["Item" .. v115]
+                local v122 = v116[2] * v72 * 10
+                v121.Text = ("- %* - %*/s "):format(v118, math.round(v122) / 10)
+            end
+            for v123 = 1, 4 - #u124[4] do
+                u43.Body["Item" .. 5 - v123].Text = ""
+            end
+        end
+        return v1
+    end
+end
+local u124 = u59[1]
+goto l28

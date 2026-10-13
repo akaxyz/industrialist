@@ -1,0 +1,236 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v_u_4 = require(v1.Modules.NextTicks).new()
+local v_u_5 = game.ReplicatedStorage.Pollution
+require(v1.Modules.Enums.Items)
+local v_u_6 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_7 = script.Parent.State
+local _ = script.Parent.Effects
+local _ = script.Parent.Base
+local v8 = v3.loadConnector(script.Parent.ItemIn1MainPipe)
+local v9 = v3.loadConnector(script.Parent.ItemIn2MainPipe)
+local v10 = v3.loadConnector(script.Parent.LiquidIn1MainPipe)
+local v11 = v3.loadConnector(script.Parent.LiquidIn2MainPipe)
+local v12 = v3.loadConnector(script.Parent.LiquidIn3MainPipe)
+local v13 = v3.loadConnector(script.Parent.LiquidIn4MainPipe)
+local v_u_14 = v3.loadConnector(script.Parent.ItemOut1MainPipe)
+local v_u_15 = v3.loadConnector(script.Parent.ItemOut2MainPipe)
+local v_u_16 = v3.loadConnector(script.Parent.LiquidOut1MainPipe)
+local v_u_17 = v3.loadConnector(script.Parent.LiquidOut2MainPipe)
+local v_u_18 = v3.loadConnector(script.Parent.LiquidOut3MainPipe)
+local v_u_19 = { v8, v9 }
+local v_u_20 = {
+    v10,
+    v11,
+    v12,
+    v13
+}
+local v_u_21 = require(script.InternalRecipes)
+local v22 = {}
+local v_u_23 = 0
+local v_u_24 = 0
+local v_u_25 = script.Parent.ModelData.Speed
+local v_u_26 = script.Parent.ModelData.Efficiency
+local v_u_27 = script.Parent.Monitor.SurfaceGui.Display
+local v_u_28 = v_u_27.Parent.Parent.Click
+local v_u_29 = 1
+local v_u_30 = 1
+local v_u_31 = 1
+local function v_u_42() -- name: updateModifiers
+    -- upvalues: (ref) v_u_29, (copy) v_u_26, (ref) v_u_31, (copy) v_u_25, (ref) v_u_30, (copy) v_u_27
+    v_u_29 = 100 / v_u_26.Value
+    v_u_31 = 1
+    if v_u_26.Value < 100 then
+        v_u_31 = v_u_31 + (v_u_26.Value - 100) / 100
+    else
+        v_u_31 = v_u_31 + (v_u_26.Value - 100) / 20
+    end
+    if v_u_25.Value < 100 then
+        v_u_31 = v_u_31 + (v_u_25.Value - 100) / 75
+    else
+        v_u_31 = v_u_31 + (v_u_25.Value - 100) / 50
+    end
+    v_u_30 = v_u_25.Value / 100
+    v_u_29 = v_u_29 * v_u_30
+    local v32 = v_u_27.Body.efficiency
+    local v33 = v_u_26.Value
+    v32.Text = ("EFFICIENCY: %*%%"):format((math.floor(v33)))
+    local v34 = v_u_27.Body.speed
+    local v35 = v_u_25.Value
+    v34.Text = ("SPEED: %*%%"):format((math.floor(v35)))
+    local v36 = v_u_27.Body.originalPower
+    local v37 = v_u_31 * 100
+    v36.Text = ("%*x Original Power"):format(math.round(v37) / 100)
+    local v38 = v_u_27.Body.originalResources
+    local v39 = v_u_29 * 100
+    v38.Text = ("%*x Original Resources"):format(math.round(v39) / 100)
+    local v40 = v_u_27.Body.originalOutput
+    local v41 = v_u_30 * 100
+    v40.Text = ("%*x Original Output"):format(math.round(v41) / 100)
+end
+v_u_27.Buttons.MinusSpeed.MouseButton1Click:Connect(function()
+    -- upvalues: (copy) v_u_28, (copy) v_u_25, (copy) v_u_42
+    v_u_28:Play()
+    local v43 = v_u_25
+    local v44 = v_u_25.Value - 5
+    v43.Value = math.clamp(v44, 50, 200)
+    v_u_42()
+end)
+v_u_27.Buttons.PlusSpeed.MouseButton1Click:Connect(function()
+    -- upvalues: (copy) v_u_28, (copy) v_u_25, (copy) v_u_42
+    v_u_28:Play()
+    local v45 = v_u_25
+    local v46 = v_u_25.Value + 5
+    v45.Value = math.clamp(v46, 50, 200)
+    v_u_42()
+end)
+v_u_27.Buttons.MinusEfficiency.MouseButton1Click:Connect(function()
+    -- upvalues: (copy) v_u_28, (copy) v_u_26, (copy) v_u_42
+    v_u_28:Play()
+    local v47 = v_u_26
+    local v48 = v_u_26.Value - 5
+    v47.Value = math.clamp(v48, 80, 120)
+    v_u_42()
+end)
+v_u_27.Buttons.PlusEfficiency.MouseButton1Click:Connect(function()
+    -- upvalues: (copy) v_u_28, (copy) v_u_26, (copy) v_u_42
+    v_u_28:Play()
+    local v49 = v_u_26
+    local v50 = v_u_26.Value + 5
+    v49.Value = math.clamp(v50, 80, 120)
+    v_u_42()
+end)
+v_u_42()
+local function v_u_68(p_u_51) -- name: checkRecipe
+    -- upvalues: (copy) v_u_14, (ref) v_u_30, (copy) v_u_15, (copy) v_u_16, (copy) v_u_17, (copy) v_u_18, (copy) v_u_6, (ref) v_u_31, (ref) v_u_23, (copy) v_u_20, (ref) v_u_29, (copy) v_u_19, (copy) v_u_7, (copy) v_u_4, (ref) v_u_24, (copy) v_u_5
+    if p_u_51.IOut1 ~= nil and not v_u_14:canHoldXMoreOf(p_u_51.IOut1[1], p_u_51.IOut1[2] * v_u_30) then
+        return
+    end
+    if p_u_51.IOut2 ~= nil and not v_u_15:canHoldXMoreOf(p_u_51.IOut2[1], p_u_51.IOut2[2] * v_u_30) then
+        return
+    end
+    if p_u_51.LOut1 ~= nil and not v_u_16:canHoldXMoreOf(p_u_51.LOut1[1], p_u_51.LOut1[2] * v_u_30) then
+        return
+    end
+    if p_u_51.LOut2 ~= nil and not v_u_17:canHoldXMoreOf(p_u_51.LOut2[1], p_u_51.LOut2[2] * v_u_30) then
+        return
+    end
+    if p_u_51.LOut3 ~= nil and not v_u_18:canHoldXMoreOf(p_u_51.LOut3[1], p_u_51.LOut3[2] * v_u_30) then
+        return
+    end
+    if not v_u_6:hasPower(p_u_51.Consumes * v_u_31 / 4) then
+        return
+    end
+    local v52 = {}
+    local v53 = {}
+    local v54 = {}
+    if p_u_51.Liquids ~= nil then
+        v_u_23 = #p_u_51.Liquids
+        for v55, v56 in v_u_20 do
+            for _, v57 in p_u_51.Liquids do
+                if v56:hasAmountOf(v57[1], v57[2] * v_u_29) and v54[v57[1]] == nil then
+                    v52[v55] = v57
+                    v54[v57[1]] = true
+                    v_u_23 = v_u_23 - 1
+                    break
+                end
+            end
+        end
+        if v_u_23 ~= 0 then
+            return
+        end
+    end
+    if p_u_51.Items ~= nil then
+        v_u_23 = #p_u_51.Items
+        for v58, v59 in v_u_19 do
+            for _, v60 in p_u_51.Items do
+                if v59:hasAmountOf(v60[1], v60[2] * v_u_29) and v54[v60[1]] == nil then
+                    v53[v58] = v60
+                    v54[v60[1]] = true
+                    v_u_23 = v_u_23 - 1
+                    break
+                end
+            end
+        end
+        if v_u_23 ~= 0 then
+            return
+        end
+    end
+    local v61 = 0
+    for v62, v63 in pairs(v52) do
+        v_u_20[v62]:removeItem(v63[2] * v_u_29)
+        if p_u_51[1] == "Steam" then
+            v61 = 1
+        end
+    end
+    for v64, v65 in pairs(v53) do
+        v_u_19[v64]:removeItem(v65[2] * v_u_29)
+    end
+    v_u_7.Value = ("%*,%*,%*,%*,%*"):format(p_u_51.Pollution, #p_u_51.Liquids, p_u_51.AnimationCode, v61, v_u_31)
+    v_u_4:nextTicks(p_u_51.Speed, function(p66)
+        -- upvalues: (ref) v_u_24, (copy) p_u_51, (ref) v_u_31, (ref) v_u_5, (ref) v_u_14, (ref) v_u_30, (ref) v_u_15, (ref) v_u_16, (ref) v_u_17, (ref) v_u_18
+        v_u_24 = v_u_24 + p_u_51.Consumes * v_u_31 / p_u_51.Speed
+        local v67 = v_u_5
+        v67.Value = v67.Value + p_u_51.Pollution
+        if p66 == 1 then
+            if p_u_51.IOut1 ~= nil then
+                v_u_14:addItemAmount(p_u_51.IOut1[1], p_u_51.IOut1[2] * v_u_30)
+            end
+            if p_u_51.IOut2 ~= nil then
+                v_u_15:addItemAmount(p_u_51.IOut2[1], p_u_51.IOut2[2] * v_u_30)
+            end
+            if p_u_51.LOut1 ~= nil then
+                v_u_16:addItemAmount(p_u_51.LOut1[1], p_u_51.LOut1[2] * v_u_30)
+            end
+            if p_u_51.LOut2 ~= nil then
+                v_u_17:addItemAmount(p_u_51.LOut2[1], p_u_51.LOut2[2] * v_u_30)
+            end
+            if p_u_51.LOut3 ~= nil then
+                v_u_18:addItemAmount(p_u_51.LOut3[1], p_u_51.LOut3[2] * v_u_30)
+            end
+        end
+    end)
+    return true
+end
+local v_u_69 = 1
+function v22.tick() -- name: tick
+    -- upvalues: (copy) v_u_6, (copy) v_u_27, (ref) v_u_24, (copy) v_u_4, (copy) v_u_7, (copy) v_u_68, (copy) v_u_21, (ref) v_u_69
+    if v_u_6:hasPower(1) then
+        v_u_27.Visible = true
+    else
+        v_u_27.Visible = false
+    end
+    if v_u_24 ~= 0 then
+        local v70 = v_u_6:getBuffer()
+        local v71 = v_u_24
+        local v72 = math.clamp(v70, 0, v71)
+        v_u_24 = v_u_24 - v72
+        v_u_6:removePower(v72)
+    end
+    if v_u_4:tickIsFree() then
+        if v_u_24 == 0 then
+            if v_u_68(v_u_21[v_u_69]) then
+                v_u_27.Body.status.Text = "RUNNING"
+            else
+                for v73, v74 in ipairs(v_u_21) do
+                    if v73 ~= v_u_69 and v_u_68(v74) then
+                        v_u_69 = v73
+                        v_u_27.Body.status.Text = "RUNNING"
+                        return
+                    end
+                end
+                v_u_7.Value = ""
+                v_u_27.Body.status.Text = "OFFLINE"
+            end
+        else
+            v_u_7.Value = ""
+            v_u_27.Body.status.Text = "LACK OF POWER"
+            v_u_27.Visible = false
+            return
+        end
+    else
+        return
+    end
+end
+return v22

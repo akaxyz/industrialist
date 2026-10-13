@@ -1,0 +1,76 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v_u_2 = require(v1.Modules.PowerUtilsV2).loadConnector(script.Parent.MainConnector)
+local v3 = {}
+local _ = script.Parent.State
+local v_u_4 = script.Parent.Hitbox
+local v_u_5 = script.Parent.Wheel
+local v_u_6 = script.Parent.Base.Spin
+local v_u_7 = OverlapParams.new()
+v_u_7.FilterDescendantsInstances = { script.Parent }
+v_u_7.FilterType = Enum.RaycastFilterType.Exclude
+function v3.localUpdate() -- name: localUpdate end
+local v_u_8 = 0
+function v3.localStart() -- name: localStart
+	-- upvalues: (copy) v_u_5, (copy) v_u_6
+	game:GetService("RunService").RenderStepped:Connect(function()
+		-- upvalues: (ref) v_u_5, (ref) v_u_6
+		if script.Parent ~= nil then
+			local v9 = script.Parent.State.Value
+			local v10 = tonumber(v9) or 0
+			for _, v11 in pairs(v_u_5.Treadmill:GetChildren()) do
+				v11.AssemblyLinearVelocity = v11.CFrame.LookVector * v10
+			end
+			local v12 = script.Parent.Wheel
+			local v13 = script.Parent.Wheel:GetPivot()
+			local v14 = CFrame.Angles
+			local v15 = -3.141592653589793 * v10 / 180
+			v12:PivotTo(v13 * v14(math.rad(v15), 0, 0))
+			if v_u_6.Playing == false then
+				v_u_6:Play()
+			end
+			v_u_6.Volume = v10 / 16 * 0.5
+			v_u_6.PlaybackSpeed = 0.8 + v10 / 16 * 0.1
+		end
+	end)
+end
+function v3.tick() -- name: tick
+	-- upvalues: (copy) v_u_4, (copy) v_u_7, (ref) v_u_8, (copy) v_u_2
+	local v16 = workspace:GetPartBoundsInBox(v_u_4.CFrame, v_u_4.Size, v_u_7)
+	local v17 = {}
+	for _, v18 in pairs(v16) do
+		if v18.Parent:FindFirstChild("Humanoid") then
+			local v19 = v18.Parent
+			if not table.find(v17, v19) then
+				local v20 = v_u_4.Position + v19.Humanoid.MoveDirection * 10
+				if (v20 - script.Parent.Front.Position).Magnitude < (v20 - script.Parent.Back.Position).Magnitude then
+					local v21 = v_u_8 + 0.013
+					v_u_8 = math.clamp(v21, -60, 60)
+				else
+					local v22 = v_u_8 - 0.013
+					v_u_8 = math.clamp(v22, -60, 60)
+				end
+			end
+		end
+	end
+	script.Parent.State.Value = v_u_8
+	local v23 = #v17
+	local v24 = math.clamp(v23, 1, 99) * 0.01
+	local v25 = #v17
+	local v26 = math.clamp(v25, 1, 99) * 1000
+	local v27 = v_u_2:getMax() - v_u_2:getBuffer()
+	local v28 = math.clamp(v26, 0, v27) / v26
+	if v_u_2:canHoldXMore(v26) and v_u_8 ~= 0 then
+		if v_u_8 < 0 then
+			local v29 = v_u_8 + v24 * v28
+			v_u_8 = math.clamp(v29, -500, 0)
+			v_u_2:addPower(v26 * v28)
+			return
+		end
+		if v_u_8 > 0 then
+			local v30 = v_u_8 - v24 * v28
+			v_u_8 = math.clamp(v30, 0, 500)
+			v_u_2:addPower(v26 * v28)
+		end
+	end
+end
+return v3

@@ -1,0 +1,78 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.G128MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.G64MainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.G32MainConnector)
+local v_u_6 = v2.loadConnector(script.Parent.G16MainConnector)
+local v_u_7 = v2.loadConnector(script.Parent.B128MainConnector)
+local v_u_8 = v2.loadConnector(script.Parent.B64MainConnector)
+local v_u_9 = v2.loadConnector(script.Parent.B32MainConnector)
+local v_u_10 = v2.loadConnector(script.Parent.B16MainConnector)
+local v_u_11 = v2.loadConnector(script.Parent.R128MainConnector)
+local v_u_12 = v2.loadConnector(script.Parent.R64MainConnector)
+local v_u_13 = v2.loadConnector(script.Parent.R32MainConnector)
+local v_u_14 = v2.loadConnector(script.Parent.R16MainConnector)
+local v_u_15 = script.Parent.Light
+local v_u_16 = 0
+local v_u_17 = 0
+local v_u_18 = 0
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (ref) v_u_16, (copy) v_u_4, (copy) v_u_5, (copy) v_u_6, (copy) v_u_11, (ref) v_u_17, (copy) v_u_12, (copy) v_u_13, (copy) v_u_14, (copy) v_u_7, (ref) v_u_18, (copy) v_u_8, (copy) v_u_9, (copy) v_u_10, (copy) v_u_15
+		if v_u_3:getBuffer() >= 1 then
+			v_u_16 = v_u_16 + 128
+		end
+		if v_u_4:getBuffer() >= 1 then
+			v_u_16 = v_u_16 + 64
+		end
+		if v_u_5:getBuffer() >= 1 then
+			v_u_16 = v_u_16 + 32
+		end
+		if v_u_6:getBuffer() >= 1 then
+			v_u_16 = v_u_16 + 16
+		end
+		if v_u_11:getBuffer() >= 1 then
+			v_u_17 = v_u_17 + 128
+		end
+		if v_u_12:getBuffer() >= 1 then
+			v_u_17 = v_u_17 + 64
+		end
+		if v_u_13:getBuffer() >= 1 then
+			v_u_17 = v_u_17 + 32
+		end
+		if v_u_14:getBuffer() >= 1 then
+			v_u_17 = v_u_17 + 16
+		end
+		if v_u_7:getBuffer() >= 1 then
+			v_u_18 = v_u_18 + 128
+		end
+		if v_u_8:getBuffer() >= 1 then
+			v_u_18 = v_u_18 + 64
+		end
+		if v_u_9:getBuffer() >= 1 then
+			v_u_18 = v_u_18 + 32
+		end
+		if v_u_10:getBuffer() >= 1 then
+			v_u_18 = v_u_18 + 16
+		end
+		v_u_15.Color = Color3.fromRGB(v_u_17, v_u_16, v_u_18)
+		v_u_17 = 0
+		v_u_16 = 0
+		v_u_18 = 0
+		v_u_3:removePower(v_u_3:getBuffer())
+		v_u_4:removePower(v_u_4:getBuffer())
+		v_u_5:removePower(v_u_5:getBuffer())
+		v_u_6:removePower(v_u_6:getBuffer())
+		v_u_7:removePower(v_u_7:getBuffer())
+		v_u_8:removePower(v_u_8:getBuffer())
+		v_u_9:removePower(v_u_9:getBuffer())
+		v_u_10:removePower(v_u_10:getBuffer())
+		v_u_11:removePower(v_u_11:getBuffer())
+		v_u_12:removePower(v_u_12:getBuffer())
+		v_u_13:removePower(v_u_13:getBuffer())
+		v_u_14:removePower(v_u_14:getBuffer())
+	end
+}

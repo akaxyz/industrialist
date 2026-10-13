@@ -1,0 +1,146 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_4 = require(v1.Modules.NextTicks).new()
+local v_u_5 = require(game.ReplicatedStorage.Modules.Achievements)
+local v_u_6 = v3.loadConnector(script.Parent.In1MainPipe)
+local v_u_7 = v3.loadConnector(script.Parent.In2MainPipe)
+local v_u_8 = v3.loadConnector(script.Parent.In3MainPipe)
+local v_u_9 = v3.loadConnector(script.Parent.In4MaInPipe)
+local v_u_10 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_11 = game.ReplicatedStorage.Statistics
+local v_u_12 = script.Parent.ModelData.Condition
+local v_u_13 = script.Parent.ModelData.LastStored
+local v_u_14 = script.Parent.State
+local v15 = {}
+local v_u_16 = script.Parent.Monitor.SurfaceGui.Display.Body
+local function v_u_23(p17) -- name: attempt
+	-- upvalues: (copy) v_u_12, (copy) v_u_6, (copy) v_u_16, (copy) v_u_7, (copy) v_u_9, (copy) v_u_8, (copy) v_u_5, (copy) v_u_11, (copy) v_u_13, (copy) v_u_14, (copy) v_u_4
+	if v_u_12.Value ~= 100 then
+		return false
+	end
+	if not v_u_6:hasAmountOf("Concrete Block", 140) then
+		v_u_16.Problem.Text = "Lack of Concrete Blocks"
+		return false
+	end
+	if not v_u_7:hasAmountOf("Lead Ingot", 70) then
+		v_u_16.Problem.Text = "Lack of Lead Ingots"
+		return false
+	end
+	local v18 = nil
+	local v19 = 0
+	if p17 == false then
+		if v_u_9:hasAmount(7000) then
+			v18 = v_u_9:getItem()
+			v_u_9:removeItem(7000)
+			v19 = 7000
+			if v_u_9:getBuffer() == 0 then
+				v_u_9:setItem(0, "")
+			end
+		end
+	elseif not v_u_9:isEmpty() then
+		v18 = v_u_9:getItem()
+		v19 = v_u_9:getBuffer()
+		v_u_9:setItem(0, "")
+	end
+	if v18 == nil then
+		if p17 == false then
+			if v_u_8:hasAmount(7000) then
+				v18 = v_u_8:getItem()
+				v19 = 7000
+				v_u_8:removeItem(7000)
+				if v_u_8:getBuffer() == 0 then
+					v_u_8:setItem(0, "")
+				end
+			end
+		elseif not v_u_8:isEmpty() then
+			v18 = v_u_8:getItem()
+			v19 = v_u_8:getBuffer()
+			v_u_8:setItem(0, "")
+		end
+	end
+	if v18 == nil then
+		v_u_16.Problem.Text = "Waiting for Waste"
+		return false
+	end
+	v_u_6:removeItem(140)
+	v_u_7:removeItem(70)
+	v_u_5.giveBadge(1568101223240208)
+	v_u_16.Problem.Text = "Operating.."
+	if v_u_11.StoredEver:FindFirstChild(v18) == nil then
+		local v20 = Instance.new("NumberValue", v_u_11.StoredEver)
+		v20.Name = v18
+		v20.Value = v19
+	else
+		local v21 = v_u_11.StoredEver[v18]
+		v21.Value = v21.Value + v19
+	end
+	v_u_13.Value = v18
+	v_u_14.Value = tick()
+	v_u_4:nextTicks(70, function(p22)
+		local _ = p22 == 1
+	end)
+end
+if game.Players.LocalPlayer == nil then
+	require(v1.Modules.Permissions)
+	local v_u_24 = false
+	v_u_16.StoreNow.MouseButton1Click:Connect(function(_)
+		-- upvalues: (ref) v_u_24, (copy) v_u_4, (copy) v_u_23, (copy) v_u_16
+		if not v_u_24 then
+			v_u_24 = true
+			if v_u_4:getTicksLeft() == 0 and not v_u_23(true) then
+				v_u_16.StoreNow.Text = "Unavailable"
+				task.wait(0.3)
+				v_u_16.StoreNow.Text = "Store waste now"
+			end
+			v_u_24 = false
+		end
+	end)
+end
+function v15.tick() -- name: tick
+	-- upvalues: (copy) v_u_10, (copy) v_u_12, (copy) v_u_16, (copy) v_u_13, (copy) v_u_11, (copy) v_u_4, (copy) v_u_23
+	if game.Lighting.ClockTime > 8 and (game.Lighting.ClockTime < 21 and script.Parent.Light2.SpotLight.Enabled == true) then
+		script.Parent.Light1.SpotLight.Enabled = false
+		script.Parent.Light2.SpotLight.Enabled = false
+		script.Parent.Light1.Material = Enum.Material.Glass
+		script.Parent.Light2.Material = Enum.Material.Glass
+	elseif script.Parent.Light2.SpotLight.Enabled == false and (game.Lighting.ClockTime > 21 or game.Lighting.ClockTime < 8) then
+		script.Parent.Light1.SpotLight.Enabled = true
+		script.Parent.Light2.SpotLight.Enabled = true
+		script.Parent.Light1.Material = Enum.Material.Neon
+		script.Parent.Light2.Material = Enum.Material.Neon
+	end
+	if v_u_10:getBuffer() >= 1000000 then
+		v_u_10:removePower(1000000)
+		if math.random(1, 2) == 1 then
+			local v25 = v_u_12
+			local v26 = v_u_12.Value + 1
+			v25.Value = math.clamp(v26, 0, 100)
+		end
+		if v_u_12.Value ~= 100 then
+			v_u_16.Problem.Text = "Improving condition"
+		end
+	else
+		v_u_16.Problem.Text = "No power"
+		local v27 = v_u_12
+		local v28 = v_u_12.Value - 1
+		v27.Value = math.clamp(v28, 0, 100)
+	end
+	if v_u_12.Value < 100 then
+		v_u_16.Condition.Text = ("Condition: %*%% (Not ready)"):format(v_u_12.Value)
+	else
+		v_u_16.Condition.Text = "Condition: 100% (Ready)"
+	end
+	if script.Parent.ModelData.LastStored.Value == "" then
+		v_u_16.LastStored.Text = "Last Stored: N/A"
+		v_u_16.StoredEver.Text = "Stored ever: N/A"
+	else
+		v_u_16.LastStored.Text = "Last Stored: " .. v_u_13.Value
+		v_u_16.StoredEver.Text = "Stored ever: " .. v_u_11.StoredEver[v_u_13.Value].Value
+	end
+	if not v_u_4:tickIsBusy() then
+		v_u_23(false)
+	end
+end
+return v15

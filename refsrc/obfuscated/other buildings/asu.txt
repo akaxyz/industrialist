@@ -1,0 +1,147 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local u4 = v2.loadConnector(script.Parent.MainConnector)
+local u5 = v3.loadConnector(script.Parent.OutArgonMainPipe)
+local u6 = v3.loadConnector(script.Parent.OutOxygenMainPipe)
+local u7 = v3.loadConnector(script.Parent.OutNitrogenMainPipe)
+local u8 = v3.loadConnector(script.Parent.OutResidueMainPipe)
+local u9 = v1.Pollution
+local u10 = script.Parent.State
+local u11 = script.Parent.Base
+local u12 = script.Parent.Base.Nitrogen
+local u13 = script.Parent.Base.Oxygen
+local u14 = script.Parent.Base.Argon
+return {
+    ["localUpdate"] = function() --[[ Name: localUpdate, Line 26 ]]
+        --[[
+        Upvalues:
+            [1] = u10
+            [2] = u12
+            [3] = u13
+            [4] = u14
+            [5] = u11
+        --]]
+        local v15 = u10.Value
+        if tonumber(v15) >= 100 then
+            u12.ParticleEmitter.Enabled = true
+            if u12.Venting.Playing == false then
+                u12.Venting:Play()
+            end
+        else
+            u12.ParticleEmitter.Enabled = false
+            if u12.Venting.Playing == true then
+                u12.Venting:Stop()
+            end
+        end
+        local v16 = u10.Value
+        if tonumber(v16) - 100 >= 10 then
+            u13.ParticleEmitter.Enabled = true
+            if u13.Venting.Playing == false then
+                u13.Venting:Play()
+            end
+            ::l9::
+            local v17 = u10.Value
+            if tonumber(v17) % 2 == 1 then
+                u14.ParticleEmitter.Enabled = true
+                if u14.Venting.Playing == false then
+                    u14.Venting:Play()
+                end
+            else
+                u14.ParticleEmitter.Enabled = false
+                if u14.Venting.Playing == true then
+                    u14.Venting:Stop()
+                end
+            end
+            if u10.Value ~= "111" then
+                local v18 = u10.Value
+                if tonumber(v18) > 0 then
+                    u11.CoolerShort.ParticleEmitter.Enabled = true
+                    ::l23::
+                    local v19 = u10.Value
+                    if tonumber(v19) >= 1 then
+                        u11.CoolerTall.ParticleEmitter.Enabled = true
+                        if u11.Sound.Playing == false then
+                            u11.Sound:Play()
+                            return
+                        end
+                    else
+                        u11.CoolerTall.ParticleEmitter.Enabled = false
+                        if u11.Sound.Playing == true then
+                            u11.Sound:Stop()
+                        end
+                    end
+                    return
+                end
+            end
+            u11.CoolerShort.ParticleEmitter.Enabled = false
+            goto l23
+        else
+            local v20 = u10.Value
+            if tonumber(v20) >= 10 then
+                local v21 = u10.Value
+                if tonumber(v21) < 100 then
+                    u13.ParticleEmitter.Enabled = true
+                    if u13.Venting.Playing == false then
+                        u13.Venting:Play()
+                    end
+                    goto l9
+                end
+            end
+            u13.ParticleEmitter.Enabled = false
+            if u13.Venting.Playing == true then
+                u13.Venting:Stop()
+            end
+            goto l9
+        end
+    end,
+    ["tick"] = function() --[[ Name: tick, Line 83 ]]
+        --[[
+        Upvalues:
+            [1] = u4
+            [2] = u10
+            [3] = u9
+            [4] = u8
+            [5] = u7
+            [6] = u6
+            [7] = u5
+        --]]
+        if u4:getBuffer() >= 20000000 then
+            local v22 = u9.Value / 500000 / 10
+            local v23 = math.clamp(v22, 1, 20)
+            if u8:canHoldXMoreOf("Residue", v23) then
+                local v24 = 0
+                if not u7:isFull() then
+                    v24 = v24 + 100
+                end
+                if not u6:isFull() then
+                    v24 = v24 + 10
+                end
+                if not u5:isFull() then
+                    v24 = v24 + 1
+                end
+                u10.Value = v24
+                u4:removePower(20000000)
+                u8:addItemAmount("Residue", v23)
+                u7:setUsedTemperature(-205)
+                local v25 = u7
+                local v26 = u7:getMax() - u7:getBuffer()
+                v25:addItemAmount("Liquid Nitrogen", (math.clamp(60, 0, v26)))
+                u6:setUsedTemperature(-190)
+                local v27 = u6
+                local v28 = u6:getMax() - u6:getBuffer()
+                v27:addItemAmount("Liquid Oxygen", (math.clamp(15, 0, v28)))
+                u5:setUsedTemperature(-195)
+                local v29 = u5
+                local v30 = u5:getMax() - u5:getBuffer()
+                v29:addItemAmount("Liquid Argon", (math.clamp(3, 0, v30)))
+            else
+                u10.Value = "0"
+            end
+        else
+            u10.Value = "0"
+            return
+        end
+    end
+}

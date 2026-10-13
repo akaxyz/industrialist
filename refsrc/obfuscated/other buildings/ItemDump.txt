@@ -1,0 +1,29 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.InMainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.In2MainPipe)
+local v_u_5 = game.ReplicatedStorage.Pollution
+require(v1.Modules.Achievements)
+local v_u_6 = require(v1.Modules.Waste)
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_6, (copy) v_u_4, (copy) v_u_5
+		local v7 = v_u_3:getBuffer()
+		local v8 = v_u_3:getItem()
+		if v7 ~= 0 then
+			v_u_3:removeItem(v7)
+			v_u_6.disposeOf(v8, v7)
+		end
+		local v9 = v_u_4:getBuffer()
+		local v10 = v_u_4:getItem()
+		if v9 ~= 0 then
+			local v11 = v_u_5
+			v11.Value = v11.Value + 3 * v9
+			v_u_4:removeItem(v9)
+			v_u_6.disposeOf(v10, v9)
+		end
+	end
+}

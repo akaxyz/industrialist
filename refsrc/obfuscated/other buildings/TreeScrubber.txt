@@ -1,0 +1,50 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.NextTicks).new()
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.MainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.ResidueMainPipe)
+local v_u_5 = script.Parent.State
+local v10 = {
+	["localUpdate"] = function() -- name: localUpdate
+		-- upvalues: (copy) v_u_5
+		if v_u_5.Value ~= "" then
+			for _, v6 in pairs(script.Parent.Leaves:GetChildren()) do
+				local v7 = Color3.fromRGB(65, 134, 92)
+				local v8 = Color3.fromRGB(80, 75, 58)
+				local v9 = v_u_5.Value
+				v6.Color = v7:Lerp(v8, (tonumber(v9)))
+			end
+		end
+	end
+}
+local v_u_11 = game.ReplicatedStorage.Pollution
+local v_u_12 = game.ReplicatedStorage.Pollution:GetAttribute("Max")
+function v10.tick() -- name: tick
+	-- upvalues: (copy) v_u_3, (copy) v_u_5, (copy) v_u_4, (copy) v_u_11, (copy) v_u_12
+	if v_u_3:hasAmountOf("Water", 18) then
+		if v_u_4:canHoldXMoreOf("Residue", 6) then
+			local v13 = v_u_11.Value / v_u_12
+			local v14 = math.exp(v13)
+			local v15 = math.clamp(v14, 0, 1) * 1.2 * 450
+			local v16 = v_u_11.Value / v_u_12
+			local v17 = math.exp(v16)
+			local v18 = math.clamp(v17, 0, 1) * 6 * 10
+			local v19 = math.round(v18) / 10
+			local v20 = v_u_11.Value / v_u_12
+			local v21 = math.clamp(v20, -1, 0)
+			v_u_5.Value = math.abs(v21)
+			v_u_3:removeItem(18)
+			v_u_4:addItemAmount("Residue", v19)
+			local v22 = v_u_11
+			v22.Value = v22.Value - v15
+		else
+			v_u_5.Value = ""
+		end
+	else
+		v_u_5.Value = ""
+		return
+	end
+end
+return v10

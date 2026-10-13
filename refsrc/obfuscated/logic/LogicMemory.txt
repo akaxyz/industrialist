@@ -1,0 +1,27 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.OutMainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.SupplyMainConnector)
+local v_u_6 = v2.loadConnector(script.Parent.ResetMainConnector)
+local v_u_7 = script.Parent.ModelData.signal
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_7, (copy) v_u_6, (copy) v_u_4, (copy) v_u_5
+		if v_u_3:hasPower(1) then
+			v_u_7.Value = true
+		end
+		if v_u_6:hasPower(1) then
+			v_u_6:removePower(v_u_6:getBuffer())
+			v_u_7.Value = false
+		end
+		if v_u_7.Value then
+			v_u_4:addPower(v_u_3:getBuffer() + v_u_5:getBuffer())
+			v_u_5:removePower(v_u_5:getBuffer())
+		end
+		v_u_3:removePower(v_u_3:getBuffer())
+	end
+}

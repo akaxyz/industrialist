@@ -1,0 +1,96 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.HotWaterInMainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.OutWaterMainPipe)
+local v_u_5 = v2.loadConnector(script.Parent.WaterInMainPipe)
+local v_u_6 = v2.loadConnector(script.Parent.OutSteamMainPipe)
+local v_u_7 = script.Parent.ModelData.Temp
+local v_u_8 = 0
+local v_u_9 = 0
+local v_u_10 = script.Parent.ModelData.SteamValve
+local v_u_11 = script.Parent.ModelData.WaterValve
+local v_u_12 = script.Parent.ModelData.MinTemp
+local v13 = {
+	["localUpdate"] = function() end
+}
+local v_u_14 = require(v1.Modules.Achievements)
+function v13.tick()
+	-- upvalues: (copy) v_u_3, (copy) v_u_5, (ref) v_u_8, (copy) v_u_4, (copy) v_u_11, (copy) v_u_7, (ref) v_u_9, (copy) v_u_6, (copy) v_u_10, (copy) v_u_12, (copy) v_u_14
+	local v15 = v_u_3:getTemp()
+	if v_u_5:getTemp() < v15 then
+		v_u_5:getTemp()
+	end
+	if v_u_3:getItem() == "Distilled Water" or v_u_3:getItem() == "Contaminated Water" then
+		v_u_8 = v_u_3:getBuffer()
+		local v16 = v_u_8
+		local v17 = v_u_4:getMax() - v_u_4:getBuffer()
+		v_u_8 = math.clamp(v16, 0, v17)
+		local v18 = v_u_8
+		local v19 = 400 * v_u_11.Value
+		v_u_8 = math.clamp(v18, 0, v19)
+		local v20 = (v15 - v_u_7.Value) * 2.2
+		if v20 < 0 then
+			v20 = v20 / 2.2
+		end
+		local v21 = v20 * 1000 * v_u_8 / 3000000
+		local v22 = v_u_7
+		v22.Value = v22.Value + v21
+		if v_u_5:getTemp() < v15 then
+			local v23 = v_u_4
+			local v24 = v15 - v20 - v_u_7.Value * 0.25
+			v23:setUsedTemperature((math.clamp(v24, 18, (1 / 0))))
+		else
+			local v25 = v_u_4
+			local v26 = v15 - v20 - v_u_7.Value * 0.25
+			v25:setUsedTemperature((math.clamp(v26, 18, (1 / 0))))
+		end
+		v_u_4:addItemAmount(v_u_3:getItem(), v_u_8)
+		v_u_3:removeItem(v_u_8)
+		script.Parent.HotWaterFlow.Value = v_u_8
+	else
+		v_u_8 = 0
+		if v_u_7.Value > 18 then
+			v_u_7.Value = v_u_7.Value - 0.75
+		end
+		script.Parent.HotWaterFlow.Value = 0
+	end
+	if v_u_5:getItem() == "Distilled Water" then
+		v_u_9 = v_u_5:getBuffer() * 30
+		local v27 = v_u_9
+		local v28 = 24000 - v_u_6:getBuffer()
+		v_u_9 = math.clamp(v27, 0, v28)
+		local v29 = v_u_9
+		local v30 = 12000 * v_u_10.Value
+		v_u_9 = math.clamp(v29, 0, v30)
+		local v31 = v_u_9
+		local v32 = 12000 * v_u_11.Value
+		v_u_9 = math.clamp(v31, 0, v32)
+		local v33 = v_u_9
+		local v34 = v_u_8 / 400 * 12000
+		v_u_9 = math.clamp(v33, 0, v34)
+		if v_u_7.Value > v_u_12.Value then
+			local v35 = v_u_5:getTemp()
+			local v36 = (v_u_7.Value - v35) * 1000 * (v_u_9 / 30)
+			if v36 < v_u_7.Value * 3000000 then
+				v_u_5:removeItem(v_u_9 / 30)
+				v_u_6:setUsedTemperature(v_u_7.Value)
+				if v_u_7.Value >= 500 then
+					v_u_14.giveBadge(4213326512100053)
+				end
+				v_u_6:addItem(v_u_9, "High Pressure Steam")
+				local v37 = v_u_7
+				v37.Value = v37.Value - v36 / 3000000
+				script.Parent.SteamProduction.Value = v_u_9
+				script.Parent.Light.Color = Color3.fromRGB(95, 255, 26)
+			else
+				script.Parent.SteamProduction.Value = 0
+				script.Parent.Light.Color = Color3.fromRGB(255, 89, 89)
+			end
+		end
+	else
+		script.Parent.SteamProduction.Value = 0
+	end
+end
+return v13

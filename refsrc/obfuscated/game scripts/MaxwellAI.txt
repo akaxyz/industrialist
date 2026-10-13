@@ -1,0 +1,394 @@
+local v1 = {}
+local v_u_2 = game.ReplicatedStorage.Events.DisplayAnnouncementEvent
+local v_u_3 = game.ReplicatedStorage.ScreenShake
+local v_u_4 = tick()
+script.Parent.Touched:Connect(function(p5)
+	-- upvalues: (ref) v_u_4, (copy) v_u_2
+	local v6 = p5.Parent:FindFirstChildWhichIsA("Humanoid")
+	if v6 then
+		local v7 = v6.Parent.HumanoidRootPart
+		local v8 = game.Players:GetPlayerFromCharacter(p5.Parent)
+		if v_u_4 < tick() then
+			v_u_4 = tick() + 2
+			local v9 = math.random(1, 4)
+			if v9 == 1 then
+				v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Get off me!</font>")
+			elseif v9 == 2 then
+				v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Yeet!</font>")
+			elseif v9 == 3 then
+				v_u_2:FireAllClients((("[MAXWELL] <font color=\"#FFFFFF\">%*</font>"):format((("Goodbye %*!"):format(v8.Name)))))
+			end
+		end
+		local v10 = (script.Parent.Position - v7.Position).Unit
+		game.ReplicatedStorage.ApplyImpulse:FireClient(v8, -v10 * 1000)
+	end
+end)
+local v_u_11 = game:GetService("TweenService")
+script.Parent.Transparency = 1
+local v_u_12 = game:GetService("Debris")
+local function v_u_18(p13, p14) -- name: shootLaser
+	-- upvalues: (copy) v_u_12, (copy) v_u_11
+	local v15 = Instance.new("Part", workspace)
+	v15.Name = "Laser"
+	v_u_12:AddItem(v15, 8)
+	v15.Material = "Neon"
+	v15.Color = Color3.fromRGB(255, 0, 0)
+	v15.Anchored = true
+	v15.CanCollide = false
+	local v16 = (p14 + p13) / 2
+	local v17 = (p13 - p14).Magnitude
+	v15.Size = Vector3.new(1, 1, v17)
+	v15.CFrame = CFrame.lookAt(v16, p14)
+	v_u_11:Create(v15, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Transparency"] = 1,
+		["Color"] = Color3.fromRGB(172, 0, 3)
+	}):Play()
+end
+local v_u_19 = false
+local v_u_20 = false
+local function v_u_27(p21, p_u_22) -- name: explosion
+	-- upvalues: (copy) v_u_12, (copy) v_u_3
+	local v23 = Instance.new("Explosion")
+	v23.Position = p21
+	v23.BlastPressure = p_u_22 * 1.2
+	v23.TimeScale = 0.5
+	v23.BlastRadius = p_u_22
+	v23.DestroyJointRadiusPercent = 0
+	v23.ExplosionType = Enum.ExplosionType.NoCraters
+	v23.Parent = workspace
+	v_u_12:AddItem(v23, 10)
+	v_u_3:FireAllClients(1, p_u_22, true, { p21 }, 500)
+	task.wait()
+	pcall(function()
+		-- upvalues: (copy) p_u_22
+		for _, v24 in pairs(game.Players:GetPlayers()) do
+			if v24.Character == nil then
+				return
+			end
+			local v25 = (v24.Character.HumanoidRootPart.Position - script.Parent.Base.Position).Magnitude
+			local v26 = ((script.Parent.Base.Position - v24.Character.HumanoidRootPart.Position).Unit + Vector3.new(0, 0.1, 0)).Unit
+			if v25 < 80 then
+				game.ReplicatedStorage.ApplyImpulse:FireClient(v24, -v26 * p_u_22 * 50000 / v25)
+			end
+		end
+	end)
+end
+local function v_u_31(p28) -- name: laserEyes
+	-- upvalues: (copy) v_u_11, (copy) v_u_18, (copy) v_u_27
+	local v29 = p28.Base.Position
+	v_u_11:Create(script.Parent, TweenInfo.new(0.5), {
+		["CFrame"] = CFrame.lookAt(script.Parent.Position, v29)
+	}):Play()
+	task.wait(0.5)
+	v_u_18(script.Parent.Eye1.WorldPosition, v29)
+	v_u_18(script.Parent.Eye2.WorldPosition, v29)
+	script.Parent.Laser:Play()
+	v_u_27(v29 + Vector3.new(0, 5, 0), 40)
+	for _, v30 in pairs(p28:GetDescendants()) do
+		if v30:IsA("BasePart") then
+			if v30:IsA("UnionOperation") then
+				v30.UsePartColor = true
+			end
+			v30.Color = Color3.fromRGB()
+			v30.Material = "Slate"
+		end
+	end
+end
+local function v_u_33() -- name: dissapear
+	-- upvalues: (copy) v_u_11
+	v_u_11:Create(script.Parent, TweenInfo.new(1), {
+		["Position"] = script.Parent.Position - Vector3.new(0, 225, 0),
+		["Transparency"] = 3
+	}):Play()
+	v_u_11:Create(game.Lighting.FinalBoss, TweenInfo.new(1), {
+		["Saturation"] = 0,
+		["Brightness"] = 0,
+		["Contrast"] = 0,
+		["TintColor"] = Color3.fromRGB(255, 255, 255)
+	}):Play()
+	v_u_11:Create(script.Parent.Halo, TweenInfo.new(1), {
+		["Volume"] = 0
+	}):Play()
+	local v32 = v_u_11:Create(game.Lighting.BossBlur, TweenInfo.new(1), {
+		["Size"] = 24
+	})
+	v32:Play()
+	v32.Completed:Connect(function()
+		-- upvalues: (ref) v_u_11
+		workspace.Ringing:Play()
+		v_u_11:Create(game.Lighting.BossBlur, TweenInfo.new(workspace.Ringing.TimeLength), {
+			["Size"] = 0
+		}):Play()
+	end)
+end
+local function v_u_37() -- name: getModels
+	local v34 = {}
+	for _, v35 in pairs(workspace.Plots:GetChildren()) do
+		if v35.Name ~= "PipeConnectionDecoration" and (v35.Name ~= "Pipes" and v35.Name ~= "Decoration") then
+			for _, v36 in pairs(v35:GetChildren()) do
+				table.insert(v34, v36)
+			end
+		end
+	end
+	return v34
+end
+local function v_u_43(p38) -- name: smashIntoThis
+	-- upvalues: (copy) v_u_11, (copy) v_u_2, (copy) v_u_3, (copy) v_u_27
+	local v39 = p38.Base.Position
+	v_u_11:Create(script.Parent, TweenInfo.new(4), {
+		["Position"] = v39 + Vector3.new(0, 50, 0)
+	}):Play()
+	task.wait(4.5)
+	if math.random(1, 5) == 1 then
+		v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Here goes nothing!</font>")
+	end
+	v_u_3:FireAllClients(1, 100, true, v39, 1000)
+	v_u_11:Create(script.Parent, TweenInfo.new(0.1), {
+		["Position"] = v39 + Vector3.new(0, 5, 0)
+	}):Play()
+	task.wait(0.1)
+	local v40 = OverlapParams.new()
+	v40.FilterType = Enum.RaycastFilterType.Include
+	v40.FilterDescendantsInstances = { workspace.Plots }
+	local v41 = workspace:GetPartBoundsInRadius(v39, 30, v40)
+	for _, v42 in pairs(v41) do
+		if v42:IsA("BasePart") then
+			if v42:IsA("UnionOperation") then
+				v42.UsePartColor = true
+			end
+			v42.Color = Color3.fromRGB()
+			v42.Material = "Slate"
+		end
+	end
+	v_u_27(v39, 100)
+	task.wait(0.6)
+	v_u_11:Create(script.Parent, TweenInfo.new(2), {
+		["Position"] = v39 + Vector3.new(0, 50, 0)
+	}):Play()
+	task.wait(2)
+end
+local function v_u_55(p44) -- name: chargeIntoThis
+	-- upvalues: (copy) v_u_11
+	v_u_11:Create(script.Parent, TweenInfo.new(3), {
+		["Position"] = script.Parent.Position + Vector3.new(0, 50, 0)
+	}):Play()
+	task.wait(3)
+	local v45 = p44.PrimaryPart
+	v_u_11:Create(script.Parent, TweenInfo.new(10), {
+		["Position"] = Vector3.new(-439.001, 15.653, 89.811)
+	}):Play()
+	task.wait(14)
+	game.ReplicatedStorage.ScreenShake:FireAllClients(0.9, 200)
+	local v46 = v_u_11
+	local v47 = script.Parent
+	local v48 = TweenInfo.new(0.8)
+	local v49 = {}
+	local v50 = v45.Position.X
+	local v51 = v45.Position.Z
+	v49.Position = Vector3.new(v50, 15, v51)
+	v46:Create(v47, v48, v49):Play()
+	for _ = 1, 24 do
+		task.wait(0.03333333333333333)
+		local v52 = OverlapParams.new()
+		v52.FilterType = Enum.RaycastFilterType.Include
+		v52.FilterDescendantsInstances = { workspace.Plots }
+		local v53 = workspace:GetPartBoundsInRadius(script.Parent.Position, 30, v52)
+		for _, v54 in pairs(v53) do
+			if v54:IsA("BasePart") then
+				if v54:IsA("UnionOperation") then
+					v54.UsePartColor = true
+				end
+				v54.Color = Color3.fromRGB()
+				v54.Material = "Slate"
+			end
+		end
+	end
+	task.wait(0.6)
+	v_u_11:Create(script.Parent, TweenInfo.new(2), {
+		["Position"] = v45.Position + Vector3.new(0, 50, 0)
+	}):Play()
+	task.wait(3)
+end
+local v_u_56 = require(game.ReplicatedStorage.Modules.Achievements)
+function v1.start() -- name: start
+	-- upvalues: (copy) v_u_56, (ref) v_u_19, (ref) v_u_20, (copy) v_u_11, (copy) v_u_2, (copy) v_u_37, (copy) v_u_31, (copy) v_u_43, (copy) v_u_55, (copy) v_u_33
+	for _, v57 in pairs(game.Players:GetPlayers()) do
+		v_u_56.giveBadge(2151338957, v57.UserId)
+	end
+	script.Parent.Position = Vector3.new(-422, -87.9, 90)
+	v_u_19 = true
+	v_u_20 = true
+	spawn(function()
+		-- upvalues: (ref) v_u_19, (ref) v_u_20
+		while v_u_19 and task.wait() do
+			if v_u_20 then
+				local v58 = script.Parent
+				local v59 = script.Parent.Orientation.Y + 1
+				v58.Orientation = Vector3.new(0, v59, 0)
+			end
+			for _, v60 in pairs(workspace.Music:GetChildren()) do
+				v60:Stop()
+			end
+		end
+	end)
+	script.Parent.Halo:Play()
+	script.Parent.Halo.Volume = 0
+	script.Parent.Transparency = 0
+	v_u_11:Create(script.Parent.Halo, TweenInfo.new(6), {
+		["Volume"] = 2
+	}):Play()
+	local v61 = v_u_11:Create(script.Parent, TweenInfo.new(6), {
+		["Position"] = script.Parent.Position + Vector3.new(0, 125, 0)
+	})
+	v61:Play()
+	local v62 = math.random(1, 2)
+	if v62 == 1 then
+		local v63, v64 = Color3.fromRGB(255, 0, 0)
+		local v65 = (" <font color=\"#%*\">You feel an uneasy presence...</font>"):format(typeof(v63) == "Color3" and (v63:ToHex() or "FFFFFF") or "FFFFFF")
+		if v64 then
+			v_u_2:FireClient(v64, v65)
+		else
+			v_u_2:FireAllClients(v65)
+		end
+		v_u_11:Create(game.Lighting.FinalBoss, TweenInfo.new(6), {
+			["Saturation"] = 1.5,
+			["Brightness"] = 3,
+			["Contrast"] = 7,
+			["TintColor"] = Color3.fromRGB(68, 13, 13)
+		}):Play()
+	elseif v62 == 4 then
+		local v66, v67 = Color3.fromRGB(255, 0, 0)
+		local v68 = (" <font color=\"#%*\">Impending doom approaches...</font>"):format(typeof(v66) == "Color3" and (v66:ToHex() or "FFFFFF") or "FFFFFF")
+		if v67 then
+			v_u_2:FireClient(v67, v68)
+		else
+			v_u_2:FireAllClients(v68)
+		end
+		v_u_11:Create(game.Lighting.FinalBoss, TweenInfo.new(6), {
+			["Saturation"] = -2,
+			["Brightness"] = 3,
+			["Contrast"] = 7,
+			["TintColor"] = Color3.fromRGB(68, 48, 48)
+		}):Play()
+	elseif v62 == 2 then
+		local v69, v70 = Color3.fromRGB(255, 0, 0)
+		local v71 = (" <font color=\"#%*\">You feel an evil presence watching you...</font>"):format(typeof(v69) == "Color3" and (v69:ToHex() or "FFFFFF") or "FFFFFF")
+		if v70 then
+			v_u_2:FireClient(v70, v71)
+		else
+			v_u_2:FireAllClients(v71)
+		end
+		v_u_11:Create(game.Lighting.FinalBoss, TweenInfo.new(6), {
+			["Saturation"] = -1,
+			["Brightness"] = 2,
+			["Contrast"] = 8,
+			["TintColor"] = Color3.fromRGB(255, 255, 255)
+		}):Play()
+	end
+	v61.Completed:Wait()
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Nice world...</font>")
+	task.wait(3)
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Lets begin!</font>")
+	task.wait(3)
+	for v72 = 1, 6 do
+		task.wait(0.8)
+		local v73 = v_u_37()
+		if #v73 ~= 0 then
+			math.randomseed(tick())
+			local v74 = v73[math.random(1, #v73)]
+			v_u_20 = false
+			local v75 = math.random(1, v72 * 8 + 12)
+			if v75 == 1 then
+				v_u_2:FireAllClients((("[MAXWELL] <font color=\"#FFFFFF\">%*</font>"):format((("Goodbye %*!"):format((v74:GetAttribute("Name")))))))
+			elseif v75 == 2 then
+				v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">BOOM!</font>")
+			elseif v75 == 3 then
+				v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Laser eyes!</font>")
+			end
+			v_u_31(v74)
+		end
+	end
+	task.wait(1)
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">Hm. This is rather inefficient...</font>")
+	v_u_19 = false
+	task.wait(0.1)
+	v_u_19 = true
+	v_u_20 = true
+	spawn(function()
+		-- upvalues: (ref) v_u_19, (ref) v_u_20
+		while v_u_19 and task.wait() do
+			if v_u_20 then
+				local v76 = script.Parent
+				local v77 = script.Parent.Orientation.Y + 1
+				v76.Orientation = Vector3.new(0, v77, 0)
+			end
+			for _, v78 in pairs(workspace.Music:GetChildren()) do
+				v78:Stop()
+			end
+		end
+	end)
+	local v79 = v_u_11:Create(script.Parent, TweenInfo.new(6), {
+		["Position"] = script.Parent.Position + Vector3.new(0, 50, 0)
+	})
+	v79:Play()
+	task.wait(2)
+	v_u_2:FireAllClients("[SERVER] <font color=\"#FFFFFF\">Weird world activity detected. Investigation procedure launched.</font>")
+	task.wait(2)
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">That\'s not good.</font>")
+	v79.Completed:Wait()
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">How about the good old fashioned way?</font>")
+	for v80 = 1, 3 do
+		task.wait(1)
+		if v80 == 2 then
+			v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">This will be a good one!</font>")
+		end
+		local v81 = v_u_37()
+		if #v81 ~= 0 then
+			math.randomseed(tick())
+			v_u_43(v81[math.random(1, #v81)])
+		end
+	end
+	v_u_2:FireAllClients("[SERVER] <font color=\"#FFFFFF\">Auto-ban procedure initiated.</font>")
+	task.wait(1)
+	v_u_2:FireAllClients("[SERVER] <font color=\"#FFFFFF\">Attempting to ban MAXWELL...</font>")
+	task.wait(1)
+	v_u_2:FireAllClients("[MAXWELL] <font color=\"#FFFFFF\">I won\'t go down without a fight!</font>")
+	task.wait(1)
+	local v82, v83 = Color3.fromRGB(255, 0, 0)
+	local v84 = ("[SERVER] <font color=\"#%*\">Unknown Error.</font>"):format(typeof(v82) == "Color3" and (v82:ToHex() or "FFFFFF") or "FFFFFF")
+	if v83 then
+		v_u_2:FireClient(v83, v84)
+	else
+		v_u_2:FireAllClients(v84)
+	end
+	local v85 = v_u_37()
+	if #v85 ~= 0 then
+		math.randomseed(tick())
+		v_u_55(v85[math.random(1, #v85)])
+	end
+	task.wait(3)
+	v_u_11:Create(script.Parent, TweenInfo.new(10), {
+		["Position"] = Vector3.new(-422, 100, 90)
+	}):Play()
+	task.wait(11)
+	for _ = 1, 6 do
+		task.wait(2)
+		local v86 = v_u_37()
+		if #v86 ~= 0 then
+			math.randomseed(tick())
+			local v87 = v86[math.random(1, #v86)]
+			v_u_20 = false
+			v_u_31(v87)
+		end
+	end
+	local v88 = v_u_11:Create(script.Parent, TweenInfo.new(12), {
+		["Position"] = Vector3.new(-422, 200, 90)
+	})
+	v88:Play()
+	v88.Completed:Connect(function()
+		-- upvalues: (ref) v_u_19, (ref) v_u_33
+		v_u_19 = false
+		v_u_33()
+	end)
+end
+return v1

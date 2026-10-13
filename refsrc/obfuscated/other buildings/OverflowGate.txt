@@ -1,0 +1,33 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PipeUtilsV2)
+local v_u_3 = v2.loadConnector(script.Parent.Pipe, true)
+local v_u_4 = v2.loadConnector(script.Parent.MainPipe, true)
+local v_u_5 = v2.loadConnector(script.Parent.MainPipeOut, true)
+return {
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_5, (copy) v_u_4
+		if v_u_3:getItem() == "" then
+			return
+		else
+			local v6 = v_u_3:getBuffer()
+			if v6 == 0 then
+				return
+			elseif v_u_5:isFull() then
+				local v7 = v_u_4:getMax() - v_u_4:getBuffer()
+				local v8 = math.clamp(v6, 0, v7)
+				v_u_4:setUsedTemperature(v_u_3:getTemp())
+				v_u_4:addItemAmount(v_u_3:getItem(), v8)
+				v_u_3:removeItem(v8)
+			else
+				local v9 = v_u_5:getMax() - v_u_5:getBuffer()
+				local v10 = math.clamp(v6, 0, v9)
+				v_u_5:setUsedTemperature(v_u_3:getTemp())
+				v_u_5:addItemAmount(v_u_3:getItem(), v10)
+				v_u_3:removeItem(v10)
+				if v_u_3:getBuffer() == 0 then
+					v_u_3:setItem(0, "")
+				end
+			end
+		end
+	end
+}

@@ -1,0 +1,68 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PipeUtilsV2)
+local v_u_3 = v2.loadConnector(script.Parent.InMainPipe, true)
+local v_u_4 = v2.loadConnector(script.Parent.BypassMainPipe, true)
+local v_u_5 = v2.loadConnector(script.Parent.StraightMainPipe, true)
+local v_u_6 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_7 = script.Parent.ModelData.Valve
+local v_u_8 = script.Parent.ModelData.Overflow
+script.Parent.Control.Control.Triggered:Connect(function(p9)
+	-- upvalues: (copy) v_u_6
+	v_u_6:openMenu(p9)
+end)
+v_u_6:addSetting(1, v_u_7, "Amount of items to bypass in %", 0, 100)
+v_u_6:addSetting(2, v_u_8, "Bypass flow if it cannot distribute")
+script.Parent.Control.Control.Enabled = true
+return {
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_7, (copy) v_u_4, (copy) v_u_5, (copy) v_u_8
+		if v_u_3:getItem() == "" then
+			return
+		else
+			local v10 = v_u_3:getBuffer()
+			if (v10 * v_u_7.Value / 100 > v_u_4:getMax() - v_u_4:getBuffer() or v10 - v10 * v_u_7.Value / 100 > v_u_5:getMax() - v_u_5:getBuffer()) and v_u_8.Value then
+				local v11 = 1 - v_u_7.Value / 100
+				local v12 = v_u_4:isFull() and 1 or v11
+				local v13 = v_u_5:getMax() - v_u_5:getBuffer()
+				local v14 = v10 * v12
+				local v15 = math.clamp(v13, 0, v14)
+				local v16 = v10 - v15
+				local v17 = v_u_4:getMax() - v_u_4:getBuffer()
+				local v18 = math.clamp(v16, 0, v17)
+				local v19 = v10 - v15
+				local v20 = math.clamp(v18, 0, v19)
+				v_u_4:setUsedTemperature(v_u_3:getTemp())
+				v_u_5:setUsedTemperature(v_u_3:getTemp())
+				local v21 = v_u_3:getItem()
+				v_u_3:removeItem(v15 + v20)
+				v_u_4:addItemAmount(v21, v20)
+				v_u_5:addItemAmount(v21, v15)
+				return
+			else
+				if v_u_4:getMax() - v_u_4:getBuffer() <= v_u_5:getMax() - v_u_5:getBuffer() then
+					local v22 = v_u_4:getMax() - v_u_4:getBuffer()
+					v10 = math.clamp(v10, 0, v22)
+				end
+				if v_u_5:getMax() - v_u_5:getBuffer() == v_u_4:getMax() - v_u_4:getBuffer() then
+					local v23 = v_u_5:getMax() - v_u_5:getBuffer()
+					v10 = math.clamp(v10, 0, v23)
+				end
+				local v24 = v_u_3:getItem()
+				if v_u_4:canHoldXMoreOf(v24, v10 * v_u_7.Value / 100) then
+					if v_u_5:canHoldXMoreOf(v24, v10 - v10 * v_u_7.Value / 100) then
+						v_u_4:setUsedTemperature(v_u_3:getTemp())
+						v_u_5:setUsedTemperature(v_u_3:getTemp())
+						v_u_3:removeItem(v10)
+						v_u_4:addItemAmount(v24, v10 * v_u_7.Value / 100)
+						v_u_5:addItemAmount(v24, v10 - v10 * v_u_7.Value / 100)
+						if v_u_3:getBuffer() == 0 then
+							v_u_3:setItem(0, "")
+						end
+					end
+				else
+					return
+				end
+			end
+		end
+	end
+}

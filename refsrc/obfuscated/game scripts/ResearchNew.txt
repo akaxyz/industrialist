@@ -1,0 +1,365 @@
+local v1 = game:GetService("Players")
+local v_u_2 = game:GetService("ReplicatedStorage")
+local v3 = v1.LocalPlayer.PlayerScripts:WaitForChild("uiScripts"):WaitForChild("Modules")
+local v_u_4 = require(script.CanvasHandler)
+local v_u_5 = require(script.ResearchTree)
+local v_u_6 = require(v3.TextFormatAlgo)
+local v_u_7 = require(v3.TierColors)
+local v_u_8 = require(game.ReplicatedStorage.Modules.Enums.Items)
+local v9 = v_u_4:CreateGroup("Production", UDim2.new(1.87, 0, 1, 0))
+local v10 = v_u_4:CreateGroup("Energy", UDim2.new(1.87, 0, 1.6, 0))
+local v11 = v_u_4:CreateGroup("Utility", UDim2.new(1.87, 0, 1, 0))
+local v_u_12 = v_u_2:WaitForChild("Statistics"):WaitForChild("SoldEver")
+local v_u_13 = script.Parent.Frame.Container.Pages
+local v_u_14 = script.Parent:WaitForChild("SideFrame")
+local v_u_15 = v_u_14:WaitForChild("Frame"):WaitForChild("Container"):WaitForChild("ScrollHolder"):WaitForChild("UnlockedItems")
+local v16 = script.Parent:WaitForChild("Frame"):WaitForChild("Container"):WaitForChild("Explorer")
+local v_u_17 = v_u_14.Frame.Container.ScrollHolder:WaitForChild("Description")
+local v_u_18 = v_u_14.Frame.Container.ScrollHolder:WaitForChild("RequiredItems")
+local v_u_19 = v16:WaitForChild("Requirements")
+local v_u_20 = v16:WaitForChild("Research")
+local v_u_21 = v_u_19:WaitForChild("Additional")
+local v_u_22 = v_u_19:WaitForChild("Price")
+local v_u_23 = v_u_2.Research.Unlock
+local v_u_24 = ""
+v_u_19.Visible = false
+v_u_20.Visible = false
+local function v_u_29(p25) -- name: toggleSideFrame
+	-- upvalues: (copy) v_u_14
+	if p25 ~= v_u_14.Frame.Visible then
+		v_u_14.Frame.Visible = p25
+		v_u_14.CloseSidebar.Visible = p25
+		v_u_14.CategorySelection.Visible = p25
+		local v26 = p25 and -0.102 or 0.102
+		for _, v27 in v_u_14.Parent:GetChildren() do
+			if v27:IsA("Folder") then
+				for _, v28 in v27:GetChildren() do
+					v28.Position = UDim2.new(v28.Position.X.Scale + v26, 0, v28.Position.Y.Scale, 0)
+				end
+			elseif v27:IsA("GuiObject") then
+				v27.Position = UDim2.new(v27.Position.X.Scale + v26, 0, v27.Position.Y.Scale, 0)
+			end
+		end
+	end
+end
+v_u_14.CloseSidebar.Activated:Connect(function()
+	-- upvalues: (copy) v_u_29
+	v_u_29(false)
+end)
+v_u_20.Activated:Connect(function(_, _)
+	-- upvalues: (copy) v_u_20, (copy) v_u_5, (ref) v_u_24, (copy) v_u_29, (copy) v_u_23, (copy) v_u_21, (copy) v_u_19
+	if v_u_20.BackgroundColor3 == Color3.fromRGB(25, 255, 255) then
+		v_u_5.update(v_u_24)
+		v_u_29(false)
+		script.Event:Fire(v_u_24)
+		v_u_23:FireServer(v_u_24)
+		v_u_20.Visible = false
+		v_u_21.TextColor3 = Color3.fromRGB(25, 255, 25)
+		v_u_21.Text = "Already unlocked!"
+		v_u_21.Parent = v_u_19
+	end
+end)
+local v_u_30 = v_u_14.CategorySelection.ButtonsFrame
+local v_u_31 = v_u_24
+local function v_u_34(p32) -- name: updateButton
+	-- upvalues: (copy) v_u_30, (copy) v_u_18, (copy) v_u_15, (copy) v_u_17, (copy) v_u_14
+	if p32:GetAttribute("Disabled") then
+		return
+	else
+		for _, v33 in v_u_30:GetChildren() do
+			if v33:IsA("GuiButton") and v33.BackgroundColor3 ~= Color3.fromRGB(49, 49, 49) then
+				v33.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			end
+		end
+		p32.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+		v_u_18.Visible = false
+		v_u_15.Visible = false
+		v_u_17.Visible = false
+		if p32.Name == "RequiredItems" then
+			v_u_14.Frame.Container.TopText.Text = "Requirements:"
+			v_u_18.Visible = true
+			return
+		elseif p32.Name == "Description" then
+			v_u_14.Frame.Container.TopText.Text = "Description:"
+			v_u_17.Visible = true
+		elseif p32.Name == "UnlockedItems" then
+			v_u_14.Frame.Container.TopText.Text = "Unlocks:"
+			v_u_15.Visible = true
+		end
+	end
+end
+for _, v_u_35 in v_u_30:GetChildren() do
+	if v_u_35:IsA("ImageButton") then
+		v_u_35.Activated:Connect(function()
+			-- upvalues: (copy) v_u_34, (copy) v_u_35
+			v_u_34(v_u_35)
+		end)
+	end
+end
+local function v_u_39(p36) -- name: getModel
+	-- upvalues: (copy) v_u_2
+	for _, v37 in v_u_2.PlacementSystem.Buildings:GetChildren() do
+		local v38 = v37:FindFirstChild(p36)
+		if v38 ~= nil then
+			return v38:Clone()
+		end
+	end
+	return nil
+end
+local function v_u_52(p40, p41) -- name: zoomToExtents
+	local v42 = p41:IsA("Model")
+	local v43 = v42 and p41:GetModelCFrame() or p41.CFrame
+	local v44 = v42 and p41:GetExtentsSize() or p41.Size
+	local v45 = p40.FieldOfView
+	local v46 = v44.Magnitude / 2
+	local v47 = v45 / 2
+	local v48 = math.rad(v47)
+	local v49 = v46 / math.tan(v48)
+	local v50 = p40.CFrame - p40.CFrame.p
+	local v51 = v43.p
+	p40.CFrame = v50 + v51 + -v50.LookVector * v49
+	p40.Focus = v50 + v51
+end
+local function v_u_59(p53, p54, p55, p56, p57) -- name: liveTrackerUpdate
+	local v58 = math.floor(p56)
+	if p55 <= v58 then
+		p53.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+		if p54 == "RP" then
+			v58 = p55
+		else
+			p57:Disconnect()
+			v58 = p55
+		end
+	end
+	if p54 == "RP" then
+		p53.ItemName.Text = "Research Points"
+	else
+		p53.ItemName.Text = ("Sell %*"):format(p54)
+	end
+	p53.BottomText.Text = ("%*/%*"):format(v58, p55)
+end
+local v_u_60 = {}
+local function v_u_69(p_u_61, p_u_62) -- name: createLiveTracker
+	-- upvalues: (copy) v_u_8, (copy) v_u_12, (copy) v_u_2, (copy) v_u_60, (copy) v_u_59, (copy) v_u_18
+	local v_u_63 = script.Item:Clone()
+	local v64 = v_u_8.findItemByDisplayName(p_u_61)
+	local v_u_65 = v_u_12:FindFirstChild(p_u_61)
+	if v64.Icon == nil then
+		if p_u_61 == "RP" then
+			v_u_63.ItemIcon.Image = "rbxassetid://17127716527"
+			v_u_65 = v_u_2.ResearchPoints
+		else
+			v_u_63.ItemIcon.Image = "rbxassetid://15476451150"
+		end
+	else
+		v_u_63.ItemIcon.Image = "rbxassetid://" .. v64.Icon
+	end
+	v_u_63.ItemName.Text = ("Sell %*"):format(p_u_61)
+	v_u_63.BottomText.Text = ("%*/%*"):format(0, p_u_62)
+	if v_u_65 == nil then
+		v_u_12.ChildAdded:Connect(function(p66)
+			-- upvalues: (copy) p_u_61, (ref) v_u_60, (copy) v_u_63, (ref) v_u_65, (ref) v_u_59, (copy) p_u_62
+			if p66:IsA("NumberValue") then
+				if p66.Name == p_u_61 then
+					v_u_60[v_u_63] = v_u_65.Changed:Connect(function(p67)
+						-- upvalues: (ref) v_u_59, (ref) v_u_63, (ref) p_u_61, (ref) p_u_62, (ref) v_u_60
+						v_u_59(v_u_63, p_u_61, p_u_62, p67, v_u_60[v_u_63])
+					end)
+					v_u_59(v_u_63, p_u_61, p_u_62, p66.Value, v_u_60[v_u_63])
+				end
+			end
+		end)
+	else
+		v_u_60[v_u_63] = v_u_65.Changed:Connect(function(p68)
+			-- upvalues: (ref) v_u_59, (copy) v_u_63, (copy) p_u_61, (copy) p_u_62, (ref) v_u_60
+			v_u_59(v_u_63, p_u_61, p_u_62, p68, v_u_60[v_u_63])
+		end)
+		v_u_59(v_u_63, p_u_61, p_u_62, v_u_65.Value, v_u_60[v_u_63])
+	end
+	v_u_63.Parent = v_u_18
+end
+local function v_u_72() -- name: cleanupLiveTrackers
+	-- upvalues: (copy) v_u_60, (copy) v_u_18
+	for _, v70 in v_u_60 do
+		v70:Disconnect()
+	end
+	for _, v71 in v_u_18:GetChildren() do
+		if v71:IsA("GuiObject") then
+			v71:Destroy()
+		end
+	end
+	table.clear(v_u_60)
+end
+function formatNumber(p73, p74) -- name: formatNumber
+	local v75 = string.format("%." .. (p74 or 2) .. "f", p73)
+	repeat
+		local v76
+		v75, v76 = v75:gsub("^(-?%d+)(%d%d%d)", "%1,%2")
+	until v76 == 0
+	return v75
+end
+local function v_u_86(p77) -- name: lightUpdate
+	-- upvalues: (copy) v_u_5, (copy) v_u_20, (copy) v_u_21, (copy) v_u_2, (copy) v_u_12, (copy) v_u_19
+	local v78 = v_u_5.getMissingDependants(p77)
+	if p77.unlocked then
+		v_u_20.Visible = false
+		v_u_21.TextColor3 = Color3.fromRGB(25, 255, 25)
+		v_u_21.Text = "Already unlocked!"
+	elseif #v78 == 0 then
+		if v_u_2.ResearchPoints.Value < p77.price then
+			v_u_21.Parent = script
+			v_u_20.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+		else
+			v_u_21.Parent = script
+			v_u_20.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+		end
+	else
+		v_u_21.TextColor3 = Color3.fromRGB(255, 25, 25)
+		v_u_21.Text = "Research missing: " .. table.concat(v78, ", ")
+		v_u_20.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+	end
+	if p77.itemRequirements then
+		local v79 = {}
+		for _, v80 in p77.itemRequirements do
+			local v81 = v_u_12:FindFirstChild(v80[1])
+			local v82 = v81 == nil and 0 or v81.Value
+			if v82 < v80[2] then
+				local v83 = string.format
+				local v84 = v80[1]
+				local v85 = v80[2]
+				table.insert(v79, v83("%s %d/%d", v84, v82, v85))
+			end
+		end
+		if #v79 >= 1 then
+			v_u_21.Parent = v_u_19
+			v_u_20.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_21.TextColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_21.Text = "Missing Sold Items: " .. table.concat(v79, ", ")
+		end
+	end
+end
+local v_u_87 = nil
+local function v106(p88) -- name: handleButtonActivation
+	-- upvalues: (ref) v_u_31, (copy) v_u_29, (ref) v_u_87, (copy) v_u_20, (copy) v_u_19, (copy) v_u_21, (copy) v_u_22, (copy) v_u_72, (copy) v_u_86, (copy) v_u_15, (copy) v_u_69, (copy) v_u_17, (copy) v_u_30, (copy) v_u_34, (copy) v_u_39, (copy) v_u_7, (copy) v_u_52, (copy) v_u_6
+	if p88.name == v_u_31 then
+		v_u_29(true)
+	else
+		v_u_87 = p88
+		v_u_31 = p88.name
+		v_u_20.Visible = true
+		v_u_19.Visible = true
+		v_u_21.Parent = v_u_19
+		v_u_22.Text = formatNumber(p88.price, 0) .. " RP"
+		v_u_72()
+		v_u_86(p88)
+		v_u_29(true)
+		for _, v89 in v_u_15:GetChildren() do
+			if v89:IsA("GuiObject") then
+				v89:Destroy()
+			end
+		end
+		if p88.itemRequirements then
+			for _, v90 in p88.itemRequirements do
+				v_u_69(v90[1], v90[2])
+			end
+		end
+		if p88.description then
+			v_u_17.ItemDescription.Text = "<stroke>" .. p88.description .. "</stroke>"
+			local v91 = v_u_30:FindFirstChild("Description")
+			v91:SetAttribute("Disabled", false)
+			v91.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			v_u_34(v_u_30.Description)
+		else
+			local v92 = v_u_30:FindFirstChild("Description")
+			v92:SetAttribute("Disabled", true)
+			v92.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+		end
+		if p88.unlocks then
+			local v93 = v_u_30:FindFirstChild("UnlockedItems")
+			v93:SetAttribute("Disabled", false)
+			v93.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			for _, v94 in p88.unlocks do
+				local v95 = v_u_39(v94)
+				local v96 = "Research configured inproperly, model " .. v94 .. " does not exist. Generated from research " .. p88.name
+				assert(v95, v96)
+				local v97 = tonumber(v95:GetAttribute("Tier")) or 1
+				local v98 = script.Item:Clone()
+				local v99 = Instance.new("Camera")
+				local v100, v101, v102 = v_u_7.findColor(v97):ToHSV()
+				v95.Parent = v98.ViewportFrame
+				v99.Parent = v98.ViewportFrame
+				v_u_52(v99, v95)
+				v98.ViewportFrame.CurrentCamera = v99
+				v98.ItemName.Text = v_u_6.Algo(v94)
+				v98.BottomText.Text = "Tier" .. v97
+				v98.BackgroundColor3 = Color3.fromHSV(v100, v101, v102 / 2)
+				v98.LayoutOrder = v97
+				v98.Parent = v_u_15
+			end
+			if p88.description == nil then
+				v_u_34(v_u_30.UnlockedItems)
+			end
+		elseif p88.description == nil then
+			v_u_17.ItemDescription.Text = "<stroke>This is a Theory Research. Researching it will allow you to progress further.</stroke>"
+			local v103 = v_u_30:FindFirstChild("UnlockedItems")
+			v103:SetAttribute("Disabled", true)
+			v103.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+			local v104 = v_u_30:FindFirstChild("Description")
+			v104:SetAttribute("Disabled", false)
+			v104.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			v_u_34(v_u_30.Description)
+		end
+		local v105 = v_u_30:FindFirstChild("RequiredItems")
+		v105:SetAttribute("Disabled", false)
+		v105.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+		v_u_69("RP", p88.price)
+	end
+end
+if not game.ReplicatedStorage.LoadingDone.Value then
+	game.ReplicatedStorage.LoadingDone:GetPropertyChangedSignal("Value"):Wait()
+	task.wait(1)
+end
+v_u_5._processRawTree(game.ReplicatedStorage.Research.Get:InvokeServer())
+v_u_5:GenerateTree("Production", v9, 0, 0, v106)
+v_u_5:GenerateTree("Energy", v10, 0.44, 0, v106)
+v_u_5:GenerateTree("Utility", v11, -0.88, 0, v106)
+v_u_23.OnClientEvent:Connect(v_u_5.update)
+v_u_4:SwitchGroup("Production")
+local v_u_107 = v_u_13.Production
+v_u_107.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+v_u_13.Utility.Activated:Connect(function(_, _)
+	-- upvalues: (copy) v_u_4, (copy) v_u_13, (ref) v_u_107
+	v_u_4:SwitchGroup("Utility")
+	local v108 = v_u_13.Utility
+	v_u_107.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+	v108.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+	v_u_107 = v108
+end)
+v_u_13.Energy.Activated:Connect(function(_, _)
+	-- upvalues: (copy) v_u_4, (copy) v_u_13, (ref) v_u_107
+	v_u_4:SwitchGroup("Energy")
+	local v109 = v_u_13.Energy
+	v_u_107.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+	v109.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+	v_u_107 = v109
+end)
+v_u_13.Production.Activated:Connect(function(_, _)
+	-- upvalues: (copy) v_u_4, (copy) v_u_13, (ref) v_u_107
+	v_u_4:SwitchGroup("Production")
+	local v110 = v_u_13.Production
+	v_u_107.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+	v110.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+	v_u_107 = v110
+end)
+script.Parent.Parent:GetPropertyChangedSignal("Enabled"):Connect(function()
+	-- upvalues: (ref) v_u_87, (copy) v_u_86
+	if script.Parent.Parent.Enabled and v_u_87 ~= nil then
+		v_u_86(v_u_87)
+	end
+	while script.Parent.Parent.Enabled do
+		task.wait(1)
+		if v_u_87 ~= nil then
+			v_u_86(v_u_87)
+		end
+	end
+end)

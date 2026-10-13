@@ -1,0 +1,8 @@
+if v_u_9 < 3600 then
+    local v32 = 3600 - v_u_9
+    local v33 = math.clamp(v32, 0, 100)
+    if v_u_5:hasAmountOf("Steam", v33 * 0.1) then
+        v_u_5:removeItem(v33 * 0.1)
+        v_u_9 = v_u_9 + v33
+    end
+end

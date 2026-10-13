@@ -1,0 +1,151 @@
+local v1 = game:GetService("ReplicatedStorage")
+require(v1.Modules.PowerUtilsV2)
+local v2 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.NextTicks).new()
+local v_u_3 = v2.loadConnector(script.Parent.InputMainPipe)
+local v_u_4 = v2.loadConnector(script.Parent.WaterMainPipe)
+local v_u_5 = v2.loadConnector(script.Parent.OutMainPipe)
+local v_u_6 = v2.loadConnector(script.Parent.OutchemicalMainPipe)
+local v_u_7 = script.Parent.Smoke.ParticleEmitter
+local v_u_8 = script.Parent.State
+local v_u_9 = game.ReplicatedStorage.Pollution
+local v_u_10 = false
+local v11 = {
+    ["localUpdate"] = function() -- name: localUpdate
+        -- upvalues: (copy) v_u_8, (ref) v_u_10, (copy) v_u_7
+        if v_u_8.Value == "Running" then
+            if v_u_10 == false then
+                v_u_10 = true
+                v_u_7.Enabled = true
+                v_u_7.Parent.furnace:Play()
+                return
+            end
+        elseif v_u_8.Value == "Idle" and v_u_10 == true then
+            v_u_10 = false
+            v_u_7.Enabled = false
+            v_u_7.Parent.furnace:Stop()
+        end
+    end
+}
+local v_u_12 = script.Parent.ModelData.Energy
+local v_u_13 = {
+    ["Coal"] = {
+        ["amount"] = 1,
+        ["energy"] = 30000,
+        ["pollution"] = 250,
+        ["itemoutput"] = nil
+    },
+    ["Coke Fuel"] = {
+        ["amount"] = 1,
+        ["energy"] = 600000,
+        ["pollution"] = 600,
+        ["itemoutput"] = nil
+    },
+    ["Planks"] = {
+        ["amount"] = 1,
+        ["energy"] = 9000,
+        ["pollution"] = 90,
+        ["itemoutput"] = nil
+    },
+    ["Oak Log"] = {
+        ["amount"] = 1,
+        ["energy"] = 16000,
+        ["pollution"] = 125,
+        ["itemoutput"] = nil,
+        ["itemoutput"] = { "Sodium Carbonate", 16 }
+    }
+}
+local v_u_14 = {
+    ["Liquid Sulfur"] = {
+        ["amount"] = 4.5,
+        ["energy"] = 900000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["output"] = { "Sulfur Dioxide", 9, 300 }
+    },
+    ["Water"] = {
+        ["amount"] = 12,
+        ["energy"] = 300000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["output"] = { "Water", 12, 300 }
+    },
+    ["Distilled Water"] = {
+        ["amount"] = 12,
+        ["energy"] = 300000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["output"] = { "Distilled Water", 12, 300 }
+    },
+    ["Filtered Water"] = {
+        ["amount"] = 12,
+        ["energy"] = 300000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["output"] = { "Filtered Water", 12, 300 }
+    },
+    ["Concentrated Salt Solution"] = {
+        ["amount"] = 12,
+        ["energy"] = 300000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["output"] = { "Water", 12, 300 },
+        ["itemoutput"] = { "Table Salt", 2 }
+    },
+    ["Boric Acid"] = {
+        ["amount"] = 2,
+        ["energy"] = 900000,
+        ["output"] = nil,
+        ["itemoutput"] = nil,
+        ["itemoutput"] = { "Boron", 1, 300 }
+    }
+}
+local v_u_15 = script.Parent.NeonPart
+function v11.tick() -- name: tick
+    -- upvalues: (copy) v_u_12, (copy) v_u_13, (copy) v_u_3, (copy) v_u_6, (copy) v_u_9, (copy) v_u_8, (copy) v_u_14, (copy) v_u_4, (copy) v_u_5, (copy) v_u_15
+    if v_u_12.Value < 3000000 then
+        local v16 = false
+        for v17, v18 in pairs(v_u_13) do
+            if v_u_3:hasAmountOf(v17, v18.amount) then
+                v_u_3:removeItem(v18.amount)
+                if v18.itemoutput ~= nil and v_u_6:canHoldXMoreOf(v18.itemoutput[1], v18.itemoutput[2]) then
+                    v_u_6:addItemAmount(v18.itemoutput[1], v18.itemoutput[2])
+                end
+                local v19 = v_u_9
+                v19.Value = v19.Value + v18.pollution
+                v_u_8.Value = "Running"
+                local v20 = v_u_12
+                v20.Value = v20.Value + v18.energy
+                v16 = true
+                break
+            end
+        end
+        if v16 == false then
+            v_u_8.Value = "Idle"
+        end
+    else
+        v_u_8.Value = "Idle"
+    end
+    for v21, v22 in pairs(v_u_14) do
+        if v_u_4:hasAmountOf(v21, v22.amount) and (v_u_12.Value >= v22.energy and (v22.itemoutput == nil or v_u_6:canHoldXMoreOf(v22.itemoutput[1], v22.itemoutput[2]))) and (v22.output == nil or v_u_5:canHoldXMoreOf(v22.output[1], v22.output[2])) then
+            local v23 = v_u_12
+            v23.Value = v23.Value - v22.energy
+            v_u_4:removeItem(v22.amount)
+            if v22.output ~= nil then
+                v_u_5:setUsedTemperature(v22.output[3])
+                v_u_5:addItemAmount(v22.output[1], v22.output[2])
+            end
+            if v22.itemoutput ~= nil then
+                v_u_6:setUsedTemperature(v22.itemoutput[3] or 50)
+                v_u_6:addItemAmount(v22.itemoutput[1], v22.itemoutput[2])
+            end
+        end
+    end
+    local v24 = Color3.fromRGB(0, 0, 0)
+    local v25 = Color3.fromRGB(255, 137, 73)
+    local v26 = v_u_12.Value / 3000000
+    local v27 = v24:Lerp(v25, (math.clamp(v26, 0, 1)))
+    v_u_15.Color = v27
+    v_u_15.SpotLight.Color = v27
+end
+return v11

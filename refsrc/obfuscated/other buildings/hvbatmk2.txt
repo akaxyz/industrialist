@@ -1,0 +1,41 @@
+local v1 = game:GetService("ReplicatedStorage")
+local u2 = require(v1.Modules.PowerUtilsV2).loadConnector(script.Parent.MainConnector)
+local v3 = {
+    ["localUpdate"] = function() --[[ Name: localUpdate, Line 8 ]] end
+}
+local u4 = require(game.ReplicatedStorage.Modules.Achievements)
+local u5 = 0
+local u6 = 0
+local u7 = u2:getBuffer() / u2:getMax()
+local u8 = game.ReplicatedStorage.StartTracking
+function v3.tick() --[[ Line: 20 ]]
+    --[[
+    Upvalues:
+        [1] = u7
+        [2] = u2
+        [3] = u6
+        [4] = u5
+        [5] = u8
+        [6] = u4
+    --]]
+    u7 = u2:getBuffer() / u2:getMax()
+    u6 = u2:getFlow()
+    u2:setFlow(0)
+    if u6 > 0 then
+        local v9 = u6
+        local v10 = 2 * (u7 - 1)
+        local v11 = math.exp(v10)
+        u5 = v9 * math.clamp(v11, 0, 1)
+        u2:removePower(u5)
+        if u8.Value then
+            shared.powerLost = shared.powerLost + u5
+        end
+    end
+    local v12 = u2:getBuffer()
+    local v13 = math.floor(v12)
+    local v14 = u2:getMax()
+    if math.floor(v14) * 0.99999 <= v13 then
+        u4.giveBadge(3030304417197250)
+    end
+end
+return v3

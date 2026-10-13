@@ -1,0 +1,293 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.In1MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.In2MainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.In3MainConnector)
+local v_u_6 = v2.loadConnector(script.Parent.In4MainConnector)
+local v_u_7 = v2.loadConnector(script.Parent.Out1MainConnector)
+local v_u_8 = v2.loadConnector(script.Parent.Out2MainConnector)
+local v_u_9 = v2.loadConnector(script.Parent.Out3MainConnector)
+local v10 = script.Parent.Monitor
+local v_u_11 = {
+	v10.Top,
+	v10.TopLeft,
+	v10.TopRight,
+	v10.Middle,
+	v10.BottomLeft,
+	v10.BottomRight,
+	v10.Bottom,
+	v10.Overflow
+}
+local v_u_12 = {
+	["0000"] = {
+		"000",
+		{
+			true,
+			true,
+			true,
+			false,
+			true,
+			true,
+			true,
+			false
+		}
+	},
+	["0001"] = {
+		"000",
+		{
+			false,
+			false,
+			true,
+			false,
+			false,
+			true,
+			false,
+			false
+		}
+	},
+	["0010"] = {
+		"000",
+		{
+			true,
+			false,
+			true,
+			true,
+			true,
+			false,
+			true,
+			false
+		}
+	},
+	["0011"] = {
+		"000",
+		{
+			true,
+			false,
+			true,
+			true,
+			false,
+			true,
+			true,
+			false
+		}
+	},
+	["0100"] = {
+		"000",
+		{
+			false,
+			true,
+			true,
+			true,
+			false,
+			true,
+			false,
+			false
+		}
+	},
+	["0101"] = {
+		"000",
+		{
+			true,
+			true,
+			false,
+			true,
+			false,
+			true,
+			true,
+			false
+		}
+	},
+	["0110"] = {
+		"000",
+		{
+			true,
+			true,
+			false,
+			true,
+			true,
+			true,
+			true,
+			false
+		}
+	},
+	["0111"] = {
+		"000",
+		{
+			true,
+			false,
+			true,
+			false,
+			false,
+			true,
+			false,
+			false
+		}
+	},
+	["1000"] = {
+		"000",
+		{
+			true,
+			true,
+			true,
+			true,
+			true,
+			true,
+			true,
+			false
+		}
+	},
+	["1001"] = {
+		"000",
+		{
+			true,
+			true,
+			true,
+			true,
+			false,
+			true,
+			true,
+			false
+		}
+	},
+	["1010"] = {
+		"001",
+		{
+			true,
+			true,
+			true,
+			false,
+			true,
+			true,
+			true,
+			true
+		}
+	},
+	["1011"] = {
+		"010",
+		{
+			false,
+			false,
+			true,
+			false,
+			false,
+			true,
+			false,
+			true
+		}
+	},
+	["1100"] = {
+		"011",
+		{
+			true,
+			false,
+			true,
+			true,
+			true,
+			false,
+			true,
+			true
+		}
+	},
+	["1101"] = {
+		"100",
+		{
+			true,
+			false,
+			true,
+			true,
+			false,
+			true,
+			true,
+			true
+		}
+	},
+	["1110"] = {
+		"101",
+		{
+			false,
+			true,
+			true,
+			true,
+			false,
+			true,
+			false,
+			true
+		}
+	},
+	["1111"] = {
+		"110",
+		{
+			true,
+			true,
+			false,
+			true,
+			false,
+			true,
+			true,
+			true
+		}
+	}
+}
+local v13 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_14 = Color3.fromRGB(255, 0, 0)
+local v_u_15 = Color3.fromRGB(0, 0, 0)
+function v13.tick() -- name: tick
+	-- upvalues: (copy) v_u_3, (copy) v_u_4, (copy) v_u_5, (copy) v_u_6, (copy) v_u_12, (copy) v_u_11, (copy) v_u_14, (copy) v_u_15, (copy) v_u_7, (copy) v_u_8, (copy) v_u_9
+	local v16 = ""
+	local v17
+	if v_u_3:hasPower(1) then
+		v_u_3:removePower(v_u_3:getBuffer())
+		v17 = v16 .. "1"
+	else
+		v17 = v16 .. "0"
+	end
+	local v18
+	if v_u_4:hasPower(1) then
+		v_u_4:removePower(v_u_4:getBuffer())
+		v18 = v17 .. "1"
+	else
+		v18 = v17 .. "0"
+	end
+	local v19
+	if v_u_5:hasPower(1) then
+		v_u_5:removePower(v_u_5:getBuffer())
+		v19 = v18 .. "1"
+	else
+		v19 = v18 .. "0"
+	end
+	local v20
+	if v_u_6:hasPower(1) then
+		v_u_6:removePower(v_u_6:getBuffer())
+		v20 = v19 .. "1"
+	else
+		v20 = v19 .. "0"
+	end
+	local v21 = v_u_12[v20]
+	for v22, v23 in ipairs(v21[2]) do
+		local v24 = v_u_11[v22]
+		if v23 then
+			v24.Color = v_u_14
+		else
+			v24.Color = v_u_15
+		end
+	end
+	if v21[1] ~= "000" then
+		local v25 = string.split(v21[1], "")
+		for v26, v27 in ipairs(v25) do
+			if v27 == "1" then
+				if v26 == 1 then
+					v_u_7:addPower(1000)
+				elseif v26 == 2 then
+					v_u_8:addPower(1000)
+				elseif v26 == 3 then
+					v_u_9:addPower(1000)
+				end
+			end
+		end
+	end
+end
+return v13

@@ -1,0 +1,2149 @@
+local v_u_1 = game.ReplicatedStorage:WaitForChild("Money")
+local v_u_2 = game.ReplicatedStorage.PlacementSystem.RemoteToast
+local v_u_3 = {}
+local v_u_4 = game.ReplicatedStorage.Pollution
+local v_u_5 = v_u_4:GetAttribute("Max")
+local v_u_6 = require(script.Parent.Parent.Achievements)
+local v_u_7 = game.ReplicatedStorage.Expenses
+local v_u_8 = require(game:GetService("ReplicatedStorage").FormatNumber.Main).NumberFormatter.with()
+function v_u_3.calculateValue(p9, p10)
+	-- upvalues: (copy) v_u_4, (copy) v_u_5
+	local v11 = workspace:GetAttribute("Difficulty")
+	local v12 = v_u_4.Value / v_u_5
+	local v13 = 2.9 - v12 / 2
+	local v14 = math.clamp(v13, 0.1, 3.1)
+	if v11 == 2 then
+		local v15 = 2.9 - v12 / 2
+		v14 = math.clamp(v15, 0.1, 3.1)
+	elseif v11 == 3 then
+		local v16 = 2.9 - v12 * 0.77
+		v14 = math.clamp(v16, 0.1, 3.1)
+	elseif v11 == 4 then
+		local v17 = 2.9 - v12 * 1.1
+		v14 = math.clamp(v17, 0.1, 3.1)
+	elseif v11 == 5 then
+		local v18 = 2.9 - 2.9 * v12 ^ 2
+		v14 = math.clamp(v18, 0.1, 3.1)
+	elseif v11 == 6 then
+		local v19 = 2.9 - 2.9 * v12 * 0.5
+		v14 = math.clamp(v19, 0.05, 3.1)
+	end
+	local v20 = p9.Price * p10 * v14
+	return math.floor(v20)
+end
+function v_u_3.sell(p21, p22)
+	-- upvalues: (copy) v_u_3, (copy) v_u_4, (copy) v_u_5, (copy) v_u_6, (copy) v_u_2, (copy) v_u_8, (copy) v_u_1, (copy) v_u_7
+	local v23 = v_u_3.calculateValue(p21, p22)
+	local v24 = workspace:GetAttribute("Difficulty")
+	local v25 = v_u_4.Value / v_u_5
+	if p21.DisplayName == "LNG" then
+		v_u_6.giveBadge(2151892358)
+	elseif p21.DisplayName == "Chair" then
+		v_u_6.giveBadge(2151892362)
+	elseif p21.DisplayName == "Water" then
+		v_u_6.giveBadge(2151892365)
+	elseif p21.DisplayName == "Crankshaft" then
+		v_u_6.giveBadge(2152756202)
+	elseif p21.DisplayName == "Gearbox" then
+		v_u_6.giveBadge(2153448883)
+		if workspace:GetAttribute("Difficulty") == 4 and v25 < 1.01 then
+			v_u_6.giveBadge(2153448893)
+		elseif workspace:GetAttribute("Difficulty") == 5 and v25 < 1.01 then
+			v_u_6.giveBadge(2153448899)
+		end
+	elseif p21.DisplayName == "Purple Gold Ingot" then
+		if p22 > 390 then
+			v_u_6.giveBadge(1615484251767613)
+		end
+		if workspace:GetAttribute("Difficulty") == 6 and v25 < 2.001 then
+			v_u_6.giveBadge(3010191455762019)
+		end
+	elseif p21.DisplayName == "Gold Ingot" then
+		v_u_6.giveBadge(4051897227500578)
+	elseif p21.DisplayName == "Sulfuric Acid" then
+		if p22 > 390 then
+			v_u_6.giveBadge(814973153988325)
+		end
+	elseif p21.DisplayName == "Insulated Wire" then
+		if p22 > 390 then
+			v_u_6.giveBadge(184286768716383)
+		end
+	elseif p21.DisplayName == "8x64x Microchip" then
+		if p22 >= 10 then
+			v_u_6.giveBadge(1152556558141045)
+		end
+	elseif p21.DisplayName == "Lithium Battery Pack" then
+		v_u_6.giveBadge(1180981379469162)
+	elseif p21.DisplayName == "Galvanized Steel" then
+		if p22 >= 390 then
+			v_u_6.giveBadge(3425112419521701)
+		end
+	elseif p21.DisplayName == "Reinforced Concrete Block" and p22 >= 390 then
+		v_u_6.giveBadge(1309098348459441)
+	end
+	if v24 == 6 then
+		v_u_2:FireAllClients(("Sold %*x of %*!"):format(math.floor(p22), p21.DisplayName), nil, Color3.new(0, 1, 0))
+	else
+		v_u_2:FireAllClients(("Sold %*x of %* for $%*"):format(math.floor(p22), p21.DisplayName, (v_u_8:Format((math.floor(v23))))), nil, v23 > 0 and Color3.new(0, 1, 0) or Color3.new(1, 0, 0))
+	end
+	local v26 = v_u_1
+	v26.Value = v26.Value + v23
+	local v27 = game.ReplicatedStorage.Statistics.TotalMoneyMade
+	v27.Value = v27.Value + v23
+	local v28 = v_u_7.Sales
+	v28.Value = v28.Value + v23 / 100 * p21.SalesTax
+	local v29 = v_u_7.SalesProfit
+	v29.Value = v29.Value + v23
+	local v30 = game.ReplicatedStorage.Statistics.SoldEver:FindFirstChild(p21.DisplayName)
+	if v30 == nil then
+		v30 = Instance.new("NumberValue", game.ReplicatedStorage.Statistics.SoldEver)
+		v30.Name = p21.DisplayName
+	end
+	v30.Value = v30.Value + p22
+	v_u_6.giveBadge(2151559587)
+	if v_u_1.Value >= 1000000 then
+		v_u_6.giveBadge(2151444747)
+	end
+	if v_u_1.Value >= 2000 then
+		v_u_6.giveBadge(2151444758)
+	end
+	if game.ReplicatedStorage.ResearchPoints.Value >= 150000 then
+		v_u_6.giveBadge(2151444752)
+	end
+end
+v_u_3. = {
+	["DisplayName"] = "None",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 0,
+	["HeatDifuseModifier"] = 100,
+	["Hidden"] = true,
+	["ID"] = -2
+}
+v_u_3.ActualNone = {
+	["DisplayName"] = "",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 0,
+	["HeatDifuseModifier"] = 100,
+	["Hidden"] = true,
+	["ID"] = 0
+}
+v_u_3.Cat = {
+	["DisplayName"] = "Cat",
+	["IsLiquid"] = true,
+	["Price"] = 6896.551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 12661324483,
+	["ID"] = 230
+}
+v_u_3.SpentMOXFuel = {
+	["DisplayName"] = "Spent MOX Fuel",
+	["IsLiquid"] = false,
+	["Price"] = -344827.5862068966,
+	["SalesTax"] = 5,
+	["Icon"] = 79897427023213,
+	["ID"] = 229,
+	["RPMultiplier"] = 0,
+	["Radiation"] = 50000,
+	["Description"] = "This item is HIGHLY radioactive. Do NOT dump and do NOT store it in silos or tanks. Must be disposed of in Underground Waste Facility."
+}
+v_u_3.SpentFuel = {
+	["DisplayName"] = "Spent Fuel",
+	["IsLiquid"] = false,
+	["Price"] = -344827.5862068966,
+	["SalesTax"] = 5,
+	["Icon"] = 92836596470046,
+	["ID"] = 228,
+	["RPMultiplier"] = 0,
+	["Radiation"] = 5000,
+	["Description"] = "This item is radioactive. Do NOT dump and do NOT store it in silos or tanks. Must be disposed of in Underground Waste Facility or reprocessed into MOX Fuel Rods."
+}
+v_u_3.MixedFissileOxides = {
+	["DisplayName"] = "Mixed Fissile Oxides",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 73155676672535,
+	["ID"] = 227
+}
+v_u_3.ReprocessedUranium = {
+	["DisplayName"] = "Reprocessed Uranium",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 118446842270417,
+	["ID"] = 226
+}
+v_u_3.PlutoniumOxidePellets = {
+	["DisplayName"] = "Plutonium Oxide Pellets",
+	["IsLiquid"] = false,
+	["Price"] = 431.0344827586207,
+	["SalesTax"] = 5,
+	["Icon"] = 104362665865047,
+	["ID"] = 225,
+	["RPMultiplier"] = 0
+}
+v_u_3.FissionByproducts = {
+	["DisplayName"] = "Fission Byproducts",
+	["IsLiquid"] = false,
+	["Price"] = -1724137.9310344828,
+	["SalesTax"] = 5,
+	["Icon"] = 103539966663374,
+	["ID"] = 224,
+	["RPMultiplier"] = 0,
+	["Radiation"] = 20000,
+	["Description"] = "This item is HIGHLY radioactive. Do NOT dump and do NOT store it in silos or tanks. Must be disposed of in Underground Waste Facility."
+}
+v_u_3.Yellowcake = {
+	["DisplayName"] = "Yellowcake",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 117286441161746,
+	["ID"] = 223,
+	["RPMultiplier"] = 5
+}
+v_u_3.MixedFissileNitrates = {
+	["DisplayName"] = "Mixed Fissile Nitrates",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 114751718954414,
+	["ID"] = 222,
+	["RPMultiplier"] = 1
+}
+v_u_3.MixedUraniumOxides = {
+	["DisplayName"] = "Mixed Uranium Oxides",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 90805295346875,
+	["ID"] = 221,
+	["RPMultiplier"] = 1
+}
+v_u_3.LowEnrichmentFuelRod = {
+	["DisplayName"] = "Low Enrichment Fuel Rod",
+	["IsLiquid"] = false,
+	["Price"] = 6896.551724137931,
+	["SalesTax"] = 5,
+	["Icon"] = 110977234799541,
+	["ID"] = 220,
+	["RPMultiplier"] = 1
+}
+v_u_3.TributylPhosphate = {
+	["DisplayName"] = "Tributyl Phosphate",
+	["IsLiquid"] = true,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 102849898653832,
+	["ID"] = 219,
+	["RPMultiplier"] = 0
+}
+v_u_3.PhosphorusOxychloride = {
+	["DisplayName"] = "Phosphorus Oxychloride",
+	["IsLiquid"] = true,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 131003127981868,
+	["ID"] = 218,
+	["RPMultiplier"] = 0
+}
+v_u_3.MOXFuelRod = {
+	["DisplayName"] = "MOX Fuel Rod",
+	["IsLiquid"] = false,
+	["Price"] = 344827.5862068966,
+	["SalesTax"] = 5,
+	["Icon"] = 105590235385932,
+	["ID"] = 217,
+	["RPMultiplier"] = 100
+}
+v_u_3.Boron = {
+	["DisplayName"] = "Boron",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 121229404580654,
+	["ID"] = 216
+}
+v_u_3.ImpureBoron = {
+	["DisplayName"] = "Impure Boron",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 5,
+	["Icon"] = 93696646068449,
+	["ID"] = 215
+}
+v_u_3.StandardFuelRod = {
+	["DisplayName"] = "Standard Fuel Rod",
+	["IsLiquid"] = false,
+	["Price"] = 51724.137931034486,
+	["SalesTax"] = 5,
+	["Icon"] = 104295149162057,
+	["ID"] = 214,
+	["RPMultiplier"] = 100
+}
+v_u_3.HydrofluoricAcid = {
+	["DisplayName"] = "Hydrofluoric Acid",
+	["IsLiquid"] = true,
+	["Price"] = 206.89655172413794,
+	["SalesTax"] = 5,
+	["Icon"] = 77226364605987,
+	["ID"] = 213,
+	["RPMultiplier"] = 13
+}
+v_u_3.ContaminatedWater = {
+	["DisplayName"] = "Contaminated Water",
+	["IsLiquid"] = true,
+	["Price"] = -83.10344827586208,
+	["SalesTax"] = 5,
+	["Icon"] = 70637762593512,
+	["ID"] = 211,
+	["RPMultiplier"] = 0
+}
+v_u_3.BoricAcid = {
+	["DisplayName"] = "Boric Acid",
+	["IsLiquid"] = true,
+	["Price"] = 517.2413793103449,
+	["SalesTax"] = 5,
+	["Icon"] = 92406012599444,
+	["ID"] = 210,
+	["RPMultiplier"] = 12
+}
+v_u_3.ControlRod = {
+	["DisplayName"] = "Control Rod",
+	["IsLiquid"] = false,
+	["Price"] = 51724.137931034486,
+	["SalesTax"] = 5,
+	["Icon"] = 94716246369300,
+	["ID"] = 209
+}
+v_u_3.ZirconiumRod = {
+	["DisplayName"] = "Zirconium Rod",
+	["IsLiquid"] = false,
+	["Price"] = 62.06896551724138,
+	["SalesTax"] = 5,
+	["Icon"] = 124619578122770,
+	["ID"] = 208
+}
+v_u_3.ZirconiumDioxide = {
+	["DisplayName"] = "Zirconium Dioxide",
+	["IsLiquid"] = false,
+	["Price"] = 15.517241379310345,
+	["SalesTax"] = 5,
+	["Icon"] = 125448046183631,
+	["ID"] = 207
+}
+v_u_3.ZirconiumChloride = {
+	["DisplayName"] = "Zirconium Chloride",
+	["IsLiquid"] = false,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 5,
+	["Icon"] = 76473913302933,
+	["ID"] = 206
+}
+v_u_3.EnrichedUO2Pellets = {
+	["DisplayName"] = "Enriched UO2 Pellets",
+	["IsLiquid"] = false,
+	["Price"] = 88.27586206896552,
+	["SalesTax"] = 5,
+	["Icon"] = 86047309378658,
+	["ID"] = 205
+}
+v_u_3.RawUranium = {
+	["DisplayName"] = "Raw Uranium",
+	["IsLiquid"] = false,
+	["Price"] = 18.620689655172413,
+	["SalesTax"] = 5,
+	["Icon"] = 140257138179513,
+	["ID"] = 204,
+	["Description"] = "Obtained from mineshaft drill at deep levels."
+}
+v_u_3.RawZirconium = {
+	["DisplayName"] = "Raw Zirconium",
+	["IsLiquid"] = false,
+	["Price"] = 11.03448275862069,
+	["SalesTax"] = 5,
+	["Icon"] = 77272918336855,
+	["ID"] = 203,
+	["Description"] = "Obtained from mineshaft drill at deep levels."
+}
+v_u_3.HardenedPlasticCasing = {
+	["DisplayName"] = "Hardened Plastic Casing",
+	["IsLiquid"] = false,
+	["Price"] = 68.96551724137932,
+	["SalesTax"] = 5,
+	["Icon"] = 106686372415350,
+	["ID"] = 202,
+	["RPMultiplier"] = 20
+}
+v_u_3.HardenedPlasticPellets = {
+	["DisplayName"] = "Hardened Plastic Pellets",
+	["IsLiquid"] = false,
+	["Price"] = 0.8620689655172414,
+	["SalesTax"] = 5,
+	["Icon"] = 105815273034956,
+	["ID"] = 201,
+	["RPMultiplier"] = 10
+}
+v_u_3.Ammonia = {
+	["DisplayName"] = "Ammonia",
+	["IsLiquid"] = true,
+	["Price"] = 0.3448275862068966,
+	["SalesTax"] = 5,
+	["Icon"] = 116087631830203,
+	["ID"] = 200,
+	["RPMultiplier"] = 15
+}
+v_u_3.Argon = {
+	["DisplayName"] = "Argon",
+	["IsLiquid"] = true,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 5,
+	["Icon"] = 71241508775721,
+	["ID"] = 185,
+	["RPMultiplier"] = 0
+}
+v_u_3.Nitrogen = {
+	["DisplayName"] = "Nitrogen",
+	["IsLiquid"] = true,
+	["Price"] = 0.05172413793103448,
+	["SalesTax"] = 5,
+	["Icon"] = 113974802295256,
+	["ID"] = 184,
+	["RPMultiplier"] = 0
+}
+v_u_3.LiquidArgon = {
+	["DisplayName"] = "Liquid Argon",
+	["IsLiquid"] = true,
+	["Price"] = 17.24137931034483,
+	["SalesTax"] = 5,
+	["Icon"] = 125927413869654,
+	["ID"] = 183,
+	["RPMultiplier"] = 3
+}
+v_u_3.LiquidOxygen = {
+	["DisplayName"] = "Liquid Oxygen",
+	["IsLiquid"] = true,
+	["Price"] = 2.0689655172413794,
+	["SalesTax"] = 5,
+	["Icon"] = 111060778474419,
+	["ID"] = 182,
+	["RPMultiplier"] = 3
+}
+v_u_3.LiquidNitrogen = {
+	["DisplayName"] = "Liquid Nitrogen",
+	["IsLiquid"] = true,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 5,
+	["Icon"] = 136322098909238,
+	["ID"] = 181,
+	["RPMultiplier"] = 3
+}
+v_u_3.DepletedUF6Waste = {
+	["DisplayName"] = "Depleted UF6 Waste",
+	["IsLiquid"] = true,
+	["Price"] = -86.20689655172414,
+	["SalesTax"] = 5,
+	["Icon"] = 86184274087454,
+	["ID"] = 199,
+	["Radiation"] = 75,
+	["RPMultiplier"] = 0,
+	["Description"] = "It is slightly radioactive, so should be stored underground in the Underground Waste Facility."
+}
+v_u_3.EnrichedUF6Gas = {
+	["DisplayName"] = "Enriched UF6 Gas",
+	["IsLiquid"] = true,
+	["Price"] = 51.724137931034484,
+	["SalesTax"] = 5,
+	["Icon"] = 75727417017947,
+	["ID"] = 198,
+	["RPMultiplier"] = 0
+}
+v_u_3.SlightlyEnrichedUF6Gas = {
+	["DisplayName"] = "Slightly Enriched UF6 Gas",
+	["IsLiquid"] = true,
+	["Price"] = 15.517241379310345,
+	["SalesTax"] = 5,
+	["Icon"] = 81272283929054,
+	["ID"] = 197,
+	["RPMultiplier"] = 0
+}
+v_u_3.UnenrichedUF6Gas = {
+	["DisplayName"] = "Unenriched UF6 Gas",
+	["IsLiquid"] = true,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 5,
+	["Icon"] = 117400433947817,
+	["ID"] = 196,
+	["RPMultiplier"] = 0
+}
+v_u_3.ReinforcedConcreteBlock = {
+	["DisplayName"] = "Reinforced Concrete Block",
+	["IsLiquid"] = false,
+	["Price"] = 217.24137931034483,
+	["SalesTax"] = 5,
+	["Icon"] = 77652120738999,
+	["ID"] = 195,
+	["RPMultiplier"] = 4
+}
+v_u_3.ConcreteBlock = {
+	["DisplayName"] = "Concrete Block",
+	["IsLiquid"] = false,
+	["Price"] = 51.724137931034484,
+	["SalesTax"] = 5,
+	["Icon"] = 112716348710225,
+	["ID"] = 194
+}
+v_u_3.WetConcrete = {
+	["DisplayName"] = "Wet Concrete",
+	["IsLiquid"] = true,
+	["Price"] = 41.37931034482759,
+	["SalesTax"] = 5,
+	["Icon"] = 135286348463074,
+	["ID"] = 193
+}
+v_u_3.Cement = {
+	["DisplayName"] = "Cement",
+	["IsLiquid"] = false,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 5,
+	["Icon"] = 76396303548063,
+	["ID"] = 192
+}
+v_u_3.Aggregate = {
+	["DisplayName"] = "Aggregate",
+	["IsLiquid"] = false,
+	["Price"] = 5.031034482758621,
+	["SalesTax"] = 5,
+	["Description"] = "Aggregate muncher",
+	["Icon"] = 82524106916464,
+	["ID"] = 191
+}
+v_u_3.Rawmix = {
+	["DisplayName"] = "Rawmix",
+	["IsLiquid"] = false,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 5,
+	["Icon"] = 97073143324479,
+	["ID"] = 190
+}
+v_u_3.Brick = {
+	["DisplayName"] = "Brick",
+	["IsLiquid"] = false,
+	["Price"] = 17.24137931034483,
+	["SalesTax"] = 5,
+	["Icon"] = 78673168772522,
+	["ID"] = 189,
+	["RPMultiplier"] = 2
+}
+v_u_3.ClayBrick = {
+	["DisplayName"] = "Clay Brick",
+	["IsLiquid"] = false,
+	["Price"] = 9.655172413793103,
+	["SalesTax"] = 5,
+	["Icon"] = 122674783765870,
+	["ID"] = 188
+}
+v_u_3.Clay = {
+	["DisplayName"] = "Clay",
+	["IsLiquid"] = false,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 5,
+	["Icon"] = 126181480858129,
+	["ID"] = 187,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.Limestone = {
+	["DisplayName"] = "Limestone",
+	["IsLiquid"] = false,
+	["Price"] = 0.3448275862068966,
+	["SalesTax"] = 5,
+	["Icon"] = 122666936593106,
+	["ID"] = 186,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.Condensate = {
+	["DisplayName"] = "Condensate",
+	["IsLiquid"] = true,
+	["Price"] = 0.034482758620689655,
+	["SalesTax"] = 5,
+	["Icon"] = 97557010702474,
+	["ID"] = 180,
+	["RPMultiplier"] = 0
+}
+v_u_3.DistilledWater = {
+	["DisplayName"] = "Distilled Water",
+	["IsLiquid"] = true,
+	["Price"] = 0.3448275862068966,
+	["SalesTax"] = 6,
+	["Icon"] = 18958587190,
+	["ID"] = 179,
+	["RPMultiplier"] = 0.3,
+	["Pollution"] = 0
+}
+v_u_3.ConcentratedSaltSolution = {
+	["DisplayName"] = "Concentrated Salt Solution",
+	["IsLiquid"] = true,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 18958587006,
+	["ID"] = 178
+}
+v_u_3.TableSalt = {
+	["DisplayName"] = "Table Salt",
+	["IsLiquid"] = true,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 6,
+	["Icon"] = 139047802558363,
+	["ID"] = 177
+}
+v_u_3.HydrochloricAcid = {
+	["DisplayName"] = "Hydrochloric Acid",
+	["IsLiquid"] = true,
+	["Price"] = 27.586206896551726,
+	["SalesTax"] = 6,
+	["Icon"] = 18958587405,
+	["ID"] = 176,
+	["RPMultiplier"] = 10
+}
+v_u_3.TreatedRawIron = {
+	["DisplayName"] = "Treated Raw Iron",
+	["IsLiquid"] = false,
+	["Price"] = 2.7586206896551726,
+	["SalesTax"] = 6,
+	["Icon"] = 18969702924,
+	["ID"] = 175
+}
+v_u_3.TreatedRawCopper = {
+	["DisplayName"] = "Treated Raw Copper",
+	["IsLiquid"] = false,
+	["Price"] = 2.0689655172413794,
+	["SalesTax"] = 6,
+	["Icon"] = 18969703237,
+	["ID"] = 174
+}
+v_u_3.Oxygen = {
+	["DisplayName"] = "Oxygen",
+	["IsLiquid"] = true,
+	["Price"] = 0.034482758620689655,
+	["SalesTax"] = 6,
+	["Icon"] = 18958586687,
+	["ID"] = 173,
+	["RPMultiplier"] = 0.5
+}
+v_u_3.Hydrogen = {
+	["DisplayName"] = "Hydrogen",
+	["IsLiquid"] = true,
+	["Price"] = 0.006896551724137932,
+	["SalesTax"] = 6,
+	["Icon"] = 18958586029,
+	["ID"] = 172,
+	["RPMultiplier"] = 0.5
+}
+v_u_3.Chlorine = {
+	["DisplayName"] = "Chlorine",
+	["IsLiquid"] = true,
+	["Price"] = 0.06896551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 18958587586,
+	["ID"] = 171,
+	["RPMultiplier"] = 0.5
+}
+v_u_3.Filter = {
+	["DisplayName"] = "Filter",
+	["IsLiquid"] = false,
+	["Price"] = 6.8965517241379315,
+	["SalesTax"] = 6,
+	["Icon"] = 18958588158,
+	["ID"] = 170
+}
+v_u_3.HighPressureSteam = {
+	["DisplayName"] = "High Pressure Steam",
+	["IsLiquid"] = true,
+	["Price"] = 0.01,
+	["SalesTax"] = 6,
+	["Icon"] = 130988939063532,
+	["ID"] = 169,
+	["RPMultiplier"] = 0,
+	["Pollution"] = 0
+}
+v_u_3.LowPressureSteam = {
+	["DisplayName"] = "Low Pressure Steam",
+	["IsLiquid"] = true,
+	["Price"] = 0.01,
+	["SalesTax"] = 6,
+	["Icon"] = 78728534990953,
+	["ID"] = 168,
+	["RPMultiplier"] = 0,
+	["Pollution"] = 0
+}
+v_u_3.Electromagnet = {
+	["DisplayName"] = "Electromagnet",
+	["IsLiquid"] = false,
+	["Price"] = 327.58620689655174,
+	["SalesTax"] = 6,
+	["Icon"] = 18969775385,
+	["ID"] = 167
+}
+v_u_3.ElectricMotor = {
+	["DisplayName"] = "Electric Motor",
+	["IsLiquid"] = false,
+	["Price"] = 1551.7241379310344,
+	["SalesTax"] = 6,
+	["Icon"] = 19003843972,
+	["ID"] = 166,
+	["RPMultiplier"] = 200
+}
+v_u_3.RawLead = {
+	["DisplayName"] = "Raw Lead",
+	["IsLiquid"] = false,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 6,
+	["Icon"] = 128106391114100,
+	["ID"] = 165
+}
+v_u_3.LiquidLead = {
+	["DisplayName"] = "Liquid Lead",
+	["IsLiquid"] = true,
+	["Price"] = 1.7241379310344829,
+	["SalesTax"] = 6,
+	["Icon"] = 109707794682739,
+	["ID"] = 164,
+	["RPMultiplier"] = 0
+}
+v_u_3.LeadIngot = {
+	["DisplayName"] = "Lead Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 8.620689655172415,
+	["SalesTax"] = 6,
+	["Icon"] = 116959980421203,
+	["ID"] = 163
+}
+v_u_3.RawZinc = {
+	["DisplayName"] = "Raw Zinc",
+	["IsLiquid"] = false,
+	["Price"] = 1.7241379310344829,
+	["SalesTax"] = 6,
+	["Icon"] = 72256630739724,
+	["ID"] = 162
+}
+v_u_3.ZincSulfate = {
+	["DisplayName"] = "Zinc Sulfate",
+	["IsLiquid"] = true,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 6,
+	["Icon"] = 18996324469,
+	["ID"] = 161
+}
+v_u_3.Zinc = {
+	["DisplayName"] = "Zinc",
+	["IsLiquid"] = false,
+	["Price"] = 6.8965517241379315,
+	["SalesTax"] = 6,
+	["Icon"] = 140061959794353,
+	["ID"] = 160
+}
+v_u_3.ShallowEarthFragment = {
+	["DisplayName"] = "Shallow Earth Fragment",
+	["IsLiquid"] = false,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 6,
+	["Icon"] = 77278155974391,
+	["Description"] = "Obtained at around 1000-3000 meters deep in the Mineshaft Drill",
+	["ID"] = 159
+}
+v_u_3.MediumEarthFragment = {
+	["DisplayName"] = "Medium Earth Fragment",
+	["IsLiquid"] = false,
+	["Price"] = 41.37931034482759,
+	["SalesTax"] = 6,
+	["Icon"] = 82467629672419,
+	["Description"] = "Obtained at around 2500-6000 meters deep in the Mineshaft Drill",
+	["ID"] = 158
+}
+v_u_3.DeepEarthFragment = {
+	["DisplayName"] = "Deep Earth Fragment",
+	["IsLiquid"] = false,
+	["Price"] = 68.96551724137932,
+	["SalesTax"] = 6,
+	["Icon"] = 18984121798,
+	["Description"] = "Obtained at around 7000-8000 meters deep in the Mineshaft Drill",
+	["ID"] = 157
+}
+v_u_3.GalvanizedSteel = {
+	["DisplayName"] = "Galvanized Steel",
+	["IsLiquid"] = false,
+	["Price"] = 42.41379310344828,
+	["SalesTax"] = 6,
+	["Icon"] = 18996341402,
+	["ID"] = 156,
+	["RPMultiplier"] = 33
+}
+v_u_3["Graphite-ZincElectrode"] = {
+	["DisplayName"] = "Graphite-Zinc Electrode",
+	["IsLiquid"] = false,
+	["Price"] = 20.689655172413794,
+	["SalesTax"] = 6,
+	["Icon"] = 99349701380589,
+	["ID"] = 155
+}
+v_u_3.LiquidBrass = {
+	["DisplayName"] = "Liquid Brass",
+	["IsLiquid"] = true,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 6,
+	["Icon"] = 84635118362421,
+	["ID"] = 154,
+	["RPMultiplier"] = 0
+}
+v_u_3.BrassIngot = {
+	["DisplayName"] = "Brass Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 27.586206896551726,
+	["SalesTax"] = 6,
+	["Icon"] = 91264188642887,
+	["ID"] = 153,
+	["RPMultiplier"] = 35
+}
+v_u_3.Tetraethyllead = {
+	["DisplayName"] = "Tetraethyllead",
+	["IsLiquid"] = true,
+	["Price"] = 7.241379310344827,
+	["SalesTax"] = 6,
+	["Icon"] = 18996324699,
+	["ID"] = 152,
+	["RPMultiplier"] = 7
+}
+v_u_3.LeadedGasoline = {
+	["DisplayName"] = "Leaded Gasoline",
+	["IsLiquid"] = true,
+	["Price"] = 38.62068965517241,
+	["SalesTax"] = 6,
+	["Icon"] = 118935231626350,
+	["ID"] = 151,
+	["RPMultiplier"] = 23
+}
+v_u_3.TungstenIngot = {
+	["DisplayName"] = "Tungsten Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 6,
+	["Icon"] = 128556193101812,
+	["Hidden"] = true,
+	["ID"] = 150
+}
+v_u_3.PowderedTungsten = {
+	["DisplayName"] = "Powdered Tungsten",
+	["IsLiquid"] = false,
+	["Price"] = 51.724137931034484,
+	["SalesTax"] = 6,
+	["Icon"] = 82626118159936,
+	["ID"] = 149
+}
+v_u_3.PowderedTungstenCarbide = {
+	["DisplayName"] = "Powdered Tungsten Carbide",
+	["IsLiquid"] = false,
+	["Price"] = 72.41379310344828,
+	["SalesTax"] = 6,
+	["Icon"] = 110205163332837,
+	["ID"] = 148
+}
+v_u_3.TungstenCarbidePlate = {
+	["DisplayName"] = "Tungsten Carbide Plate",
+	["IsLiquid"] = false,
+	["Price"] = 206.89655172413794,
+	["SalesTax"] = 6,
+	["Icon"] = 120143868565924,
+	["ID"] = 147,
+	["RPMultiplier"] = 70
+}
+v_u_3.TungstenCarbideDrillHead = {
+	["DisplayName"] = "Tungsten Carbide Drill Head",
+	["IsLiquid"] = false,
+	["Price"] = 275862.0689655173,
+	["SalesTax"] = 6,
+	["Icon"] = 84698329407427,
+	["ID"] = 146,
+	["RPMultiplier"] = 225
+}
+v_u_3.IronDrillHead = {
+	["DisplayName"] = "Iron Drill Head",
+	["IsLiquid"] = false,
+	["Price"] = 50000,
+	["SalesTax"] = 6,
+	["Icon"] = 119612640410043,
+	["ID"] = 145,
+	["RPMultiplier"] = 30
+}
+v_u_3.CopperDrillHead = {
+	["DisplayName"] = "Copper Drill Head",
+	["IsLiquid"] = false,
+	["Price"] = 6896.551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 106000735626055,
+	["ID"] = 144,
+	["RPMultiplier"] = 25
+}
+v_u_3.AluminiumDrillHead = {
+	["DisplayName"] = "Aluminium Drill Head",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 6,
+	["Icon"] = 84698329407427,
+	["Hidden"] = true,
+	["ID"] = 143,
+	["RPMultiplier"] = 100
+}
+v_u_3.SteelDrillHead = {
+	["DisplayName"] = "Steel Drill Head",
+	["IsLiquid"] = false,
+	["Price"] = 65517.24137931035,
+	["SalesTax"] = 6,
+	["Icon"] = 97235078812762,
+	["ID"] = 142,
+	["RPMultiplier"] = 125
+}
+v_u_3.Exhaust = {
+	["DisplayName"] = "Exhaust",
+	["IsLiquid"] = true,
+	["Price"] = -0.1724137931034483,
+	["SalesTax"] = 6,
+	["Icon"] = 89606353401605,
+	["ID"] = 141,
+	["RPMultiplier"] = 0
+}
+v_u_3.SodiumHydroxideSolution = {
+	["DisplayName"] = "Sodium Hydroxide Solution",
+	["IsLiquid"] = true,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 6,
+	["Icon"] = 113089763342645,
+	["ID"] = 140
+}
+v_u_3.Rock = {
+	["DisplayName"] = "Rock",
+	["IsLiquid"] = false,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 6,
+	["Icon"] = 76089480506437,
+	["ID"] = 138
+}
+v_u_3.TreatedRock = {
+	["DisplayName"] = "Treated Rock",
+	["IsLiquid"] = false,
+	["Price"] = 5.172413793103448,
+	["SalesTax"] = 6,
+	["Icon"] = 123592927746232,
+	["ID"] = 137
+}
+v_u_3.SteelCoil = {
+	["DisplayName"] = "Steel Coil",
+	["IsLiquid"] = false,
+	["Price"] = 25.862068965517242,
+	["SalesTax"] = 6,
+	["Icon"] = 90227209280014,
+	["ID"] = 136
+}
+v_u_3.Gunpowder = {
+	["DisplayName"] = "Gunpowder",
+	["IsLiquid"] = false,
+	["Price"] = 24.137931034482758,
+	["SalesTax"] = 6,
+	["Icon"] = 127946557063733,
+	["ID"] = 135
+}
+v_u_3.Dynamite = {
+	["DisplayName"] = "Dynamite",
+	["IsLiquid"] = false,
+	["Price"] = 41.37931034482759,
+	["SalesTax"] = 6,
+	["Icon"] = 140288281127262,
+	["ID"] = 134,
+	["RPMultiplier"] = 25
+}
+v_u_3.GoldWire = {
+	["DisplayName"] = "Gold Wire",
+	["IsLiquid"] = false,
+	["Price"] = 68.96551724137932,
+	["SalesTax"] = 6,
+	["Icon"] = 17434806186,
+	["ID"] = 133
+}
+v_u_3.Silicon = {
+	["DisplayName"] = "Silicon",
+	["IsLiquid"] = false,
+	["Price"] = 17.24137931034483,
+	["SalesTax"] = 0,
+	["Icon"] = 17434744568,
+	["ID"] = 132
+}
+v_u_3.Semiconductor = {
+	["DisplayName"] = "Semiconductor",
+	["IsLiquid"] = false,
+	["Price"] = 224.13793103448276,
+	["SalesTax"] = 0,
+	["Icon"] = 17437704034,
+	["ID"] = 131,
+	["RPMultiplier"] = 30
+}
+v_u_3.LogicPlate = {
+	["DisplayName"] = "Logic Plate",
+	["IsLiquid"] = false,
+	["Price"] = 22.413793103448278,
+	["SalesTax"] = 0,
+	["ID"] = 130
+}
+v_u_3.SodiumCarbonate = {
+	["DisplayName"] = "Sodium Carbonate",
+	["IsLiquid"] = false,
+	["Price"] = 2.7586206896551726,
+	["SalesTax"] = 0,
+	["Icon"] = 17434745256,
+	["ID"] = 129
+}
+v_u_3.LithiumBrine = {
+	["DisplayName"] = "Lithium Brine",
+	["IsLiquid"] = true,
+	["Price"] = 8.620689655172415,
+	["SalesTax"] = 0,
+	["Icon"] = 17434790194,
+	["ID"] = 128
+}
+v_u_3.DirtyLithiumSulfate = {
+	["DisplayName"] = "Dirty Lithium Sulfate",
+	["IsLiquid"] = false,
+	["Price"] = 20.689655172413794,
+	["SalesTax"] = 0,
+	["Icon"] = 17434734144,
+	["ID"] = 127
+}
+v_u_3.LithiumSulfate = {
+	["DisplayName"] = "Lithium Sulfate",
+	["IsLiquid"] = false,
+	["Price"] = 34.48275862068966,
+	["SalesTax"] = 0,
+	["Icon"] = 17434745056,
+	["ID"] = 126
+}
+v_u_3.LithiumCarbonate = {
+	["DisplayName"] = "Lithium Carbonate",
+	["IsLiquid"] = false,
+	["Price"] = 68.96551724137932,
+	["SalesTax"] = 0,
+	["Icon"] = 17434744769,
+	["Description"] = "You are now done with the chemistry part",
+	["ID"] = 125,
+	["RPMultiplier"] = 40
+}
+v_u_3.LithiumOre = {
+	["DisplayName"] = "Lithium Ore",
+	["IsLiquid"] = false,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 0,
+	["Icon"] = 17434745549,
+	["ID"] = 124
+}
+v_u_3["Graphite-IronElectrode"] = {
+	["DisplayName"] = "Graphite-Iron Electrode",
+	["IsLiquid"] = false,
+	["Price"] = 27.586206896551726,
+	["SalesTax"] = 0,
+	["Icon"] = 130137709204623,
+	["ID"] = 123
+}
+v_u_3["UnchargedLithium-IonBattery"] = {
+	["DisplayName"] = "Uncharged Lithium-Ion Battery",
+	["IsLiquid"] = false,
+	["Price"] = 689.6551724137931,
+	["SalesTax"] = 0,
+	["Icon"] = 17434745784,
+	["ID"] = 122
+}
+v_u_3["ChargedLithium-IonBattery"] = {
+	["DisplayName"] = "Charged Lithium-Ion Battery",
+	["IsLiquid"] = false,
+	["Price"] = 1379.3103448275863,
+	["SalesTax"] = 0,
+	["Icon"] = 17434733878,
+	["Description"] = "Power selling??",
+	["ID"] = 121
+}
+v_u_3.LithiumBatteryPack = {
+	["DisplayName"] = "Lithium Battery Pack",
+	["IsLiquid"] = false,
+	["Price"] = 29310.344827586207,
+	["SalesTax"] = 0,
+	["Icon"] = 17444862470,
+	["Description"] = "Even more valuable power?",
+	["ID"] = 120,
+	["RPMultiplier"] = 180
+}
+v_u_3["2xMicrochip"] = {
+	["DisplayName"] = "2x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 1379.3103448275863,
+	["SalesTax"] = 0,
+	["Description"] = "The lowest tier Microchip, there is many more up to 8x64x!",
+	["ID"] = 119
+}
+v_u_3["4xMicrochip"] = {
+	["DisplayName"] = "4x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 2896.551724137931,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 118
+}
+v_u_3["8xMicrochip"] = {
+	["DisplayName"] = "8x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 4551.724137931034,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 117
+}
+v_u_3["16xMicrochip"] = {
+	["DisplayName"] = "16x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 6068.9655172413795,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 116
+}
+v_u_3["32xMicrochip"] = {
+	["DisplayName"] = "32x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 7586.206896551725,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 115
+}
+v_u_3["64xMicrochip"] = {
+	["DisplayName"] = "64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 9103.448275862069,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 114
+}
+v_u_3["2x64xMicrochip"] = {
+	["DisplayName"] = "2x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 34482.75862068966,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 113
+}
+v_u_3["3x64xMicrochip"] = {
+	["DisplayName"] = "3x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 86206.89655172414,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 112
+}
+v_u_3["4x64xMicrochip"] = {
+	["DisplayName"] = "4x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 129310.34482758622,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 111,
+	["RPMultiplier"] = 100
+}
+v_u_3["5x64xMicrochip"] = {
+	["DisplayName"] = "5x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 344827.5862068966,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 110,
+	["RPMultiplier"] = 150
+}
+v_u_3["6x64xMicrochip"] = {
+	["DisplayName"] = "6x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 689655.1724137932,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 109,
+	["RPMultiplier"] = 200
+}
+v_u_3["7x64xMicrochip"] = {
+	["DisplayName"] = "7x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 1034482.7586206897,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 108,
+	["RPMultiplier"] = 250
+}
+v_u_3["8x64xMicrochip"] = {
+	["DisplayName"] = "8x64x Microchip",
+	["IsLiquid"] = false,
+	["Price"] = 1724137.9310344828,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = 107,
+	["RPMultiplier"] = 300
+}
+v_u_3.Uranium = {
+	["DisplayName"] = "Uranium",
+	["IsLiquid"] = false,
+	["Price"] = 2800,
+	["SalesTax"] = 6,
+	["Icon"] = 16808708950,
+	["Description"] = "Unobtainable.",
+	["Hidden"] = true,
+	["ID"] = 106
+}
+v_u_3.HeavyOil = {
+	["DisplayName"] = "Heavy Oil",
+	["IsLiquid"] = true,
+	["Price"] = 1.7241379310344829,
+	["SalesTax"] = 6,
+	["Icon"] = 16826982851,
+	["ID"] = 105,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.LightOil = {
+	["DisplayName"] = "Light Oil",
+	["IsLiquid"] = true,
+	["Price"] = 2.413793103448276,
+	["SalesTax"] = 6,
+	["Icon"] = 16826982619,
+	["ID"] = 104,
+	["RPMultiplier"] = 0.1
+}
+v_u_3.HydrogenSulfide = {
+	["DisplayName"] = "Hydrogen Sulfide",
+	["IsLiquid"] = true,
+	["Price"] = 2.7586206896551726,
+	["SalesTax"] = 6,
+	["Icon"] = 16828302421,
+	["ID"] = 103,
+	["RPMultiplier"] = 0
+}
+v_u_3.LiquidSulfur = {
+	["DisplayName"] = "Liquid Sulfur",
+	["IsLiquid"] = true,
+	["Price"] = 4.137931034482759,
+	["SalesTax"] = 6,
+	["Icon"] = 16839604032,
+	["ID"] = 102,
+	["RPMultiplier"] = 0
+}
+v_u_3.Sulfur = {
+	["DisplayName"] = "Sulfur",
+	["IsLiquid"] = false,
+	["Price"] = 10.344827586206897,
+	["SalesTax"] = 6,
+	["Icon"] = 16810093813,
+	["ID"] = 101,
+	["RPMultiplier"] = 12
+}
+v_u_3.SulfurDioxide = {
+	["DisplayName"] = "Sulfur Dioxide",
+	["IsLiquid"] = true,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 16828301636,
+	["ID"] = 100,
+	["RPMultiplier"] = 0
+}
+v_u_3.SulfurTrioxide = {
+	["DisplayName"] = "Sulfur Trioxide",
+	["IsLiquid"] = true,
+	["Price"] = 0.8620689655172414,
+	["SalesTax"] = 6,
+	["Icon"] = 16828301911,
+	["ID"] = 99,
+	["RPMultiplier"] = 0
+}
+v_u_3.SulfuricAcid = {
+	["DisplayName"] = "Sulfuric Acid",
+	["IsLiquid"] = true,
+	["Price"] = 22.413793103448278,
+	["SalesTax"] = 6,
+	["Icon"] = 16828302143,
+	["ID"] = 98,
+	["RPMultiplier"] = 4
+}
+v_u_3.FrackingOil = {
+	["DisplayName"] = "Fracking Oil",
+	["IsLiquid"] = true,
+	["Price"] = 0.3448275862068966,
+	["SalesTax"] = 6,
+	["Icon"] = 16826983190,
+	["ID"] = 97,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.Naphtha = {
+	["DisplayName"] = "Naphtha",
+	["IsLiquid"] = true,
+	["Price"] = 5.379310344827586,
+	["SalesTax"] = 6,
+	["Icon"] = 16839232902,
+	["ID"] = 96,
+	["RPMultiplier"] = 0.1
+}
+v_u_3.Rubber = {
+	["DisplayName"] = "Rubber",
+	["IsLiquid"] = false,
+	["Price"] = 6.689655172413793,
+	["SalesTax"] = 6,
+	["Icon"] = 107541899948222,
+	["ID"] = 95,
+	["RPMultiplier"] = 90
+}
+v_u_3.InsulatedWire = {
+	["DisplayName"] = "Insulated Wire",
+	["IsLiquid"] = false,
+	["Price"] = 13.793103448275863,
+	["SalesTax"] = 6,
+	["Icon"] = 101212953354741,
+	["ID"] = 94
+}
+v_u_3.TireRim = {
+	["DisplayName"] = "Tire Rim",
+	["IsLiquid"] = false,
+	["Price"] = 620.6896551724138,
+	["SalesTax"] = 6,
+	["Icon"] = 113195649866121,
+	["ID"] = 93
+}
+v_u_3.Tire = {
+	["DisplayName"] = "Tire",
+	["IsLiquid"] = false,
+	["Price"] = 689.6551724137931,
+	["SalesTax"] = 6,
+	["Icon"] = 71363360164777,
+	["ID"] = 92,
+	["RPMultiplier"] = 40
+}
+v_u_3.GasolineE10 = {
+	["DisplayName"] = "GasolineE10",
+	["IsLiquid"] = true,
+	["Price"] = 19.655172413793103,
+	["SalesTax"] = 6,
+	["Icon"] = 16836403974,
+	["ID"] = 91,
+	["RPMultiplier"] = 13
+}
+v_u_3.SteelIngot = {
+	["DisplayName"] = "Steel Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 16.8,
+	["SalesTax"] = 6,
+	["Icon"] = 16810086081,
+	["ID"] = 90
+}
+v_u_3.SteelRod = {
+	["DisplayName"] = "Steel Rod",
+	["IsLiquid"] = false,
+	["Price"] = 32,
+	["SalesTax"] = 6,
+	["Icon"] = 16438182118,
+	["ID"] = 89
+}
+v_u_3.Crankshaft = {
+	["DisplayName"] = "Crankshaft",
+	["IsLiquid"] = false,
+	["Price"] = 260,
+	["SalesTax"] = 6,
+	["Icon"] = 16839500353,
+	["ID"] = 88,
+	["RPMultiplier"] = 35
+}
+v_u_3.Gearbox = {
+	["DisplayName"] = "Gearbox",
+	["IsLiquid"] = false,
+	["Price"] = 880,
+	["SalesTax"] = 6,
+	["Icon"] = 16828186489,
+	["ID"] = 87,
+	["RPMultiplier"] = 50
+}
+v_u_3.WaterBottle = {
+	["DisplayName"] = "Water Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 60,
+	["SalesTax"] = 6,
+	["Icon"] = 16839079340,
+	["ID"] = 86,
+	["RPMultiplier"] = 20
+}
+v_u_3.CheapWaterBottle = {
+	["DisplayName"] = "Cheap Water Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 45,
+	["SalesTax"] = 6,
+	["Icon"] = 16839080107,
+	["ID"] = 85,
+	["RPMultiplier"] = 5
+}
+v_u_3.RefinedDieselBottle = {
+	["DisplayName"] = "Refined Diesel Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 155,
+	["SalesTax"] = 6,
+	["Icon"] = 16839079584,
+	["ID"] = 84,
+	["RPMultiplier"] = 15
+}
+v_u_3.ResidueBottle = {
+	["DisplayName"] = "Residue Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 6,
+	["Icon"] = 13118701728,
+	["Description"] = "Icon does not resemble reality.",
+	["ID"] = 83,
+	["RPMultiplier"] = 0
+}
+v_u_3.OilBottle = {
+	["DisplayName"] = "Oil Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 72,
+	["SalesTax"] = 6,
+	["Icon"] = 16839079827,
+	["ID"] = 82,
+	["RPMultiplier"] = 20
+}
+v_u_3.FilteredWater = {
+	["DisplayName"] = "Filtered Water",
+	["IsLiquid"] = true,
+	["Price"] = 0.19,
+	["SalesTax"] = 6,
+	["Icon"] = 16836435471,
+	["ID"] = 81,
+	["RPMultiplier"] = 0.2,
+	["Pollution"] = 0
+}
+v_u_3.PlasticCasing = {
+	["DisplayName"] = "Plastic Casing",
+	["IsLiquid"] = false,
+	["Price"] = 50,
+	["SalesTax"] = 6,
+	["Icon"] = 16836504951,
+	["ID"] = 80,
+	["RPMultiplier"] = 7
+}
+v_u_3.PlasticBottle = {
+	["DisplayName"] = "Plastic Bottle",
+	["IsLiquid"] = false,
+	["Price"] = 25,
+	["SalesTax"] = 6,
+	["Icon"] = 16839080416,
+	["ID"] = 79,
+	["RPMultiplier"] = 30
+}
+v_u_3.SteelPlate = {
+	["DisplayName"] = "Steel Plate",
+	["IsLiquid"] = false,
+	["Price"] = 31,
+	["SalesTax"] = 6,
+	["Icon"] = 16810085786,
+	["ID"] = 78,
+	["RPMultiplier"] = 18
+}
+v_u_3.Gear = {
+	["DisplayName"] = "Gear",
+	["IsLiquid"] = false,
+	["Price"] = 34,
+	["SalesTax"] = 6,
+	["Icon"] = 16808473640,
+	["ID"] = 77,
+	["RPMultiplier"] = 20
+}
+v_u_3.Ethanol = {
+	["DisplayName"] = "Ethanol",
+	["IsLiquid"] = true,
+	["Price"] = 2,
+	["SalesTax"] = 6,
+	["Icon"] = 16826816983,
+	["ID"] = 76,
+	["RPMultiplier"] = 2
+}
+v_u_3.AceticAcid = {
+	["DisplayName"] = "Acetic Acid",
+	["IsLiquid"] = true,
+	["Price"] = 5,
+	["SalesTax"] = 6,
+	["Icon"] = 99559331992643,
+	["ID"] = 75,
+	["RPMultiplier"] = 7
+}
+v_u_3.Paraxylene = {
+	["DisplayName"] = "Paraxylene",
+	["IsLiquid"] = true,
+	["Price"] = 5,
+	["SalesTax"] = 6,
+	["Icon"] = 16826816167,
+	["ID"] = 74,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.Ethylene = {
+	["DisplayName"] = "Ethylene",
+	["IsLiquid"] = true,
+	["Price"] = 5,
+	["SalesTax"] = 6,
+	["Icon"] = 16826816744,
+	["ID"] = 73,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.PTA = {
+	["DisplayName"] = "PTA",
+	["IsLiquid"] = true,
+	["Price"] = 1,
+	["SalesTax"] = 6,
+	["Icon"] = 16826816346,
+	["ID"] = 72,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.MEG = {
+	["DisplayName"] = "MEG",
+	["IsLiquid"] = true,
+	["Price"] = 1,
+	["SalesTax"] = 6,
+	["Icon"] = 16826816570,
+	["ID"] = 71,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.PlasticPellets = {
+	["DisplayName"] = "Plastic Pellets",
+	["IsLiquid"] = false,
+	["Price"] = 0.3,
+	["SalesTax"] = 6,
+	["Icon"] = 89322679014212,
+	["ID"] = 70,
+	["RPMultiplier"] = 25
+}
+v_u_3.IronMix = {
+	["DisplayName"] = "Iron Mix",
+	["IsLiquid"] = false,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 0,
+	["Icon"] = 16808497449,
+	["ID"] = 69
+}
+v_u_3.IronPowder = {
+	["DisplayName"] = "Iron Powder",
+	["IsLiquid"] = false,
+	["Price"] = 5.172413793103448,
+	["SalesTax"] = 0,
+	["Icon"] = 16808489819,
+	["ID"] = 68
+}
+v_u_3.CopperPowder = {
+	["DisplayName"] = "Copper Powder",
+	["IsLiquid"] = false,
+	["Price"] = 2.413793103448276,
+	["SalesTax"] = 0,
+	["Icon"] = 16808507099,
+	["ID"] = 67
+}
+v_u_3.CopperMix = {
+	["DisplayName"] = "Copper Mix",
+	["IsLiquid"] = false,
+	["Price"] = 1.0344827586206897,
+	["SalesTax"] = 0,
+	["Icon"] = 16808503765,
+	["ID"] = 66
+}
+v_u_3.CokeFuel = {
+	["DisplayName"] = "Coke Fuel",
+	["IsLiquid"] = false,
+	["Price"] = 6.206896551724138,
+	["SalesTax"] = 0,
+	["Icon"] = 128524487351773,
+	["ID"] = 65,
+	["RPMultiplier"] = 9
+}
+v_u_3.LiquidGold = {
+	["DisplayName"] = "Liquid Gold",
+	["IsLiquid"] = true,
+	["Price"] = 344.82758620689657,
+	["SalesTax"] = 0,
+	["Icon"] = 16827634955,
+	["ID"] = 64,
+	["RPMultiplier"] = 0
+}
+v_u_3.Sand = {
+	["DisplayName"] = "Sand",
+	["IsLiquid"] = false,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 0,
+	["Icon"] = 16836521906,
+	["ID"] = 63,
+	["RPMultiplier"] = 0.1
+}
+v_u_3.GoldIngot = {
+	["DisplayName"] = "Gold Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 1465.5172413793105,
+	["SalesTax"] = 0,
+	["Icon"] = 16808512195,
+	["ID"] = 62,
+	["RPMultiplier"] = 70
+}
+v_u_3.BauxiteResidue = {
+	["DisplayName"] = "Bauxite Residue",
+	["IsLiquid"] = false,
+	["Price"] = 17.24137931034483,
+	["SalesTax"] = 0,
+	["Icon"] = 16839557671,
+	["ID"] = 61
+}
+v_u_3.CrushedBauxite = {
+	["DisplayName"] = "Crushed Bauxite",
+	["IsLiquid"] = false,
+	["Price"] = 25.862068965517242,
+	["SalesTax"] = 0,
+	["Icon"] = 16839590028,
+	["ID"] = 60
+}
+v_u_3.Alumina = {
+	["DisplayName"] = "Alumina",
+	["IsLiquid"] = false,
+	["Price"] = 34.48275862068966,
+	["SalesTax"] = 0,
+	["Icon"] = 16827090828,
+	["ID"] = 59
+}
+v_u_3.AluminaDust = {
+	["DisplayName"] = "Alumina Dust",
+	["IsLiquid"] = false,
+	["Price"] = 31.03448275862069,
+	["SalesTax"] = 0,
+	["Icon"] = 16827113357,
+	["ID"] = 58
+}
+v_u_3.LiquidAluminium = {
+	["DisplayName"] = "Liquid Aluminium",
+	["IsLiquid"] = true,
+	["Price"] = 68.96551724137932,
+	["SalesTax"] = 0,
+	["Icon"] = 74972686074238,
+	["ID"] = 57,
+	["RPMultiplier"] = 0
+}
+v_u_3.AluminiumIngot = {
+	["DisplayName"] = "Aluminium Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 275.86206896551727,
+	["SalesTax"] = 0,
+	["Icon"] = 131089595114185,
+	["ID"] = 56,
+	["RPMultiplier"] = 65
+}
+v_u_3.MoltenPurpleGold = {
+	["DisplayName"] = "Molten Purple Gold",
+	["IsLiquid"] = true,
+	["Price"] = 200,
+	["SalesTax"] = 0,
+	["Icon"] = 16827634412,
+	["ID"] = 55
+}
+v_u_3.PurpleGoldIngot = {
+	["DisplayName"] = "Purple Gold Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 6896.551724137931,
+	["SalesTax"] = 0,
+	["Icon"] = 16808377554,
+	["ID"] = 54,
+	["RPMultiplier"] = 100
+}
+v_u_3.FerroaluminiumAlloyIngot = {
+	["DisplayName"] = "Ferroaluminium Alloy Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 862.0689655172414,
+	["SalesTax"] = 0,
+	["Icon"] = 16808407436,
+	["ID"] = 53
+}
+v_u_3.MoltenFerroaluminiumAlloy = {
+	["DisplayName"] = "Molten Ferroaluminium Alloy",
+	["IsLiquid"] = true,
+	["Price"] = 379.3103448275862,
+	["SalesTax"] = 0,
+	["Icon"] = 98095670526090,
+	["ID"] = 52
+}
+v_u_3.FerroaluminiumMagnet = {
+	["DisplayName"] = "Ferroaluminium Magnet",
+	["IsLiquid"] = false,
+	["Price"] = 2931.034482758621,
+	["SalesTax"] = 0,
+	["Icon"] = 91762104705119,
+	["ID"] = 51,
+	["RPMultiplier"] = 120
+}
+v_u_3.RichSoil = {
+	["DisplayName"] = "Rich Soil",
+	["IsLiquid"] = false,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 0,
+	["Icon"] = 16839654169,
+	["ID"] = 50
+}
+v_u_3.LiquidGlass = {
+	["DisplayName"] = "Liquid Glass",
+	["IsLiquid"] = true,
+	["Price"] = 3.4482758620689657,
+	["SalesTax"] = 0,
+	["Icon"] = 16839252696,
+	["ID"] = 49
+}
+v_u_3.Glass = {
+	["DisplayName"] = "Glass",
+	["IsLiquid"] = false,
+	["Price"] = 27.586206896551726,
+	["SalesTax"] = 0,
+	["Icon"] = 88670849719194,
+	["ID"] = 48,
+	["RPMultiplier"] = 14
+}
+v_u_3.Soil = {
+	["DisplayName"] = "Soil",
+	["IsLiquid"] = false,
+	["Price"] = 0.6896551724137931,
+	["SalesTax"] = 0,
+	["Icon"] = 4562500665,
+	["ID"] = 47,
+	["RPMultiplier"] = 0.1
+}
+v_u_3.Gravel = {
+	["DisplayName"] = "Gravel",
+	["IsLiquid"] = false,
+	["Price"] = 1.3793103448275863,
+	["SalesTax"] = 0,
+	["Icon"] = 16836527214,
+	["ID"] = 46,
+	["RPMultiplier"] = 0.1
+}
+v_u_3["10KaratGold"] = {
+	["DisplayName"] = "10 Karat Gold",
+	["IsLiquid"] = false,
+	["Price"] = 103.44827586206897,
+	["SalesTax"] = 0,
+	["Icon"] = 16808692273,
+	["ID"] = 45
+}
+v_u_3["12KaratGold"] = {
+	["DisplayName"] = "12 Karat Gold",
+	["IsLiquid"] = false,
+	["Price"] = 172.41379310344828,
+	["SalesTax"] = 0,
+	["Icon"] = 16808691787,
+	["ID"] = 44
+}
+v_u_3["8KaratGold"] = {
+	["DisplayName"] = "8 Karat Gold",
+	["IsLiquid"] = false,
+	["Price"] = 55.17241379310345,
+	["SalesTax"] = 0,
+	["Icon"] = 16808692273,
+	["ID"] = 43
+}
+v_u_3["18KaratGold"] = {
+	["DisplayName"] = "18 Karat Gold",
+	["IsLiquid"] = false,
+	["Price"] = 275.86206896551727,
+	["SalesTax"] = 0,
+	["Icon"] = 16808691539,
+	["ID"] = 42
+}
+v_u_3["24KaratGold"] = {
+	["DisplayName"] = "24 Karat Gold",
+	["IsLiquid"] = false,
+	["Price"] = 413.7931034482759,
+	["SalesTax"] = 0,
+	["Icon"] = 16808691222,
+	["Description"] = "The final tier of gold. Melt it and mold it into an Ingot for usable product.",
+	["ID"] = 41
+}
+v_u_3.OakLog = {
+	["DisplayName"] = "Oak Log",
+	["IsLiquid"] = false,
+	["Price"] = 2,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 16842514734,
+	["Description"] = "Fresh timber! You can convert it to Planks.",
+	["ID"] = 40
+}
+v_u_3.Paper = {
+	["DisplayName"] = "Paper",
+	["IsLiquid"] = false,
+	["Price"] = 5,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 137669627275067,
+	["ID"] = 39,
+	["RPMultiplier"] = 7
+}
+v_u_3.CutOakLog = {
+	["DisplayName"] = "Cut Oak Log",
+	["IsLiquid"] = false,
+	["Price"] = 1.2,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 16842515252,
+	["ID"] = 38
+}
+v_u_3.ChunkPlank = {
+	["DisplayName"] = "Chunk Plank",
+	["IsLiquid"] = false,
+	["Price"] = 1.2,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 16842434842,
+	["ID"] = 37
+}
+v_u_3.Planks = {
+	["DisplayName"] = "Planks",
+	["IsLiquid"] = false,
+	["Price"] = 4.5,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Description"] = "Essential material in Chair manufacturing",
+	["Icon"] = 16808323872,
+	["ID"] = 36,
+	["RPMultiplier"] = 5
+}
+v_u_3.Toy = {
+	["DisplayName"] = "Toy",
+	["IsLiquid"] = false,
+	["Price"] = 35,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 72530386797639,
+	["ID"] = 35,
+	["RPMultiplier"] = 2
+}
+v_u_3.PresentBox = {
+	["DisplayName"] = "Present Box",
+	["IsLiquid"] = false,
+	["Price"] = 60,
+	["SalesTax"] = 6,
+	["Icon"] = 108544200094134,
+	["ID"] = 34
+}
+v_u_3.PackedPresent = {
+	["DisplayName"] = "Packed Present",
+	["IsLiquid"] = false,
+	["Price"] = 103.44827586206897,
+	["SalesTax"] = 6,
+	["Hidden"] = true,
+	["ID"] = 33
+}
+v_u_3["Plank\194\178"] = {
+	["DisplayName"] = "Plank\194\178",
+	["IsLiquid"] = false,
+	["Price"] = 14,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Icon"] = 16808449632,
+	["ID"] = 32
+}
+v_u_3.Chair = {
+	["DisplayName"] = "Chair",
+	["IsLiquid"] = false,
+	["Price"] = 355,
+	["SalesTax"] = 6,
+	["Model"] = script.Wood,
+	["Description"] = "A chair made out of wood and nails. Why does it cost so much? No one knows!",
+	["Icon"] = 104604269358469,
+	["ID"] = 31,
+	["RPMultiplier"] = 30
+}
+v_u_3.Nails = {
+	["DisplayName"] = "Nails",
+	["IsLiquid"] = false,
+	["Price"] = 1,
+	["SalesTax"] = 6,
+	["Icon"] = 16808470291,
+	["Description"] = "\240\159\146\133",
+	["ID"] = 30
+}
+v_u_3.RawGas = {
+	["DisplayName"] = "Raw Gas",
+	["IsLiquid"] = true,
+	["Price"] = 0.01,
+	["SalesTax"] = 0,
+	["Icon"] = 16827246257,
+	["ID"] = 29,
+	["RPMultiplier"] = 0
+}
+v_u_3["Water-FreeGas"] = {
+	["DisplayName"] = "Water-Free Gas",
+	["IsLiquid"] = true,
+	["Price"] = 0.05,
+	["SalesTax"] = 0,
+	["Icon"] = 16827245704,
+	["ID"] = 28,
+	["RPMultiplier"] = 0
+}
+v_u_3.LNG = {
+	["DisplayName"] = "LNG",
+	["IsLiquid"] = true,
+	["Price"] = 55.17241379310345,
+	["SalesTax"] = 0,
+	["Icon"] = 16827246497,
+	["ID"] = 27,
+	["RPMultiplier"] = 2
+}
+v_u_3.RefinedGas = {
+	["DisplayName"] = "Refined Gas",
+	["IsLiquid"] = true,
+	["Price"] = 0.1,
+	["SalesTax"] = 0,
+	["Icon"] = 16827246084,
+	["ID"] = 26,
+	["RPMultiplier"] = 0.01
+}
+v_u_3.None = {
+	["DisplayName"] = "None",
+	["IsLiquid"] = false,
+	["Price"] = 0,
+	["SalesTax"] = 0,
+	["Hidden"] = true,
+	["ID"] = -1
+}
+v_u_3.RawCopper = {
+	["DisplayName"] = "Raw Copper",
+	["IsLiquid"] = false,
+	["Price"] = 1.9,
+	["SalesTax"] = 1,
+	["Model"] = script.RawCopper,
+	["Icon"] = 107089347989210,
+	["ID"] = 25
+}
+v_u_3.Coal = {
+	["DisplayName"] = "Coal",
+	["IsLiquid"] = false,
+	["Price"] = 1.8,
+	["SalesTax"] = 6,
+	["Model"] = script.Coal,
+	["Description"] = "Coal.",
+	["Icon"] = 131659488107618,
+	["ID"] = 24
+}
+v_u_3.BlackDye = {
+	["DisplayName"] = "Black Dye",
+	["IsLiquid"] = false,
+	["Price"] = 3,
+	["SalesTax"] = 6,
+	["Model"] = script.Coal,
+	["Icon"] = 16836585336,
+	["ID"] = 23
+}
+v_u_3.CopperIngot = {
+	["DisplayName"] = "Copper Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 9.2,
+	["SalesTax"] = 6,
+	["Model"] = script.CopperIngot,
+	["Icon"] = 16827033766,
+	["ID"] = 22,
+	["RPMultiplier"] = 1.5
+}
+v_u_3.CopperPlate = {
+	["DisplayName"] = "Copper Plate",
+	["IsLiquid"] = false,
+	["Price"] = 11.33,
+	["SalesTax"] = 7,
+	["Model"] = script.CopperPlate,
+	["Icon"] = 16808516651,
+	["ID"] = 21,
+	["RPMultiplier"] = 6
+}
+v_u_3.CopperWire = {
+	["DisplayName"] = "Copper Wire",
+	["IsLiquid"] = false,
+	["Price"] = 2.52,
+	["SalesTax"] = 5,
+	["Model"] = script.CopperWire,
+	["Icon"] = 16808428752,
+	["ID"] = 20
+}
+v_u_3.RawIron = {
+	["DisplayName"] = "Raw Iron",
+	["IsLiquid"] = false,
+	["Price"] = 2,
+	["SalesTax"] = 6,
+	["Icon"] = 126629213755331,
+	["ID"] = 19
+}
+v_u_3.IronIngot = {
+	["DisplayName"] = "Iron Ingot",
+	["IsLiquid"] = false,
+	["Price"] = 22.6,
+	["SalesTax"] = 6,
+	["Icon"] = 16842378531,
+	["ID"] = 18
+}
+v_u_3.IronPlate = {
+	["DisplayName"] = "Iron Plate",
+	["IsLiquid"] = false,
+	["Price"] = 24.2,
+	["SalesTax"] = 7,
+	["Icon"] = 16808482704,
+	["ID"] = 17
+}
+v_u_3["IronPlate\194\178"] = {
+	["DisplayName"] = "Iron Plate\194\178",
+	["IsLiquid"] = false,
+	["Price"] = 102,
+	["SalesTax"] = 7,
+	["Icon"] = 100207339201117,
+	["ID"] = 16
+}
+v_u_3.IronCoil = {
+	["DisplayName"] = "Iron Coil",
+	["IsLiquid"] = false,
+	["Price"] = 15.12,
+	["SalesTax"] = 8,
+	["Icon"] = 16808501006,
+	["ID"] = 15,
+	["RPMultiplier"] = 4
+}
+v_u_3.Water = {
+	["DisplayName"] = "Water",
+	["IsLiquid"] = true,
+	["Price"] = 0.08,
+	["SalesTax"] = 5,
+	["Icon"] = 16842403038,
+	["ID"] = 14,
+	["RPMultiplier"] = 0,
+	["Pollution"] = 0
+}
+v_u_3.CrudeOil = {
+	["DisplayName"] = "Crude Oil",
+	["IsLiquid"] = true,
+	["Price"] = 4,
+	["SalesTax"] = 5,
+	["Icon"] = 16368043689,
+	["ID"] = 13,
+	["RPMultiplier"] = 0.2
+}
+v_u_3.HotCrudeOil = {
+	["DisplayName"] = "Hot Crude Oil",
+	["IsLiquid"] = true,
+	["Price"] = 0.05,
+	["SalesTax"] = 5,
+	["Icon"] = 16836677009,
+	["ID"] = 12,
+	["RPMultiplier"] = 0
+}
+v_u_3.Residue = {
+	["DisplayName"] = "Residue",
+	["IsLiquid"] = true,
+	["Price"] = -2,
+	["SalesTax"] = 0,
+	["Icon"] = 16836403780,
+	["ID"] = 11,
+	["RPMultiplier"] = 0,
+	["Pollution"] = 1200
+}
+v_u_3.Gasoline = {
+	["DisplayName"] = "Gasoline",
+	["IsLiquid"] = true,
+	["Price"] = 14,
+	["SalesTax"] = 10,
+	["Icon"] = 16836404166,
+	["ID"] = 10,
+	["RPMultiplier"] = 7.5
+}
+v_u_3.CrudeDiesel = {
+	["DisplayName"] = "Crude Diesel",
+	["IsLiquid"] = true,
+	["Price"] = 4.5,
+	["SalesTax"] = 20,
+	["Icon"] = 16826983589,
+	["ID"] = 9,
+	["RPMultiplier"] = 1
+}
+v_u_3.PoorQualityDiesel = {
+	["DisplayName"] = "Poor Quality Diesel",
+	["IsLiquid"] = true,
+	["Price"] = 7.5,
+	["SalesTax"] = 15,
+	["Icon"] = 16841577063,
+	["ID"] = 8,
+	["RPMultiplier"] = 1.5
+}
+v_u_3.Diesel = {
+	["DisplayName"] = "Diesel",
+	["IsLiquid"] = true,
+	["Price"] = 10.5,
+	["SalesTax"] = 12,
+	["Icon"] = 16826983400,
+	["ID"] = 7,
+	["RPMultiplier"] = 2
+}
+v_u_3.RefinedDiesel = {
+	["DisplayName"] = "Refined Diesel",
+	["IsLiquid"] = true,
+	["Price"] = 14,
+	["SalesTax"] = 10,
+	["Icon"] = 16826982177,
+	["ID"] = 6,
+	["RPMultiplier"] = 3
+}
+v_u_3.MachineOil = {
+	["DisplayName"] = "Machine Oil",
+	["IsLiquid"] = true,
+	["Price"] = 10,
+	["SalesTax"] = 10,
+	["Icon"] = 16826982397,
+	["ID"] = 5,
+	["RPMultiplier"] = 4
+}
+v_u_3.Steam = {
+	["DisplayName"] = "Steam",
+	["IsLiquid"] = true,
+	["Price"] = 0.01,
+	["SalesTax"] = 80,
+	["Icon"] = 16827479972,
+	["ID"] = 4,
+	["RPMultiplier"] = 0,
+	["Pollution"] = 0
+}
+v_u_3.LiquidCopper = {
+	["DisplayName"] = "Liquid Copper",
+	["IsLiquid"] = true,
+	["Price"] = 2.6,
+	["SalesTax"] = 25,
+	["Icon"] = 16827635393,
+	["ID"] = 3,
+	["RPMultiplier"] = 0
+}
+v_u_3.LiquidIron = {
+	["DisplayName"] = "Liquid Iron",
+	["IsLiquid"] = true,
+	["Price"] = 8,
+	["SalesTax"] = 30,
+	["Icon"] = 16827634677,
+	["ID"] = 2,
+	["RPMultiplier"] = 0
+}
+v_u_3.LiquidIron = {
+	["DisplayName"] = "Liquid Iron",
+	["IsLiquid"] = true,
+	["Price"] = 8,
+	["SalesTax"] = 30,
+	["Icon"] = 16827634677,
+	["ID"] = 1,
+	["RPMultiplier"] = 0
+}
+function v_u_3.get(p31)
+	return p31.DisplayName
+end
+function v_u_3.findItemByDisplayName(p32)
+	-- upvalues: (copy) v_u_3
+	return v_u_3[string.gsub(p32, " ", "")] or v_u_3.None
+end
+return v_u_3

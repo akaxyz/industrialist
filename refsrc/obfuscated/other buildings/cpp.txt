@@ -1,0 +1,1075 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PowerUtilsV2 = require(ReplicatedStorage.Modules.PowerUtilsV2)
+local PipeUtilsV2 = require(ReplicatedStorage.Modules.PipeUtilsV2)
+require(ReplicatedStorage.Modules.Enums.Items)
+local Achievements = require(ReplicatedStorage.Modules.Achievements)
+local v1 = PipeUtilsV2.loadConnector(script.Parent.ItemIn1MainPipe)
+PipeUtilsV2.loadConnector(script.Parent.ItemIn2MainPipe)
+local v2 = PipeUtilsV2.loadConnector(script.Parent.FluidInMainPipe)
+local v3 = PipeUtilsV2.loadConnector(script.Parent.OutFluidMainPipe)
+local v4 = PipeUtilsV2.loadConnector(script.Parent.OutFluid2MainPipe)
+local v5 = PowerUtilsV2.loadConnector(script.Parent.MainConnector)
+local v6 = -15
+local v7 = false
+local v8 = false
+local t = {}
+local t2 = {
+    pressurizer = false,
+    waterinflow = false,
+    watercirculation = false,
+    wateroutflow = false,
+    coalfeeder = false,
+    aircirculation = false,
+    preheater = false,
+    idlesystems = true
+}
+local Interactable = script.Parent.Interactable
+local function equipmentStatus(p1, p2) --[[ equipmentStatus | Line: 40 | Upvalues: t (copy), t2 (copy), Interactable (copy) ]]
+    local v1 = t[p1]
+    if p2 == false and t2[p1] == true then
+        v1.Lamp.Material = Enum.Material.Plastic
+        Interactable.Table.Button:Play()
+    elseif p2 == true then
+        v1.Lamp.Material = Enum.Material.Neon
+        Interactable.Table.Button:Play()
+    end
+    t2[p1] = p2
+end
+local t3 = {
+    pressurization = 0,
+    air = 0,
+    coalfeed = 0,
+    centralvalve = 0,
+    exhaust = 0,
+    recirculation = 0,
+    preheatpower = 0,
+    exchangersteam = 0,
+    exchangerwater = 0,
+    exchangermintemp = 0,
+    steambypass = 0,
+    generatorclutch = 0,
+    monitor = 0
+}
+local function saveData() --[[ saveData | Line: 69 | Upvalues: t2 (copy), v8 (ref), v7 (ref), t3 (copy) ]]
+    local v1 = ""
+    for i, v in ipairs({
+        t2.pressurizer,
+        t2.waterinflow,
+        t2.watercirculation,
+        t2.wateroutflow,
+        t2.coalfeeder,
+        t2.aircirculation,
+        t2.preheater,
+        false,
+        false,
+        false,
+        t2.idlesystems,
+        v8,
+        false,
+        v7,
+        t3.pressurization,
+        t3.air,
+        t3.coalfeed,
+        t3.centralvalve,
+        t3.exhaust,
+        t3.recirculation,
+        t3.preheatpower,
+        t3.exchangersteam,
+        t3.exchangerwater,
+        t3.exchangermintemp,
+        t3.steambypass,
+        t3.generatorclutch,
+        t3.monitor
+    }) do
+        if typeof(v) == "number" then
+            v = round(v, 2)
+        end
+        v1 = v1 .. tostring(v) .. "|"
+    end
+    script.Parent.ModelData.Data.Value = v1
+end
+local function toBool(p1) --[[ toBool | Line: 109 ]]
+    return p1 == "true"
+end
+local v9 = RaycastParams.new()
+v9.FilterType = Enum.RaycastFilterType.Exclude
+local v10 = false
+local Permissions = require(game.ReplicatedStorage.Modules.Permissions)
+local t4 = {}
+function newControllableDial(p1, p2, p3, p4, p5, p6) --[[ newControllableDial | Line: 121 | Upvalues: v10 (ref), Interactable (copy), t3 (copy), t4 (copy), Permissions (copy), v9 (copy) ]]
+    if p6 == nil then
+        p6 = 0
+    end
+    local v1 = p1:GetPivot()
+    local v2 = p5 / (p3 - p6)
+    local v3 = v1
+    local function upd(p12, p22) --[[ upd | Line: 130 | Upvalues: v10 (ref), p1 (copy), v3 (ref), p3 (copy), p6 (ref), v1 (copy), v2 (copy), Interactable (ref), t3 (ref), p2 (copy) ]]
+        if v10 and p22 == nil then
+            p1:PivotTo(v3)
+        elseif p12 ~= nil then
+            if p3 < p12 then
+                p12 = p6
+            end
+            if p12 < p6 then
+                p12 = p6
+            end
+            p1:PivotTo(v1 * CFrame.Angles(math.rad(v2 * (p12 - p6)), 0, 0))
+            v3 = v1 * CFrame.Angles(math.rad(v2 * (p12 - p6)), 0, 0)
+            Interactable.Table["Switch 1 (SFX)"]:Play()
+            t3[p2] = p12
+        end
+    end
+    t4[p2] = upd
+    if p1:FindFirstChild("ClickDetector") then
+        p1.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 156 | Upvalues: Permissions (ref), upd (copy), t3 (ref), p2 (copy), p4 (copy) ]]
+            if Permissions.doesPlayerHavePermission(p1, 7) then
+                upd(t3[p2] + p4)
+            end
+        end)
+    elseif p1:FindFirstChild("DragDetector") then
+        local v4 = p1:GetPivot()
+        local Position = p1:GetPivot().Position
+        local v5 = (p3 - p6) / p4
+        p1:SetAttribute("Sample", v5)
+        p1:SetAttribute("Test1", p5 / v5 * v5 / 2)
+        local t = {}
+        for i = 0, v5 do
+            table.insert(t, { p6 + (p3 - p6) / v5 * i, v4 * CFrame.Angles(math.rad(p5 / v5 * i), 0, 0) })
+        end
+        p1:PivotTo(t[1][2])
+        local v6 = 0
+        local v7 = nil
+        local v8 = script.BillboardGui:Clone()
+        v8.Parent = p1.Pivot
+        p1.DragDetector.PermissionPolicy = Enum.DragDetectorPermissionPolicy.Scriptable
+        p1.DragDetector:SetPermissionPolicyFunction(function(p1, p2) --[[ Line: 187 | Upvalues: Permissions (ref) ]]
+            return Permissions.doesPlayerHavePermission(p1, 7)
+        end)
+        p1.DragDetector:SetDragStyleFunction(function(p12) --[[ Line: 191 | Upvalues: v9 (ref), p1 (copy), v7 (ref), v4 (copy), Position (copy), p6 (ref), t (copy), v6 (ref), v8 (copy), p3 (copy) ]]
+            v9.FilterDescendantsInstances = { p1, v7 }
+            local v1 = workspace:Raycast(p12.Origin, p12.Direction, v9)
+            if v1 then
+                local Position_2 = v1.Position
+                local v2 = v4:ToObjectSpace(CFrame.new(Position_2))
+                local v3 = CFrame.lookAt(Position, Position_2 - v4.RightVector * v2.Position.X, v4.RightVector) * CFrame.Angles(0, 0, 1.5707963267948966)
+                local LookVector = v3.LookVector
+                local t2 = { p6, v3 }
+                local v42 = (1 / 0)
+                for k, v in pairs(t) do
+                    local v72 = math.deg((math.acos((v[2].LookVector:Dot(LookVector)))))
+                    if v72 < v42 then
+                        v42 = v72
+                        t2 = v
+                    end
+                end
+                v6 = t2[1]
+                v8.Enabled = true
+                v8.TextLabel.Text = round((v6 - p6) / (p3 - p6) * 100, 1) .. "%"
+                return t2[2]
+            else
+                return nil
+            end
+        end)
+        p1.DragDetector.DragStart:Connect(function(p1) --[[ Line: 227 | Upvalues: v7 (ref) ]]
+            v7 = p1.Character
+        end)
+        p1.DragDetector.DragEnd:Connect(function() --[[ Line: 231 | Upvalues: v8 (copy), upd (copy), v6 (ref) ]]
+            v8.Enabled = false
+            upd(v6)
+        end)
+    end
+end
+local function loadData() --[[ loadData | Line: 239 | Upvalues: equipmentStatus (copy), v8 (ref), Interactable (copy), v7 (ref), t4 (copy), t3 (copy) ]]
+    local v1 = string.split(script.Parent.ModelData.Data.Value, "|")
+    if v1 ~= nil and not (#v1 < 10) then
+        equipmentStatus("pressurizer", v1[1] == "true")
+        equipmentStatus("waterinflow", v1[2] == "true")
+        equipmentStatus("watercirculation", v1[3] == "true")
+        equipmentStatus("wateroutflow", v1[4] == "true")
+        equipmentStatus("coalfeeder", v1[5] == "true")
+        equipmentStatus("aircirculation", v1[6] == "true")
+        equipmentStatus("preheater", v1[7] == "true")
+        equipmentStatus("idlesystems", v1[11] == "true")
+        v8 = v1[12] == "true"
+        if v1[12] == "true" then
+            Interactable.Sync:PivotTo(Interactable.Sync:GetPivot() * CFrame.Angles(1.5707963267948966, 0, 0))
+        end
+        v7 = v1[14] == "true"
+        if v1[14] == "true" then
+            Interactable.Start:PivotTo(Interactable.Start:GetPivot() * CFrame.Angles(1.5707963267948966, 0, 0))
+        end
+        t4.pressurization((tonumber(v1[15])))
+        t4.air((tonumber(v1[16])))
+        t4.coalfeed((tonumber(v1[17])))
+        t4.centralvalve((tonumber(v1[18])))
+        t4.exhaust((tonumber(v1[19])))
+        t4.recirculation((tonumber(v1[20])))
+        t3.preheatpower = tonumber(v1[21])
+        t4.exchangersteam((tonumber(v1[22])))
+        t4.exchangerwater((tonumber(v1[23])))
+        t4.exchangermintemp((tonumber(v1[24])))
+        t4.steambypass((tonumber(v1[25])))
+        t4.generatorclutch((tonumber(v1[26])))
+        t4.monitor((tonumber(v1[27])))
+    end
+end
+if game.Players.LocalPlayer == nil then
+    Interactable.Start.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 296 | Upvalues: Permissions (copy), v7 (ref), Interactable (copy) ]]
+        if Permissions.doesPlayerHavePermission(p1, 7) then
+            if v7 == false then
+                Interactable.Start:PivotTo(Interactable.Start:GetPivot() * CFrame.Angles(1.5707963267948966, 0, 0))
+                v7 = true
+            else
+                Interactable.Start:PivotTo(Interactable.Start:GetPivot() * CFrame.Angles(-1.5707963267948966, 0, 0))
+                v7 = false
+            end
+            Interactable.Table["Locking Wrench 6 (SFX)"]:Play()
+        end
+    end)
+    Interactable.Sync.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 310 | Upvalues: Permissions (copy), v8 (ref), Interactable (copy) ]]
+        if Permissions.doesPlayerHavePermission(p1, 7) then
+            if v8 == false then
+                Interactable.Sync:PivotTo(Interactable.Sync:GetPivot() * CFrame.Angles(1.5707963267948966, 0, 0))
+                v8 = true
+            else
+                Interactable.Sync:PivotTo(Interactable.Sync:GetPivot() * CFrame.Angles(-1.5707963267948966, 0, 0))
+                v8 = false
+            end
+            Interactable.Table["Locking Wrench 6 (SFX)"]:Play()
+        end
+    end)
+    newControllableDial(Interactable.SteamBypass, "steambypass", 4, 0.1, 180)
+    newControllableDial(Interactable.Pressurization, "pressurization", 4, 0.1, 180)
+    newControllableDial(Interactable.Air, "air", 4, 0.1, 180)
+    newControllableDial(Interactable.MinTemp, "exchangermintemp", 300, 10, 180, 100)
+    newControllableDial(Interactable.CoalFeed, "coalfeed", 4, 0.1, 180)
+    newControllableDial(Interactable.Central, "centralvalve", 2, 0.1, 100)
+    newControllableDial(Interactable.ExchangerSteam, "exchangersteam", 1, 0.05, 100)
+    newControllableDial(Interactable.ExchangerWater, "exchangerwater", 1, 0.05, 100)
+    newControllableDial(Interactable.Recirculation, "recirculation", 1, 0.1, 100)
+    newControllableDial(Interactable.Exhaust, "exhaust", 2, 0.1, 90)
+    newControllableDial(Interactable.Monitor, "monitor", 3, 1.5, 90)
+    newControllableDial(Interactable.GeneratorClutch, "generatorclutch", 4, 0.1, 180)
+    for k, v in pairs(Interactable:GetChildren()) do
+        local v11 = string.lower(v.Name)
+        if t2[v11] ~= nil then
+            t[v11] = v
+            v.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 344 | Upvalues: Permissions (copy), t2 (copy), v11 (copy), t (copy), Interactable (copy) ]]
+                if Permissions.doesPlayerHavePermission(p1, 7) then
+                    if t2[v11] then
+                        local v1 = v11
+                        local v2 = t[v1]
+                        if t2[v1] == true then
+                            v2.Lamp.Material = Enum.Material.Plastic
+                            Interactable.Table.Button:Play()
+                        end
+                        t2[v1] = false
+                    else
+                        local v3 = v11
+                        t[v3].Lamp.Material = Enum.Material.Neon
+                        Interactable.Table.Button:Play()
+                        t2[v3] = true
+                    end
+                end
+            end)
+        end
+    end
+    Interactable.AddPower.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 356 | Upvalues: Permissions (copy), t3 (copy), Interactable (copy) ]]
+        if Permissions.doesPlayerHavePermission(p1, 7) then
+            if t3.preheatpower < 5 then
+                local v1 = t3
+                v1.preheatpower = v1.preheatpower + 5
+            end
+            Interactable.Table.Button:Play()
+        end
+    end)
+    Interactable.RemovePower.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 364 | Upvalues: Permissions (copy), t3 (copy), Interactable (copy) ]]
+        if Permissions.doesPlayerHavePermission(p1, 7) then
+            if t3.preheatpower > 0 then
+                local v1 = t3
+                v1.preheatpower = v1.preheatpower - 5
+            end
+            Interactable.Table.Button:Play()
+        end
+    end)
+    Interactable.ZeroPower.ClickDetector.MouseClick:Connect(function() --[[ Line: 372 | Upvalues: t3 (copy), Interactable (copy) ]]
+        t3.preheatpower = 0
+        Interactable.Table.Button:Play()
+    end)
+    Interactable.Emergency.ClickDetector.MouseClick:Connect(function(p1) --[[ Line: 377 | Upvalues: Permissions (copy), Interactable (copy), v10 (ref) ]]
+        if Permissions.doesPlayerHavePermission(p1, 7) then
+            Interactable.Table.Button:Play()
+            if v10 == false and script.Parent.ModelData.Burning.Value then
+                v10 = true
+                Interactable.Emergency.Size = Vector3.new(0.2, 0.33, 0.33)
+            end
+        end
+    end)
+end
+local v12 = require(script.MODDEDModelTweenUtils).new(script.Parent.Door)
+local v13 = script.Parent.HingeOpen.CFrame
+local v14 = v12:GetPivot()
+local t5 = {
+    localUpdate = function() --[[ localUpdate | Line: 396 ]] end
+}
+local v15 = false
+if game.Players.LocalPlayer == nil then
+    script.Parent.Door.ClickDetector.MouseClick:Connect(function() --[[ Line: 401 | Upvalues: v15 (ref), v12 (copy), v13 (copy), v14 (copy) ]]
+        v15 = not v15
+        if v15 then
+            v12:newTween(TweenInfo.new(1), v13):Play()
+            script.Parent.Door["Door Opening"]:Play()
+        else
+            v12:newTween(TweenInfo.new(0.5), v14):Play()
+            script.Parent.Door["Door Close"]:Play()
+        end
+    end)
+end
+local CoalInBunker = script.Parent.ModelData.CoalInBunker
+local WaterInSilo = script.Parent.ModelData.WaterInSilo
+local Pressure = script.Parent.ModelData.Pressure
+local CoalInFirebox = script.Parent.ModelData.CoalInFirebox
+local Temperature = script.Parent.ModelData.Temperature
+local SiloTemp = script.Parent.ModelData.SiloTemp
+local AirFirebox = script.Parent.ModelData.AirFirebox
+local ExhaustFirebox = script.Parent.ModelData.ExhaustFirebox
+local FireboxPressure = script.Parent.ModelData.FireboxPressure
+local v16 = script.Parent.Coal:GetPivot()
+local Body = script.Parent.Displays.CoalMonitor.SurfaceGui.Display.Body
+local Body_2 = script.Parent.Displays.WaterDisplay.SurfaceGui.Display.Body
+local Body_3 = script.Parent.Displays.FirstMonitor.First.Display.Body
+local Body_4 = script.Parent.Displays.FirstMonitor.Second.Display.Body
+local Body_5 = script.Parent.Displays.FirstMonitor.Third.Display.Body
+local Body_6 = script.Parent.Displays.CenterDisplay.SurfaceGui.Display.Body
+local Body_7 = script.Parent.Displays.WarningMonitor.SurfaceGui.Display.Body
+local Body_8 = script.Parent.Displays.ThirdMonitor.SurfaceGui.Display.Body
+local Body_9 = script.Parent.Displays.FourthMonitor.SurfaceGui.Display.Body
+local Body_10 = script.Parent.Displays.PolisherMonitor.SurfaceGui.Display.Body
+local Body_11 = script.Parent.Displays.TurbineMonitor.SurfaceGui.Display.Body
+local Body_12 = script.Parent.Displays.TurbineSpinMonitor.SurfaceGui.Display.Body
+local function barSize(p1, p2) --[[ barSize | Line: 443 ]]
+    local v1 = ""
+    for i = 1, p1 do
+        v1 = v1 .. "|"
+    end
+    for j = 1, p2 - p1 do
+        v1 = v1 .. "."
+    end
+    return v1
+end
+local v17 = require(game:GetService("ReplicatedStorage").FormatNumber.Main).NumberFormatter.with()
+function round(p1, p2) --[[ round | Line: 457 ]]
+    local v1 = 10 ^ (p2 or 0)
+    return math.floor(p1 * v1 + 0.5) / v1
+end
+local Fire = script.Parent.Fire
+local v18 = Color3.fromRGB(0, 39, 15)
+local v19 = Color3.fromRGB(0, 144, 55)
+local v20 = false
+local v21 = 0
+local v22 = 0
+local function warning(p1, p2) --[[ warning | Line: 473 | Upvalues: v20 (ref), Body_7 (copy), v19 (copy), v18 (copy), v22 (ref), v21 (ref) ]]
+    if v20 then
+        local v1 = Body_7[p1]
+        v1.BackgroundColor3 = v19
+        v1.TextColor3 = v18
+        v22 = v22 + 1
+        if p2 then
+            v21 = v21 + 1
+        end
+    end
+end
+local t6 = {
+    [0] = Color3.fromRGB(255, 0, 0),
+    [1] = Color3.fromRGB(0, 255, 0),
+    [2] = Color3.fromRGB(255, 255, 0),
+    [3] = Color3.fromRGB(0, 0, 0)
+}
+local function light(p1, p2) --[[ light | Line: 493 | Upvalues: t6 (copy) ]]
+    script.Parent.Interactable[p1].Lamp.Color = t6[p2]
+end
+local function convertPower(p1, p2, p3) --[[ convertPower | Line: 498 ]]
+    if p3 == nil then
+        p3 = 2
+    end
+    local v1 = "MF"
+    local v2 = if p1 < p2 then p2 else p1
+    if v2 / 1000000000000 > 0.99 then
+        return round(p1 / 1000000000000, p3), round(p2 / 1000000000000, p3), "TMF"
+    elseif v2 / 1000000000 > 0.99 then
+        return round(p1 / 1000000000, p3), round(p2 / 1000000000, p3), "GMF"
+    elseif v2 / 1000000 > 0.99 then
+        return round(p1 / 1000000, p3), round(p2 / 1000000, p3), "MMF"
+    elseif v2 / 1000 > 0.99 then
+        return round(p1 / 1000, p3), round(p2 / 1000, p3), "kMF"
+    else
+        return round(p1, 2), round(p2, 2), v1
+    end
+end
+local v23 = 0
+local v24 = PowerUtilsV2.loadConnector(script.Parent.DataMainConnector)
+local function calculateSteamPressure(p1, p2, p3) --[[ calculateSteamPressure | Line: 538 ]]
+    return p2 * 0.04 * (p1 + 273) / p3
+end
+if game.Players.LocalPlayer == nil then
+    loadData()
+end
+local v25 = 0
+local v26 = 0
+local v27 = tick()
+function t5.tick() --[[ tick | Line: 549 | Upvalues: v26 (ref), v27 (ref), saveData (copy), v24 (copy), v20 (ref), Body_7 (copy), v18 (copy), v19 (copy), v16 (copy), CoalInBunker (copy), Body (copy), Body_2 (copy), WaterInSilo (copy), v17 (copy), SiloTemp (copy), Pressure (copy), Body_4 (copy), Body_3 (copy), t3 (copy), Body_8 (copy), Body_9 (copy), t2 (copy), CoalInFirebox (copy), t6 (copy), v22 (ref), Temperature (copy), t (copy), Interactable (copy), FireboxPressure (copy), v21 (ref), v25 (ref), AirFirebox (copy), ExhaustFirebox (copy), v4 (copy), v7 (ref), v3 (copy), Fire (copy), v2 (copy), v5 (copy), v6 (ref), v1 (copy), v10 (ref), t4 (copy), convertPower (copy), Body_6 (copy), v23 (ref), Body_11 (copy), Body_12 (copy), v8 (ref), Body_10 (copy), Achievements (copy) ]]
+    v26 = v26 + 1
+    if tick() - v27 > 5 then
+        saveData()
+        v27 = tick()
+    end
+    local v12 = nil
+    local v28 = nil
+    local v32 = nil
+    local v42 = nil
+    for k, v in pairs(v24.folder.Inputs) do
+        local v52 = workspace.Plots[v[1]][v[2]]
+        local v62 = v52:GetAttribute("Name")
+        if v62 == "HeatExchanger" or v62 == "VerticalHeatExchanger" then
+            v12 = v52
+        elseif v62 == "SteamCondenser" then
+            v28 = v52
+        elseif v62 == "TurbineGenerator" then
+            v32 = v52
+        elseif v62 == "Polisher" then
+            v42 = v52
+        end
+    end
+    if v20 == true then
+        v20 = false
+        for k, v in pairs(Body_7:GetChildren()) do
+            if v:IsA("TextLabel") then
+                v.BackgroundColor3 = v18
+                v.TextColor3 = v19
+            end
+        end
+    else
+        v20 = true
+    end
+    script.Parent.Coal:PivotTo(v16 + Vector3.new(0, CoalInBunker.Value / 5000, 0))
+    local v102 = math.floor(CoalInBunker.Value / 10000 * 2)
+    local v11 = ""
+    for i = 1, v102 do
+        v11 = v11 .. "|"
+    end
+    for j = 1, 20 - v102 do
+        v11 = v11 .. "."
+    end
+    Body.Coal.Text = v11 .. " " .. math.floor(CoalInBunker.Value / 100) / 10 .. "%"
+    local v14 = math.floor(WaterInSilo.Value / 40000 * 2)
+    local v15 = ""
+    for k = 1, v14 do
+        v15 = v15 .. "|"
+    end
+    for n = 1, 20 - v14 do
+        v15 = v15 .. "."
+    end
+    Body_2.Water.Text = v15 .. " " .. math.floor(WaterInSilo.Value / 400) / 10 .. "%"
+    local v192 = v17:Format((math.floor(WaterInSilo.Value)))
+    Body_2.WaterTemp.Text = v192 .. "L at " .. math.floor(SiloTemp.Value * 10) / 10 .. "\194\176C"
+    Body_2.Pressure.Text = "outflow pressure: " .. round(Pressure.Value, 2) .. "MPa"
+    Body_4.Pressure.Text = "W. pres.: " .. round(Pressure.Value, 2) .. "MPa"
+    Body_3.Pressure.Text = "press.: " .. round(Pressure.Value, 2) .. "MPa"
+    Body_3.Power.Text = "preheat: " .. t3.preheatpower * 20 .. "%"
+    if v12 then
+        Body_8.HeatExchangerTemp.Text = "Temp.: " .. round(v12.ModelData.Temp.Value, 1) .. "\194\176C"
+        Body_8.SteamProduction.Text = "Prod.: " .. round(v12.SteamProduction.Value, 1) .. "L/s"
+        Body_8.HotWaterFlow.Text = "Flow: " .. round(v12.HotWaterFlow.Value, 1) .. "L/s"
+        local v212 = round
+        Body_8.PressureOut.Text = "Pres.: " .. v212(v12.SteamProduction.Value * 0.04 * (v12.ModelData.Temp.Value + 273) / 12000, 1) .. "MPa"
+        v12.ModelData.SteamValve.Value = t3.exchangersteam
+        v12.ModelData.WaterValve.Value = t3.exchangerwater
+        v12.ModelData.MinTemp.Value = t3.exchangermintemp
+    else
+        Body_8.HeatExchangerTemp.Text = "Temp.: N/A"
+        Body_8.HotWaterFlow.Text = "Flow: N/A"
+        Body_8.SteamProduction.Text = "Prod.: N/A"
+        Body_8.PressureOut.Text = "Pres.: N/A"
+    end
+    if v28 then
+        Body_9.Temp.Text = "Temp.:" .. round(v28.ModelData.Temp.Value, 1) .. "\194\176C"
+        Body_9.CondensateProd.Text = "Prod.: " .. round(v28.CondensateProd.Value, 1) .. "L/s"
+        Body_9.Flow.Text = "Flow: " .. round(v28.CoolantFlow.Value, 1) .. "L/s"
+    else
+        Body_9.Temp.Text = "Temp.: N/A"
+        Body_9.Flow.Text = "Flow: N/A"
+        Body_9.CondensateProd.Text = "Prod.: N/A"
+    end
+    local sum = if t2.idlesystems then 100000 else 0
+    if t2.coalfeeder and (t3.coalfeed > 0 and (CoalInBunker.Value > t3.coalfeed * 40 and CoalInFirebox.Value - 3000 < t3.coalfeed * 25)) then
+        local v242 = math.clamp(t3.coalfeed * 40, 0, 3000 - CoalInFirebox.Value)
+        script.Parent.Interactable.CoalFeeder.Lamp.Color = t6[1]
+        local v252 = CoalInBunker
+        v252.Value = v252.Value - v242
+        local v262 = CoalInFirebox
+        v262.Value = v262.Value + v242
+        sum = sum + t3.coalfeed * 100000
+    elseif t2.coalfeeder then
+        script.Parent.Interactable.CoalFeeder.Lamp.Color = t6[2]
+    else
+        script.Parent.Interactable.CoalFeeder.Lamp.Color = t6[0]
+    end
+    if CoalInFirebox.Value < 10 and v20 then
+        local LOWCOAL = Body_7.LOWCOAL
+        LOWCOAL.BackgroundColor3 = v19
+        LOWCOAL.TextColor3 = v18
+        v22 = v22 + 1
+    end
+    Body.CoalInFireBox.Text = "coal in firebox: " .. round(CoalInFirebox.Value, 1) .. "u"
+    local v272 = CoalInFirebox.Value / 150
+    local v282 = ""
+    for m = 1, v272 do
+        v282 = v282 .. "|"
+    end
+    for i = 1, 20 - v272 do
+        v282 = v282 .. "."
+    end
+    Body.CoalInFireBoxBar.Text = v282 .. " " .. round(CoalInFirebox.Value / 30, 1) .. "%"
+    Body_4.Firebox.Text = "coal: " .. round(CoalInFirebox.Value, 1) .. "u"
+    if t2.preheater and t3.preheatpower > 0 then
+        script.Parent.Interactable.Preheater.Lamp.Color = t6[1]
+        if v20 then
+            local HEATERON = Body_7.HEATERON
+            HEATERON.BackgroundColor3 = v19
+            HEATERON.TextColor3 = v18
+            v22 = v22 + 1
+        end
+        if t3.centralvalve == 0 then
+            if t3.preheatpower * 40 > Temperature.Value then
+                local v29 = Temperature
+                v29.Value = v29.Value + t3.preheatpower * 0.5
+            end
+            sum = sum + t3.preheatpower * 1000000
+        else
+            local preheater = t.preheater
+            if t2.preheater == true then
+                preheater.Lamp.Material = Enum.Material.Plastic
+                Interactable.Table.Button:Play()
+            end
+            t2.preheater = false
+            script.Parent.Interactable.Preheater.Lamp.Color = t6[0]
+        end
+    elseif t2.preheater then
+        script.Parent.Interactable.Preheater.Lamp.Color = t6[2]
+    else
+        script.Parent.Interactable.Preheater.Lamp.Color = t6[0]
+    end
+    local v31 = math.sqrt(Temperature.Value) / 10 + FireboxPressure.Value
+    local v322 = Temperature.Value
+    if v322 > 500 then
+        if v20 then
+            local HIGHFIREBOX = Body_7.HIGHFIREBOX
+            HIGHFIREBOX.BackgroundColor3 = v19
+            HIGHFIREBOX.TextColor3 = v18
+            v22 = v22 + 1
+            v21 = v21 + 1
+        end
+        v25 = v25 + 1
+    end
+    if v31 < 1 and (script.Parent.ModelData.Burning.Value and v20) then
+        local LOWPRESSURE = Body_7.LOWPRESSURE
+        LOWPRESSURE.BackgroundColor3 = v19
+        LOWPRESSURE.TextColor3 = v18
+        v22 = v22 + 1
+        v21 = v21 + 1
+    end
+    if v31 > 12 then
+        if v20 then
+            local HIGHPRESSURE = Body_7.HIGHPRESSURE
+            HIGHPRESSURE.BackgroundColor3 = v19
+            HIGHPRESSURE.TextColor3 = v18
+            v22 = v22 + 1
+            v21 = v21 + 1
+        end
+        v25 = v25 + 1
+    end
+    Body_3.Pressure.Text = "press.:" .. round(v31 - 0.321, 2) .. "MPa"
+    Body_3.Mix.Text = "air mix:" .. round(AirFirebox.Value / (ExhaustFirebox.Value + AirFirebox.Value) * 100, 1) .. "%"
+    if t3.monitor == 0 then
+        script.Parent.Displays.FirstMonitor.First.Enabled = true
+        script.Parent.Displays.FirstMonitor.Second.Enabled = false
+        script.Parent.Displays.FirstMonitor.Third.Enabled = false
+    elseif t3.monitor == 1.5 then
+        script.Parent.Displays.FirstMonitor.First.Enabled = false
+        script.Parent.Displays.FirstMonitor.Second.Enabled = true
+        script.Parent.Displays.FirstMonitor.Third.Enabled = false
+    elseif t3.monitor == 3 then
+        script.Parent.Displays.FirstMonitor.First.Enabled = false
+        script.Parent.Displays.FirstMonitor.Second.Enabled = false
+        script.Parent.Displays.FirstMonitor.Third.Enabled = true
+    end
+    local v33 = 0
+    if t2.aircirculation == true then
+        script.Parent.Interactable.AirCirculation.Lamp.Color = t6[1]
+        local v38 = math.clamp(math.clamp(v31 * t3.exhaust / 2 * 1000, -1, ExhaustFirebox.Value + AirFirebox.Value), 0, (v4:getMax() - v4:getBuffer()) / 1)
+        local v39 = 1 / v31 * t3.air / 4 * 3500 * 5
+        local v40 = ExhaustFirebox.Value * 3 / (ExhaustFirebox.Value * 3 + AirFirebox.Value)
+        local v41 = ExhaustFirebox
+        v41.Value = v41.Value - math.clamp(v38 * v40, 0, ExhaustFirebox.Value / 3)
+        local v44 = AirFirebox
+        v44.Value = v44.Value - math.clamp(v38 * (1 - v40), 0, AirFirebox.Value / 3)
+        local v47 = AirFirebox
+        v47.Value = v47.Value + v39
+        sum = sum + (v31 * 250000 * t3.air + t3.exhaust * 10000)
+        Temperature.Value = (v322 * v31 * 100000 + 18 * v39) / (v39 + v31 * 100000)
+        v33 = v38
+    else
+        script.Parent.Interactable.AirCirculation.Lamp.Color = t6[0]
+    end
+    FireboxPressure.Value = (ExhaustFirebox.Value * 2 + AirFirebox.Value) * Temperature.Value * 0.0036 / 100000
+    if AirFirebox.Value / ExhaustFirebox.Value < 1 and v20 then
+        local LOWAIR = Body_7.LOWAIR
+        LOWAIR.BackgroundColor3 = v19
+        LOWAIR.TextColor3 = v18
+        v22 = v22 + 1
+        v21 = v21 + 1
+    end
+    if ExhaustFirebox.Value <= 1 then
+        ExhaustFirebox.Value = 1
+    end
+    if AirFirebox.Value <= 1 then
+        AirFirebox.Value = 1
+    end
+    if v7 and (Temperature.Value > 150 and v31 >= 0.1) then
+        script.Parent.ModelData.Burning.Value = true
+    end
+    if Temperature.Value < 150 then
+        script.Parent.ModelData.Burning.Value = false
+    end
+    local v49 = math.sqrt(Temperature.Value) / 10 + FireboxPressure.Value
+    local _ = Temperature.Value
+    local v50 = 0
+    if script.Parent.ModelData.Burning.Value == false then
+        script.Parent.StartLight.Color = Color3.fromRGB(255, 0, 0)
+        local v51 = Temperature
+        v51.Value = v51.Value - 200 / (5000 - CoalInFirebox.Value)
+        Body_3.Status.Text = "OFFLINE"
+        Body_3.Usage.Text = "Usage: NONE"
+        Body.consumption.Text = "Consumption: NONE"
+        if v20 then
+            local NOFIRE = Body_7.NOFIRE
+            NOFIRE.BackgroundColor3 = v19
+            NOFIRE.TextColor3 = v18
+            v22 = v22 + 1
+        end
+    else
+        script.Parent.StartLight.Color = Color3.fromRGB(0, 255, 0)
+        Body_3.Status.Text = "ONLINE"
+        local v55 = math.clamp(v49 / 2 * math.clamp(AirFirebox.Value * 4 / ExhaustFirebox.Value, 0.025, 40) * 1.6 * 1.6, 0, CoalInFirebox.Value)
+        local v56 = v55 * 10 * 0.625
+        local v58 = math.clamp(AirFirebox.Value / v56, 0, 1)
+        local v59 = v55 * v58
+        local v60 = v56 * v58
+        if v59 <= CoalInFirebox.Value then
+            local v61 = CoalInFirebox
+            v61.Value = v61.Value - v59
+            local v62 = AirFirebox
+            v62.Value = v62.Value - v60
+            local v63 = ExhaustFirebox
+            v63.Value = v63.Value + v59 * 25 * 0.625
+            local v64 = Temperature
+            v64.Value = v64.Value + 800 / Temperature.Value * v59 / 350 * 20 * 0.625
+            Body_3.Usage.Text = "Usage: " .. round(v59, 1) .. "/s"
+            Body.consumption.Text = "Consumption: " .. round(v59, 1) .. "/s"
+            v50 = v59 / 160
+        else
+            Body_3.Usage.Text = "Usage: NONE"
+            Body.consumption.Text = "Consumption: NONE"
+            v50 = 0.1
+        end
+    end
+    local v65 = Temperature.Value
+    local v69 = math.clamp(math.sqrt((math.pow(SiloTemp.Value, 1.5))) * 0.4 - 12.6413, 0, (1 / 0)) + 0.1013
+    local v722 = math.clamp(t3.centralvalve / 2 * 400, 0, WaterInSilo.Value)
+    if t2.watercirculation == false then
+        v722 = 0
+    end
+    if t2.pressurizer then
+        if v722 > 0 then
+            script.Parent.Interactable.Pressurizer.Lamp.Color = t6[1]
+        else
+            script.Parent.Interactable.Pressurizer.Lamp.Color = t6[2]
+        end
+        if t3.pressurization == 0 then
+            script.Parent.Interactable.Pressurizer.Lamp.Color = t6[2]
+            Pressure.Value = (Pressure.Value * 19 + v69) / 20
+            script.Parent.Base["Air Compressor Sound"]:Stop()
+        else
+            local v74 = math.abs(t3.pressurization * 7 - v69)
+            sum = sum + v74 ^ 1.1 * v722 * 500
+            Pressure.Value = (Pressure.Value * 19 + t3.pressurization * 7) / 20
+            if script.Parent.Base["Air Compressor Sound"].Playing == false then
+                script.Parent.Base["Air Compressor Sound"]:Play()
+            end
+            script.Parent.Base["Air Compressor Sound"].Volume = v74 / 10
+            script.Parent.Base["Air Compressor Sound"].Pitch = v74 / 100 + 0.9
+        end
+    else
+        script.Parent.Interactable.Pressurizer.Lamp.Color = t6[0]
+        Pressure.Value = (Pressure.Value * 19 + v69) / 20
+        script.Parent.Base["Air Compressor Sound"]:Stop()
+    end
+    local v75 = SiloTemp.Value
+    if t2.watercirculation == true then
+        script.Parent.Interactable.WaterCirculation.Lamp.Color = t6[1]
+        local v76 = (v65 - SiloTemp.Value) * 0.9 * math.clamp(v49 / 16, 0.1, 0.5)
+        local v78 = v76 * math.clamp(Pressure.Value / 14, 0.5, 2)
+        Temperature.Value = (v65 * 100000 * v49 - v722 * v78 * Pressure.Value) / (100000 * v49)
+        v75 = v78 + SiloTemp.Value
+        sum = sum + v722 * 1000
+    else
+        script.Parent.Interactable.WaterCirculation.Lamp.Color = t6[0]
+    end
+    if t2.watercirculation and (t3.recirculation >= 0 and WaterInSilo.Value > 0) then
+        SiloTemp.Value = (SiloTemp.Value * WaterInSilo.Value + v722 * t3.recirculation * v75) / (WaterInSilo.Value + v722 * t3.recirculation)
+        local v79 = WaterInSilo
+        v79.Value = v79.Value + v722 * t3.recirculation
+    end
+    if v722 >= 0.1 then
+        Body_2.OutflowTemp.Text = "outflow temperature: " .. round(v75, 2) .. "\194\176C"
+        Body_4.Outflow.Text = "Temp.: " .. round(v75, 2) .. "\194\176C"
+        if math.clamp(math.sqrt((math.pow(v75, 1.5))) * 0.4 - 12.6413, 0, (1 / 0)) + 0.1013 > Pressure.Value + 0.05 then
+            if v20 then
+                local LOWWATERPRESSURE = Body_7.LOWWATERPRESSURE
+                LOWWATERPRESSURE.BackgroundColor3 = v19
+                LOWWATERPRESSURE.TextColor3 = v18
+                v22 = v22 + 1
+                v21 = v21 + 1
+            end
+            v25 = v25 + 1
+        end
+    else
+        Body_2.OutflowTemp.Text = "outflow temperature: N/A\194\176C"
+        Body_4.Outflow.Text = "Temp.: N/A\194\176C"
+    end
+    Body_2.FlowSpeed.Text = "flow speed: " .. round(v722, 2) .. "L/s"
+    Body_4.FlowSpeed.Text = "Flow.: " .. round(v722, 2) .. "L/s"
+    if v722 > 0 then
+        local v822 = WaterInSilo
+        v822.Value = v822.Value - v722
+        if not v3:canHoldXMoreOf("Distilled Water", v722 * (1 - t3.recirculation)) then
+            local v83 = WaterInSilo
+            v83.Value = v83.Value + v722 * (1 - t3.recirculation)
+            SiloTemp.Value = (SiloTemp.Value * WaterInSilo.Value + v722 * v75) / (WaterInSilo.Value + v722)
+            Body_2.FlowSpeed.Text = "flow speed: " .. round(0, 2) .. "L/s"
+            Body_4.FlowSpeed.Text = "Flow.: " .. round(0, 2) .. "L/s"
+        end
+    end
+    if Fire.Fire.Playing == false then
+        Fire.Fire:Play()
+    end
+    Fire.Fire.Volume = v50 * 1
+    Fire.Fire.Pitch = 1.1 - v50 * 0.2
+    Fire.FIRE.Enabled = true
+    Fire.FIRE.Rate = v50 * 100
+    Fire.FIRE.Lifetime = NumberRange.new(v50 * 3 + 1)
+    Fire.GLOW.Enabled = true
+    Fire.GLOW.Rate = v50 * 500
+    Fire.GLOW.Lifetime = NumberRange.new(v50 * 0.5 + 0.5)
+    Fire.SPECKS.Enabled = true
+    Fire.SPECKS.Rate = v50 * 100
+    Fire.PointLight.Enabled = true
+    Fire.PointLight.Brightness = v50 * 4
+    script.Parent.Window.Transparency = 0.8 - 0.7 * (1 - AirFirebox.Value / (ExhaustFirebox.Value + AirFirebox.Value))
+    Temperature.Value = math.clamp(Temperature.Value - (0.5 + Temperature.Value ^ 2 / 1000000), 18, (1 / 0))
+    if WaterInSilo.Value > 0 then
+        SiloTemp.Value = math.clamp(SiloTemp.Value - ((SiloTemp.Value - 18) / 40) ^ 2, 18, (1 / 0))
+    end
+    if v2:has("Distilled Water") and (t2.waterinflow and WaterInSilo.Value < 400000) then
+        if script.Parent.FluidInMainPipe["Waterfall Distant 1 (SFX)"].Playing == false then
+            script.Parent.FluidInMainPipe["Waterfall Distant 1 (SFX)"]:Play()
+        end
+        local v90 = math.clamp(v2:getBuffer(), 0, 400000 - WaterInSilo.Value)
+        local v91 = v2:getTemp()
+        v2:removeItem(v90)
+        local v92 = WaterInSilo
+        v92.Value = v92.Value + v90
+        SiloTemp.Value = (400000 * SiloTemp.Value + v91 * v90) / (v90 + 400000)
+        script.Parent.Interactable.WaterInflow.Lamp.Color = t6[1]
+    elseif t2.waterinflow then
+        script.Parent.FluidInMainPipe["Waterfall Distant 1 (SFX)"]:Stop()
+        script.Parent.Interactable.WaterInflow.Lamp.Color = t6[2]
+    else
+        script.Parent.Interactable.WaterInflow.Lamp.Color = t6[0]
+    end
+    if t2.wateroutflow and v3:canHoldXMoreOf("Distilled Water", v722 * (1 - t3.recirculation)) then
+        v3:setUsedTemperature(v75)
+        v3:addItemAmount("Distilled Water", v722 * (1 - t3.recirculation))
+        script.Parent.Interactable.WaterOutflow.Lamp.Color = t6[1]
+        if script.Parent.OutFluidMainPipe["Waterfall Distant 1 (SFX)"].Playing == false then
+            script.Parent.OutFluidMainPipe["Waterfall Distant 1 (SFX)"]:Play()
+        end
+    elseif t2.wateroutflow then
+        script.Parent.OutFluidMainPipe["Waterfall Distant 1 (SFX)"]:Stop()
+        script.Parent.Interactable.WaterOutflow.Lamp.Color = t6[2]
+    else
+        script.Parent.Interactable.WaterOutflow.Lamp.Color = t6[0]
+    end
+    if v5:hasPower(sum) then
+        v5:removePower(sum)
+        v6 = 0
+    else
+        v6 = v6 + 1
+        v5:removePower(v5:getBuffer())
+    end
+    Body_4.Critical.Text = "Crit. Pres.: " .. round(math.clamp(math.sqrt((math.pow(v75, 1.5))) * 0.4 - 12.6413, 0, (1 / 0)) + 0.1013, 1) .. "MPa"
+    if v33 > 0 then
+        Body_4.Exhaust.Text = "Exhaust: " .. round(v33 * 1, 0) .. "L/s"
+        if v4:canHoldXMoreOf("Exhaust", v33 * 1) then
+            v4:addItemAmount("Exhaust", v33 * 1)
+            if script.Parent.OutFluid2MainPipe.Gas.Playing == false then
+                script.Parent.OutFluid2MainPipe.Gas:Play()
+            end
+        else
+            script.Parent.OutFluid2MainPipe.Gas:Stop()
+        end
+    else
+        Body_4.Exhaust.Text = "Exhaust: N/A"
+    end
+    if v1:has("Coal") then
+        local v98 = math.clamp(v1:getBuffer(), 0, 100000 - CoalInBunker.Value)
+        local v99 = CoalInBunker
+        v99.Value = v99.Value + v98
+        v1:removeItem(v98)
+    end
+    if v10 then
+        script.Parent.Displays.WarningMonitor.Trip:Play()
+        if v20 then
+            local TRIP = Body_7.TRIP
+            TRIP.BackgroundColor3 = v19
+            TRIP.TextColor3 = v18
+            v22 = v22 + 1
+            v21 = v21 + 1
+        end
+        local preheater = t.preheater
+        if t2.preheater == true then
+            preheater.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.preheater = false
+        local coalfeeder = t.coalfeeder
+        if t2.coalfeeder == true then
+            coalfeeder.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.coalfeeder = false
+        t4.air(0, true)
+        t4.exhaust(2, true)
+        t4.coalfeed(0, true)
+        t4.recirculation(1, true)
+        t4.centralvalve(2, true)
+        local v100 = Temperature
+        v100.Value = v100.Value - 5
+        for k, v in pairs(script.Parent.Sprinkler:GetChildren()) do
+            if v:IsA("Attachment") then
+                v.ParticleEmitter.Enabled = true
+            else
+                v:Resume()
+            end
+        end
+        if script.Parent.ModelData.Burning.Value == false then
+            v10 = false
+            script.Parent.Interactable.Emergency.Size = Vector3.new(0.277, 0.33, 0.33)
+            for k, v in pairs(script.Parent.Sprinkler:GetChildren()) do
+                if v:IsA("Attachment") then
+                    v.ParticleEmitter.Enabled = false
+                else
+                    v:Stop()
+                end
+            end
+        end
+    end
+    if v6 > 12 then
+        local pressurizer = t.pressurizer
+        if t2.pressurizer == true then
+            pressurizer.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.pressurizer = false
+    end
+    if v6 > 11 then
+        local wateroutflow = t.wateroutflow
+        if t2.wateroutflow == true then
+            wateroutflow.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.wateroutflow = false
+        local watercirculation = t.watercirculation
+        if t2.watercirculation == true then
+            watercirculation.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.watercirculation = false
+        local aircirculation = t.aircirculation
+        if t2.aircirculation == true then
+            aircirculation.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.aircirculation = false
+    end
+    if v6 > 8 then
+        local coalfeeder = t.coalfeeder
+        if t2.coalfeeder == true then
+            coalfeeder.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.coalfeeder = false
+        local waterinflow = t.waterinflow
+        if t2.waterinflow == true then
+            waterinflow.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.waterinflow = false
+    end
+    if v6 > 4 then
+        local backupwater = t.backupwater
+        if t2.backupwater == true then
+            backupwater.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.backupwater = false
+        local sprinklers = t.sprinklers
+        if t2.sprinklers == true then
+            sprinklers.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.sprinklers = false
+        local backuppressurizer = t.backuppressurizer
+        if t2.backuppressurizer == true then
+            backuppressurizer.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.backuppressurizer = false
+        local preheater = t.preheater
+        if t2.preheater == true then
+            preheater.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.preheater = false
+    end
+    if v6 == 1 then
+        local idlesystems = t.idlesystems
+        if t2.idlesystems == true then
+            idlesystems.Lamp.Material = Enum.Material.Plastic
+            Interactable.Table.Button:Play()
+        end
+        t2.idlesystems = false
+    end
+    local v101, _2, v1022 = convertPower(sum, sum + 1, 2)
+    Body_6.PowerConsumption.Text = "power consumption: " .. v101 .. v1022 .. "/s"
+    if math.abs(Temperature.Value - v23) > 4 and v20 then
+        local LOWERINGTEMP = Body_7.LOWERINGTEMP
+        LOWERINGTEMP.BackgroundColor3 = v19
+        LOWERINGTEMP.TextColor3 = v18
+        v22 = v22 + 1
+        v21 = v21 + 1
+    end
+    v23 = Temperature.Value
+    if t2.idlesystems == false then
+        if script.Parent.ActualLights.Light.Emergency.Enabled == false then
+            for k, v in pairs(script.Parent.Lights:GetChildren()) do
+                v.Color = Color3.fromRGB(150, 0, 0)
+            end
+            for k, v in pairs(script.Parent.ActualLights:GetChildren()) do
+                v.SurfaceLight.Enabled = false
+                v.Emergency.Enabled = true
+            end
+            for k, v in pairs(script.Parent.BackgroundScreens:GetChildren()) do
+                v.Material = Enum.Material.SmoothPlastic
+            end
+            script.Parent.Base["Light Shut Off"]:Play()
+            script.Parent.Interactable.IdleSystems.Lamp.Color = t6[0]
+        end
+    elseif script.Parent.ActualLights.Light.Emergency.Enabled == true then
+        for k, v in pairs(script.Parent.Lights:GetChildren()) do
+            v.Color = Color3.fromRGB(199, 171, 129)
+        end
+        for k, v in pairs(script.Parent.ActualLights:GetChildren()) do
+            v.SurfaceLight.Enabled = true
+            v.Emergency.Enabled = false
+        end
+        for k, v in pairs(script.Parent.BackgroundScreens:GetChildren()) do
+            v.Material = Enum.Material.Neon
+        end
+        script.Parent.Base["power on"]:Play()
+        script.Parent.Interactable.IdleSystems.Lamp.Color = t6[1]
+    end
+    Body_3.Temp.Text = "temp.: " .. round(v65, 1) .. "\194\176C"
+    Body_6.firebox.Text = "Running at " .. round(Temperature.Value, 1) .. "\194\176C"
+    if v32 and v32.Data.Value ~= "" then
+        local v104 = string.split(v32.Data.Value, "|")
+        if tonumber(v104[1]) == 0 then
+            Body_11.PowerProduction.Text = "Prod.: N/A"
+        else
+            local v110, _3, v111 = convertPower(tonumber(v104[1]), tonumber(v104[1]) + 1, 2)
+            Body_11.PowerProduction.Text = "Prod.: " .. v110 .. v111 .. "/s"
+        end
+        local v112 = round
+        Body_12.RPM.Text = "RPM: " .. v112(tonumber(v104[2]), 1) .. "RPM"
+        local v114 = round
+        Body_12.RPMChange.Text = "RPM Change: " .. v114(tonumber(v104[3]), 2)
+        local v116 = round
+        Body_12.Torque.Text = "Torque: " .. v116(tonumber(v104[4]) / 1000, 1) .. "kMT"
+        local v118 = round
+        Body_11.SteamIn.Text = "HPS In: " .. v118(tonumber(v104[5]), 0) .. "L/s"
+        local v120 = round
+        Body_11.Pressure.Text = "Pressure: " .. v120(tonumber(v104[6]), 1) .. "MPa"
+        local v1222 = round
+        Body_11.SteamOut.Text = "LPS Out: " .. v1222(tonumber(v104[8]), 1) .. "L/s"
+        if v32.ModelData.Synced.Value == "Synced" and v8 == false then
+            v32.ModelData.Synced.Value = ""
+        end
+        local v124 = "false"
+        if v32.ModelData.Synced.Value == "Synced" then
+            script.Parent.SyncLight.Color = Color3.fromRGB(47, 255, 0)
+            v124 = "true"
+        elseif v32.ModelData.Synced.Value == "Spindown" then
+            script.Parent.SyncLight.Color = Color3.fromRGB(255, 0, 0)
+            v124 = "unavailable"
+        elseif v8 and math.abs(tonumber(v104[2]) - 3600) < 10 then
+            v32.ModelData.Synced.Value = "Synced"
+        end
+        v32.ModelData.Bypass.Value = t3.steambypass / 4
+        v32.ModelData.GeneratorClutch.Value = t3.generatorclutch / 4
+        Body_11.Sync.Text = "Sync: " .. v124
+    else
+        Body_12.RPM.Text = "RPM: N/A"
+        Body_11.PowerProduction.Text = "Prod.: N/A"
+        Body_12.RPMChange.Text = "RPM Change: N/A"
+        Body_12.Torque.Text = "Torque: N/A"
+        Body_11.SteamIn.Text = "HPS In: N/A"
+        Body_11.Pressure.Text = "Pressure: N/A"
+        Body_11.Sync.Text = "Sync: N/A"
+        Body_11.SteamOut.Text = "LPS Out: N/A"
+        script.Parent.SyncLight.Color = Color3.fromRGB(255, 0, 0)
+    end
+    if v42 then
+        Body_10.Flow.Text = "Flow: " .. round(v42.CondensateFlow.Value, 0) .. "L/s"
+        Body_10.Chemical.Text = "Usage: " .. round(v42.ChemicalUsage.Value, 2) .. "L/s"
+    else
+        Body_10.Flow.Text = "Flow: N/A"
+        Body_10.Chemical.Text = "Usage: N/A"
+    end
+    v25 = math.clamp(v25 - 0.95, 0, 10)
+    if v25 >= 3 and v10 == false then
+        Interactable.Table.Button:Play()
+        v10 = true
+        Interactable.Emergency.Size = Vector3.new(0.2, 0.33, 0.33)
+    end
+    if v21 ~= 0 and v21 == 1 then
+        script.Parent.Displays.WarningMonitor.beep:Play()
+    elseif v21 ~= 0 then
+        script.Parent.Displays.WarningMonitor.Alarm2:Play()
+    end
+    if v22 >= 4 then
+        Achievements.giveBadge(3319000651294509)
+    end
+    v21 = 0
+    v22 = 0
+end
+return t5

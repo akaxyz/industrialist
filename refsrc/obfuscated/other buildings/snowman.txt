@@ -1,0 +1,39 @@
+local v1 = {}
+local v_u_2 = script.Parent.ModelData.Seed
+function v1.localUpdate() -- name: localUpdate end
+function RandomColor(p3) -- name: RandomColor
+    math.randomseed(p3)
+    local v4 = math.random(0, 255)
+    math.randomseed(p3 - 651)
+    local v5 = math.random(0, 255)
+    math.randomseed(p3 + 5453)
+    local v6 = math.random(0, 255)
+    return Color3.fromRGB(v4, v5, v6)
+end
+local v_u_7 = 333
+function v1.localStart() -- name: localStart
+    -- upvalues: (ref) v_u_7, (copy) v_u_2
+    repeat
+        v_u_7 = v_u_7 - 1
+        task.wait()
+    until v_u_2.Value ~= 0 or v_u_7 <= 0
+    local v8 = RandomColor(v_u_2.Value)
+    script.Parent.Scarf.Color = v8
+    math.randomseed(v_u_2.Value)
+    if math.random(1, 100) == 1 then
+        script.Parent.Scarf.Material = "Neon"
+    end
+end
+local v_u_9 = false
+function v1.tick() -- name: tick
+    -- upvalues: (ref) v_u_9, (copy) v_u_2
+    if v_u_9 == false then
+        v_u_9 = true
+        if v_u_2.Value == 0 then
+            local v10 = Random.new
+            local v11 = tick() + script.Parent.Scarf.Position.X - script.Parent.Scarf.Position.Y * script.Parent.Scarf.Position.X
+            v_u_2.Value = v10((math.abs(v11))):NextNumber(1, 9999999)
+        end
+    end
+end
+return v1

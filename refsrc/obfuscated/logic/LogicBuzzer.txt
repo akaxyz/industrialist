@@ -1,0 +1,40 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_4 = v2.loadConnector(script.Parent.MainConnector)
+if game.Players.LocalPlayer == nil then
+	script.Parent.Base.ProximityPrompt.Enabled = true
+	script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p5)
+		-- upvalues: (copy) v_u_3
+		v_u_3:openMenu(p5)
+	end)
+	v_u_3:addSetting(1, script.Parent.ModelData.Range, "Range of sound", 1, 1000)
+	v_u_3:addSetting(1, script.Parent.ModelData.Sound, "Sound type (1-5)", 1, 5)
+end
+local v6 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_7 = false
+local v_u_8 = tick() - 5
+function v6.tick() -- name: tick
+	-- upvalues: (copy) v_u_4, (ref) v_u_8, (ref) v_u_7
+	if v_u_4:getBuffer() >= 1 then
+		if v_u_8 <= tick() then
+			script.Parent.LED.Material = Enum.Material.Neon
+			local v9 = script.Parent.Base
+			local v10 = script.Parent.ModelData.Sound.Value
+			local v11 = v9[tostring(v10)]
+			v11.RollOffMaxDistance = script.Parent.ModelData.Range.Value
+			v11:Play()
+			v_u_8 = tick() + v11.TimeLength
+			v_u_7 = true
+		end
+	elseif v_u_8 <= tick() and v_u_7 then
+		script.Parent.LED.Material = Enum.Material.Glass
+		v_u_7 = false
+	end
+	v_u_4:removePower(v_u_4:getBuffer())
+end
+return v6

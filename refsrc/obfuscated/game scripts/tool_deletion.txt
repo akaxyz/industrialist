@@ -1,0 +1,409 @@
+local v1 = game:GetService("UserInputService")
+game:GetService("Players")
+game:GetService("TweenService")
+local v2 = game.Players.LocalPlayer
+local v_u_3 = game.ReplicatedStorage.PlacementSystem.Buildings.Parent.BindableToast
+local v_u_4 = nil
+local v_u_5 = nil
+local v_u_6 = nil
+local v_u_7 = nil
+local v_u_8 = nil
+local v_u_9 = false
+local v_u_10 = Instance.new("Highlight", nil)
+v_u_10.Name = "FirstHighlight"
+v_u_10.FillColor = Color3.new(1, 1, 1)
+v_u_10.OutlineColor = Color3.new(1, 1, 1)
+v_u_10.FillTransparency = 0.5
+v_u_10.OutlineTransparency = 0
+local v_u_11 = Instance.new("Highlight", nil)
+v_u_11.Name = "SecondHighlight"
+v_u_11.FillColor = Color3.new(1, 1, 1)
+v_u_11.OutlineColor = Color3.new(1, 1, 1)
+v_u_11.FillTransparency = 0.5
+v_u_11.OutlineTransparency = 0
+local v_u_12 = v2.PlayerGui:WaitForChild("TutorialRestrictions"):WaitForChild("NodeSelected")
+local v_u_13 = v2.PlayerGui:WaitForChild("TutorialRestrictions")
+local v_u_14 = v2.PlayerGui:WaitForChild("TutorialRestrictions"):WaitForChild("WireMade")
+local function v_u_22(p15, p16) -- name: findClosestConnectorToPoint
+    local v17 = (1 / 0)
+    local v18 = nil
+    if p15 == nil then
+        return nil
+    end
+    for _, v19 in pairs(p15:GetChildren()) do
+        local v20 = v19.Name
+        if string.find(v20, "Pipe") and true or false then
+            local v21 = (p16 - v19.Position).Magnitude
+            if v21 < v17 then
+                v18 = v19
+                v17 = v21
+            end
+        end
+    end
+    if v17 > 3 then
+        v18 = nil
+    end
+    return v18
+end
+local v_u_23 = game.Players.LocalPlayer:GetMouse()
+local function v_u_25(p24) -- name: getModelFromPart
+    if p24 == nil then
+        return
+    elseif not p24:FindFirstChild("Shop") then
+        for _ = 1, 4 do
+            p24 = p24.Parent
+            if p24 == nil then
+                return nil
+            end
+            if p24 == workspace then
+                return nil
+            end
+            if p24:FindFirstChild("Shop") then
+                return p24
+            end
+        end
+    end
+end
+local function v_u_31(p26) -- name: findOnlyConnectorInModel
+    if not p26:FindFirstChild("Shop") then
+        for _ = 1, 4 do
+            p26 = p26.Parent
+            if p26 == workspace then
+                return nil
+            end
+            if p26 == nil then
+                return nil
+            end
+            if p26:FindFirstChild("Shop") then
+                break
+            end
+        end
+    end
+    local v27 = 0
+    local v28 = nil
+    for _, v29 in pairs(p26:GetChildren()) do
+        local v30 = v29.Name
+        if string.find(v30, "Pipe") and true or false then
+            v27 = v27 + 1
+            v28 = v29
+        end
+    end
+    if v27 == 1 then
+        return v28
+    else
+        return nil
+    end
+end
+workspace.Plots.PipeConnectionDecoration.ChildAdded:Connect(function()
+    -- upvalues: (ref) v_u_9
+    if v_u_9 then
+        for _, v32 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            if v32.Name ~= "Power" then
+                v32.Transparency = 0.45
+            end
+        end
+    end
+end)
+local v_u_33 = game:GetService("GuiService")
+script.Parent.ToolEvent.Event:Connect(function(p34)
+    -- upvalues: (ref) v_u_9, (copy) v_u_10, (copy) v_u_11, (copy) v_u_12, (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8, (copy) v_u_33
+    if p34 == "unequip" then
+        for _, v35 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            v35.Transparency = 1
+        end
+        v_u_9 = false
+        v_u_10.Parent = nil
+        v_u_11.Parent = nil
+        v_u_12.Value = nil
+        pcall(function()
+            -- upvalues: (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+            v_u_4 = nil
+            v_u_5:Destroy()
+            v_u_6:Destroy()
+            v_u_7:Destroy()
+            v_u_8:Destroy()
+        end)
+        if game.ReplicatedStorage.Values.IsMobile.Value then
+            workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+            v_u_33.TouchControlsEnabled = true
+            return
+        end
+    elseif p34 == "equip" then
+        v_u_9 = true
+        for _, v36 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+            if v36.Name ~= "Power" then
+                v36.Transparency = 0.45
+            end
+        end
+    end
+end)
+local v_u_37 = nil
+local function v_u_51(p_u_38) -- name: tap
+    -- upvalues: (copy) v_u_23, (ref) v_u_37, (copy) v_u_25, (ref) v_u_4, (copy) v_u_31, (copy) v_u_22, (copy) v_u_3, (copy) v_u_10, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8, (copy) v_u_12, (copy) v_u_11, (copy) v_u_13, (copy) v_u_14
+    if v_u_23.Target ~= nil then
+        v_u_37 = v_u_25(v_u_23.Target)
+        if v_u_4 == nil then
+            local v39 = v_u_23.Target
+            local v40 = v39.Name
+            local v41
+            if string.find(v40, "Pipe") and true or false then
+                v41 = v39
+            else
+                v41 = v_u_31(v39.Parent)
+                if v41 == nil then
+                    v41 = v_u_22(v_u_25(v39), v_u_23.Hit.Position)
+                end
+            end
+            if v41 == nil then
+                return
+            end
+            if v41.Pipe:FindFirstChild("Input") and v41.Pipe.Input.Value == true then
+                v_u_3:Fire("Unable to connect! That node is Input only!", nil, Color3.new(1, 0, 0))
+                script.Error:Play()
+                return
+            end
+            v_u_4 = v41
+            if v_u_4 then
+                script.Select:Play()
+                if not v39:FindFirstChild("TutorialHighlight") then
+                    v_u_10.FillColor = v_u_4.Color
+                    v_u_10.Parent = v_u_4
+                end
+            end
+            v_u_5 = Instance.new("Attachment", workspace.Terrain)
+            v_u_5.Position = v41.Position
+            v_u_6 = Instance.new("Attachment", workspace.Terrain)
+            v_u_7 = Instance.new("Part", workspace)
+            v_u_7.Size = Vector3.new(0.1, 1, 0.1)
+            v_u_7.Color = v_u_4.Color
+            v_u_7.Anchored = true
+            v_u_7.CanCollide = false
+            v_u_7.CanQuery = false
+            v_u_7.Material = Enum.Material.SmoothPlastic
+            v_u_8 = script.Parent.Handle:Clone()
+            v_u_8.Parent = workspace
+            v_u_8.Color = v_u_4.Color
+            v_u_8.Anchored = true
+            v_u_8.CanCollide = false
+            v_u_8.CanQuery = false
+            v_u_12.Value = v41
+            while v_u_4 ~= nil do
+                task.wait()
+                local v42 = v_u_23.Target
+                if v42 == nil or v42.Parent == workspace then
+                    v_u_7.Transparency = 1
+                    v_u_8.Transparency = 1
+                else
+                    v_u_7.Transparency = 0
+                    v_u_8.Transparency = 0
+                    v_u_6.Position = v42.Position
+                    if (v_u_6.Position - v_u_5.Position).Magnitude > 50 then
+                        v_u_7.Transparency = 1
+                        v_u_8.Transparency = 1
+                    end
+                end
+                local v43 = (v_u_5.WorldPosition + v_u_6.WorldPosition) / 2
+                v_u_7.CFrame = CFrame.new(v43, v_u_5.Position)
+                local v44 = (v_u_5.WorldPosition - v_u_6.WorldPosition).Magnitude
+                v_u_7.Size = Vector3.new(0.5, 0.5, v44)
+                local v45 = (v_u_5.WorldPosition + v_u_6.WorldPosition * 100) / 101
+                v_u_8.CFrame = CFrame.new(v45, v_u_6.Position)
+            end
+        else
+            local v46 = v_u_23.Target
+            local v47 = v46.Name
+            local v48
+            if string.find(v47, "Pipe") and true or false then
+                v48 = v46
+            else
+                v48 = v_u_31(v46.Parent)
+                if v48 == nil then
+                    v48 = v_u_22(v_u_25(v46), v_u_23.Hit.Position)
+                end
+            end
+            if v48 ~= nil then
+                if v48:FindFirstChild("Pipe"):FindFirstChild("Output").Value == true then
+                    v_u_10.Parent = nil
+                    v_u_11.Parent = nil
+                    v_u_12.Value = nil
+                    pcall(function()
+                        -- upvalues: (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+                        v_u_4 = nil
+                        v_u_5:Destroy()
+                        v_u_6:Destroy()
+                        v_u_7:Destroy()
+                        v_u_8:Destroy()
+                    end)
+                    v_u_3:Fire("Unable to connect! That node is Output only!", nil, Color3.new(1, 0, 0))
+                    script.Error:Play()
+                    return
+                end
+                if v48.Name == v48.Name or (v48.Name == "Pipe" or (string.find(v48.Name, "MainPipe") or (v_u_4.Name == "Pipe" or string.find(v_u_4.Name, "MainPipe")))) then
+                    local v_u_49 = v48
+                    task.spawn(function()
+                        -- upvalues: (ref) v_u_13, (ref) v_u_14, (ref) v_u_4, (ref) v_u_49, (copy) p_u_38, (ref) v_u_10, (ref) v_u_11
+                        if v_u_13.Value ~= 0 then
+                            v_u_14:Fire(v_u_4, v_u_49)
+                        end
+                        if game.ReplicatedStorage.PlacementSystem.PipeBind:InvokeServer(v_u_4, v_u_49, p_u_38) == false then
+                            script.Error:Play()
+                        else
+                            v_u_10.Parent = nil
+                            v_u_11.Parent = nil
+                            if p_u_38 then
+                                script["Repair Torch Stop"].Volume = 0.2
+                            else
+                                script["Repair Torch Stop"].Volume = 0.5
+                            end
+                            script["Repair Torch Stop"]:Play()
+                        end
+                    end)
+                end
+            end
+            v_u_10.Parent = nil
+            v_u_11.Parent = nil
+            v_u_12.Value = nil
+            pcall(function()
+                -- upvalues: (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+                v_u_4 = nil
+                v_u_5:Destroy()
+                v_u_6:Destroy()
+                v_u_7:Destroy()
+                v_u_8:Destroy()
+            end)
+            task.spawn(function()
+                task.wait(0.5)
+                for _, v50 in pairs(workspace.Plots.PipeConnectionDecoration:GetChildren()) do
+                    if v50.Name ~= "Power" then
+                        v50.Transparency = 0.45
+                    end
+                end
+            end)
+        end
+    end
+end
+local v_u_52 = false
+local v_u_53 = tick()
+local v_u_54 = v2.PlayerGui:WaitForChild("Research")
+v1.InputBegan:Connect(function(p55, p56)
+    -- upvalues: (copy) v_u_54, (ref) v_u_9, (copy) v_u_10, (copy) v_u_11, (ref) v_u_52, (ref) v_u_53, (copy) v_u_51
+    if p56 then
+        return
+    elseif v_u_54.Enabled then
+        return
+    elseif v_u_9 == false then
+        v_u_10.Parent = nil
+        v_u_11.Parent = nil
+    elseif p55.UserInputType == Enum.UserInputType.MouseButton1 or p55.KeyCode == Enum.KeyCode.ButtonR2 then
+        v_u_52 = true
+        v_u_53 = tick()
+        v_u_51()
+    end
+end)
+v1.TouchStarted:Connect(function(_, p57)
+    -- upvalues: (ref) v_u_9, (ref) v_u_4, (ref) v_u_52, (ref) v_u_53, (copy) v_u_33
+    if v_u_9 == false then
+        return
+    elseif p57 then
+        return
+    elseif v_u_4 ~= nil then
+        v_u_52 = true
+        v_u_53 = tick()
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+        v_u_33.TouchControlsEnabled = false
+    end
+end)
+v1.TouchEnded:Connect(function(_)
+    -- upvalues: (ref) v_u_9, (ref) v_u_52, (copy) v_u_33, (ref) v_u_53, (copy) v_u_10, (copy) v_u_11, (copy) v_u_12, (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+    if v_u_9 ~= false then
+        v_u_52 = false
+        workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+        v_u_33.TouchControlsEnabled = true
+        if tick() - v_u_53 > 0.2 then
+            v_u_10.Parent = nil
+            v_u_11.Parent = nil
+            v_u_12.Value = nil
+            pcall(function()
+                -- upvalues: (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+                v_u_4 = nil
+                v_u_5:Destroy()
+                v_u_6:Destroy()
+                v_u_7:Destroy()
+                v_u_8:Destroy()
+            end)
+        end
+    end
+end)
+v1.TouchTapInWorld:Connect(function(_, p58)
+    -- upvalues: (ref) v_u_9, (copy) v_u_51
+    if v_u_9 == false then
+        return
+    elseif not p58 then
+        v_u_51()
+    end
+end)
+v1.InputEnded:Connect(function(p59)
+    -- upvalues: (ref) v_u_9, (ref) v_u_52, (ref) v_u_53, (copy) v_u_10, (copy) v_u_11, (copy) v_u_12, (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+    if v_u_9 ~= false then
+        if p59.UserInputType == Enum.UserInputType.MouseButton1 or p59.KeyCode == Enum.KeyCode.ButtonR2 then
+            v_u_52 = false
+            if tick() - v_u_53 > 0.2 then
+                v_u_10.Parent = nil
+                v_u_11.Parent = nil
+                v_u_12.Value = nil
+                pcall(function()
+                    -- upvalues: (ref) v_u_4, (ref) v_u_5, (ref) v_u_6, (ref) v_u_7, (ref) v_u_8
+                    v_u_4 = nil
+                    v_u_5:Destroy()
+                    v_u_6:Destroy()
+                    v_u_7:Destroy()
+                    v_u_8:Destroy()
+                end)
+            end
+        end
+    end
+end)
+game:GetService("RunService").RenderStepped:Connect(function()
+    -- upvalues: (ref) v_u_9, (ref) v_u_52, (ref) v_u_53, (copy) v_u_23, (copy) v_u_25, (ref) v_u_37, (copy) v_u_51, (ref) v_u_4, (copy) v_u_33
+    if v_u_9 and (v_u_52 and tick() - v_u_53 > 0.2) then
+        local v60
+        if v_u_23.Target == nil then
+            v60 = nil
+        else
+            v60 = v_u_25(v_u_23.Target)
+        end
+        if v60 == nil then
+            return
+        end
+        if v60 ~= v_u_37 then
+            v_u_51(true)
+            v_u_51(true)
+        end
+        if game.ReplicatedStorage.Values.IsMobile.Value and v_u_4 == nil then
+            v_u_52 = false
+            workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+            v_u_33.TouchControlsEnabled = true
+        end
+    end
+end)
+task.spawn(function()
+    -- upvalues: (ref) v_u_9, (ref) v_u_4, (copy) v_u_23, (copy) v_u_10, (copy) v_u_11
+    while task.wait() do
+        if v_u_9 and v_u_4 then
+            local v61 = v_u_23.Target
+            if v61 and not v61:FindFirstChild("TutorialHighlight") then
+                local v62 = v61.Name
+                if (string.find(v62, "Pipe") and true or false) and not v61:FindFirstChild(v_u_10.Name) then
+                    local v63, v64, v65 = v61.Color:ToHSV()
+                    local v66 = Color3.fromHSV((v63 + 0.5) % 1, v64, v65)
+                    v_u_11.Parent = v61
+                    v_u_11.FillColor = v66
+                else
+                    v_u_11.Parent = nil
+                end
+            else
+                v_u_11.Parent = nil
+            end
+        end
+    end
+end)

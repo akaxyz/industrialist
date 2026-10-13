@@ -1,0 +1,25 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local In1 = v2.loadConnector(script.Parent.In1MainConnector)
+local In2 = v2.loadConnector(script.Parent.In2MainConnector)
+local Out = v2.loadConnector(script.Parent.OutMainConnector)
+local Carry = v2.loadConnector(script.Parent.CarryMainConnector)
+return {
+	["localUpdate"] = function()
+	["tick"] = function()
+		if In1:hasPower(1) and In2:hasPower(1) then
+			Out:removePower(2000)
+			Carry:addPower(1000)
+		elseif In1:hasPower(1) or In2:hasPower(1) then
+			Out:addPower(1000)
+			Carry:removePower(1000)
+		else
+			Out:removePower(2000)
+			Carry:removePower(2000)
+		end
+		In1:removePower(In1:getBuffer())
+		In2:removePower(In2:getBuffer())
+	end
+}

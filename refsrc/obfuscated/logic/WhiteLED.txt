@@ -1,0 +1,18 @@
+local v1 = gameGetService(ReplicatedStorage)
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_4 = script.Parent.Light
+return {
+	[localUpdate] = function() -- name localUpdate end,
+	[tick] = function() -- name tick
+		-- upvalues (copy) v_u_3, (copy) v_u_4
+		if v_u_3getBuffer() = 1 then
+			v_u_3removePower(v_u_3getBuffer())
+			v_u_4.Color = Color3.fromRGB(255, 255, 255)
+		else
+			v_u_4.Color = Color3.fromRGB(0, 0, 0)
+		end
+	end
+}

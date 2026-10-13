@@ -1,0 +1,94 @@
+local PowerUtilsV2 = require(game:GetService("ReplicatedStorage").Modules.PowerUtilsV2)
+local module = {
+    localUpdate = function() -- Line 32, Named "localUpdate"
+    end;
+}
+local any_loadConnector_result1_upvr_2 = PowerUtilsV2.loadConnector(script.Parent.G128MainConnector)
+local var5_upvw = 0
+local any_loadConnector_result1_upvr_6 = PowerUtilsV2.loadConnector(script.Parent.G64MainConnector)
+local any_loadConnector_result1_upvr_7 = PowerUtilsV2.loadConnector(script.Parent.G32MainConnector)
+local any_loadConnector_result1_upvr_4 = PowerUtilsV2.loadConnector(script.Parent.G16MainConnector)
+local any_loadConnector_result1_upvr_8 = PowerUtilsV2.loadConnector(script.Parent.R128MainConnector)
+local var10_upvw = 0
+local any_loadConnector_result1_upvr = PowerUtilsV2.loadConnector(script.Parent.R64MainConnector)
+local any_loadConnector_result1_upvr_12 = PowerUtilsV2.loadConnector(script.Parent.R32MainConnector)
+local any_loadConnector_result1_upvr_3 = PowerUtilsV2.loadConnector(script.Parent.R16MainConnector)
+local any_loadConnector_result1_upvr_9 = PowerUtilsV2.loadConnector(script.Parent.B128MainConnector)
+local var15_upvw = 0
+local any_loadConnector_result1_upvr_5 = PowerUtilsV2.loadConnector(script.Parent.B64MainConnector)
+local any_loadConnector_result1_upvr_11 = PowerUtilsV2.loadConnector(script.Parent.B32MainConnector)
+local any_loadConnector_result1_upvr_10 = PowerUtilsV2.loadConnector(script.Parent.B16MainConnector)
+local Light_upvr = script.Parent.Light
+function module.tick() -- Line 36
+    --[[ Upvalues[16]:
+        [1]: any_loadConnector_result1_upvr_2 (readonly)
+        [2]: var5_upvw (read and write)
+        [3]: any_loadConnector_result1_upvr_6 (readonly)
+        [4]: any_loadConnector_result1_upvr_7 (readonly)
+        [5]: any_loadConnector_result1_upvr_4 (readonly)
+        [6]: any_loadConnector_result1_upvr_8 (readonly)
+        [7]: var10_upvw (read and write)
+        [8]: any_loadConnector_result1_upvr (readonly)
+        [9]: any_loadConnector_result1_upvr_12 (readonly)
+        [10]: any_loadConnector_result1_upvr_3 (readonly)
+        [11]: any_loadConnector_result1_upvr_9 (readonly)
+        [12]: var15_upvw (read and write)
+        [13]: any_loadConnector_result1_upvr_5 (readonly)
+        [14]: any_loadConnector_result1_upvr_11 (readonly)
+        [15]: any_loadConnector_result1_upvr_10 (readonly)
+        [16]: Light_upvr (readonly)
+    ]]
+    if 1 <= any_loadConnector_result1_upvr_2:getBuffer() then
+        var5_upvw += 128
+    end
+    if 1 <= any_loadConnector_result1_upvr_6:getBuffer() then
+        var5_upvw += 64
+    end
+    if 1 <= any_loadConnector_result1_upvr_7:getBuffer() then
+        var5_upvw += 32
+    end
+    if 1 <= any_loadConnector_result1_upvr_4:getBuffer() then
+        var5_upvw += 16
+    end
+    if 1 <= any_loadConnector_result1_upvr_8:getBuffer() then
+        var10_upvw += 128
+    end
+    if 1 <= any_loadConnector_result1_upvr:getBuffer() then
+        var10_upvw += 64
+    end
+    if 1 <= any_loadConnector_result1_upvr_12:getBuffer() then
+        var10_upvw += 32
+    end
+    if 1 <= any_loadConnector_result1_upvr_3:getBuffer() then
+        var10_upvw += 16
+    end
+    if 1 <= any_loadConnector_result1_upvr_9:getBuffer() then
+        var15_upvw += 128
+    end
+    if 1 <= any_loadConnector_result1_upvr_5:getBuffer() then
+        var15_upvw += 64
+    end
+    if 1 <= any_loadConnector_result1_upvr_11:getBuffer() then
+        var15_upvw += 32
+    end
+    if 1 <= any_loadConnector_result1_upvr_10:getBuffer() then
+        var15_upvw += 16
+    end
+    Light_upvr.Color = Color3.fromRGB(var10_upvw, var5_upvw, var15_upvw)
+    var10_upvw = 0
+    var5_upvw = 0
+    var15_upvw = 0
+    any_loadConnector_result1_upvr_2:removePower(any_loadConnector_result1_upvr_2:getBuffer())
+    any_loadConnector_result1_upvr_6:removePower(any_loadConnector_result1_upvr_6:getBuffer())
+    any_loadConnector_result1_upvr_7:removePower(any_loadConnector_result1_upvr_7:getBuffer())
+    any_loadConnector_result1_upvr_4:removePower(any_loadConnector_result1_upvr_4:getBuffer())
+    any_loadConnector_result1_upvr_9:removePower(any_loadConnector_result1_upvr_9:getBuffer())
+    any_loadConnector_result1_upvr_5:removePower(any_loadConnector_result1_upvr_5:getBuffer())
+    any_loadConnector_result1_upvr_11:removePower(any_loadConnector_result1_upvr_11:getBuffer())
+    any_loadConnector_result1_upvr_10:removePower(any_loadConnector_result1_upvr_10:getBuffer())
+    any_loadConnector_result1_upvr_8:removePower(any_loadConnector_result1_upvr_8:getBuffer())
+    any_loadConnector_result1_upvr:removePower(any_loadConnector_result1_upvr:getBuffer())
+    any_loadConnector_result1_upvr_12:removePower(any_loadConnector_result1_upvr_12:getBuffer())
+    any_loadConnector_result1_upvr_3:removePower(any_loadConnector_result1_upvr_3:getBuffer())
+end
+return module

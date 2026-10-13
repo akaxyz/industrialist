@@ -1,0 +1,103 @@
+local v1 = game:GetService("Players")
+local v_u_2 = game:GetService("TweenService")
+game:GetService("ReplicatedStorage")
+local v_u_3 = v1.LocalPlayer
+local v4 = {}
+local v5 = v_u_3.PlayerGui:WaitForChild("Badges").Frame.Container
+local v_u_6 = v5.AchievementsFrame.Holder.Scroller
+local v_u_7 = v5.SideMenu.Holder
+local v_u_8 = script.ImageButton
+local v_u_9 = nil
+local v_u_10 = 0
+game:GetService("RunService").RenderStepped:Connect(function()
+	-- upvalues: (ref) v_u_9, (ref) v_u_10
+	if v_u_9 then
+		local v11 = v_u_9.Border.BorderStroke.UIGradient
+		local v12 = v11.Rotation
+		local v13 = 20 / v_u_10
+		v11.Rotation = v12 + math.max(v13, 0.05)
+		v_u_10 = v_u_10 + 1
+	end
+end)
+function v4.refreshBadges() -- name: refreshBadges
+	-- upvalues: (copy) v_u_3, (copy) v_u_6, (copy) v_u_8, (ref) v_u_9, (ref) v_u_10, (copy) v_u_2, (copy) v_u_7
+	for _, v_u_14 in v_u_3.Achievements:GetChildren() do
+		if not v_u_6:FindFirstChild(v_u_14.Name) then
+			local v_u_15 = v_u_8:Clone()
+			v_u_15.Name = v_u_14.Name
+			v_u_15:SetAttribute("Description", v_u_14:GetAttribute("Description"))
+			v_u_15:SetAttribute("Image", v_u_14:GetAttribute("Image"))
+			v_u_15.Image = v_u_14:GetAttribute("Image")
+			if v_u_14.Value then
+				v_u_15:SetAttribute("BaseColor", Color3.fromRGB(0, 255, 0))
+				v_u_15:SetAttribute("SelectedColor", Color3.fromRGB(158, 255, 161))
+			else
+				v_u_15:SetAttribute("BaseColor", Color3.fromRGB(255, 0, 0))
+				v_u_15:SetAttribute("SelectedColor", Color3.fromRGB(255, 153, 155))
+			end
+			v_u_15.Border.BorderStroke.Color = v_u_15:GetAttribute("BaseColor")
+			v_u_15.Title.Text = v_u_14.Name
+			v_u_15.MouseEnter:Connect(function()
+				-- upvalues: (ref) v_u_9, (copy) v_u_15, (ref) v_u_10, (ref) v_u_2, (ref) v_u_6
+				v_u_9 = v_u_15
+				v_u_10 = 1
+				v_u_2:Create(v_u_15.Border.BorderStroke, TweenInfo.new(0.4), {
+					["Color"] = v_u_15:GetAttribute("SelectedColor")
+				}):Play()
+				v_u_2:Create(v_u_15.Title, TweenInfo.new(0.4), {
+					["TextTransparency"] = 0
+				}):Play()
+				v_u_2:Create(v_u_15.Title.UIStroke, TweenInfo.new(0.4), {
+					["Transparency"] = 0
+				}):Play()
+				v_u_2:Create(v_u_6.Parent.Parent.BorderStroke, TweenInfo.new(0.1), {
+					["Color"] = v_u_15:GetAttribute("BaseColor")
+				}):Play()
+			end)
+			v_u_15.MouseLeave:Connect(function()
+				-- upvalues: (ref) v_u_9, (ref) v_u_2, (copy) v_u_15, (ref) v_u_6
+				v_u_9 = nil
+				v_u_2:Create(v_u_15.Border.BorderStroke.UIGradient, TweenInfo.new(0.1), {
+					["Rotation"] = 45
+				}):Play()
+				v_u_2:Create(v_u_15.Border.BorderStroke, TweenInfo.new(0.1), {
+					["Color"] = v_u_15:GetAttribute("BaseColor")
+				}):Play()
+				v_u_2:Create(v_u_15.Title, TweenInfo.new(0.1), {
+					["TextTransparency"] = 1
+				}):Play()
+				v_u_2:Create(v_u_15.Title.UIStroke, TweenInfo.new(0.1), {
+					["Transparency"] = 1
+				}):Play()
+				v_u_2:Create(v_u_6.Parent.Parent.BorderStroke, TweenInfo.new(0.1), {
+					["Color"] = Color3.fromRGB(255, 255, 255)
+				}):Play()
+			end)
+			v_u_15.MouseButton1Click:Connect(function()
+				-- upvalues: (ref) v_u_7, (copy) v_u_14, (ref) v_u_2
+				v_u_7.Parent.Visible = true
+				v_u_7.ImageLabel.Image = v_u_14:GetAttribute("Image")
+				v_u_7.Scroller.Description.Text = v_u_14:GetAttribute("Description")
+				v_u_7.ImageLabel.Label.Text = v_u_14.Name
+				if v_u_14.Value then
+					v_u_7.ImageLabel.Container.Lock.Visible = false
+					v_u_2:Create(v_u_7.Parent.BorderStroke, TweenInfo.new(0.4), {
+						["Color"] = Color3.fromRGB(0, 255, 0)
+					}):Play()
+				else
+					v_u_7.ImageLabel.Container.Lock.Visible = true
+					v_u_2:Create(v_u_7.Parent.BorderStroke, TweenInfo.new(0.4), {
+						["Color"] = Color3.fromRGB(255, 0, 0)
+					}):Play()
+				end
+			end)
+			v_u_15:GetPropertyChangedSignal("AbsoluteSize"):Connect(function(_)
+				-- upvalues: (copy) v_u_15
+				v_u_15.Border.BorderStroke.Thickness = v_u_15.Border.AbsoluteSize.X / 20
+				print(v_u_15.Border.BorderStroke.Thickness)
+			end)
+			v_u_15.Parent = v_u_6
+		end
+	end
+end
+return v4

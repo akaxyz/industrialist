@@ -1,0 +1,270 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_4 = {}
+game:GetService("CollectionService")
+game:GetService("PhysicsService")
+local v_u_5 = game.ReplicatedStorage.Pollution
+local v_u_6 = game.ReplicatedStorage.Raining
+local v_u_7 = require(game.ReplicatedStorage.Modules.Achievements)
+local v_u_8 = OverlapParams.new()
+v_u_8.FilterType = Enum.RaycastFilterType.Include
+v_u_8.FilterDescendantsInstances = { script.Parent.Parent }
+local function v_u_15()
+	-- upvalues: (ref) v_u_4, (copy) v_u_8
+	for _, v_u_9 in pairs(v_u_4) do
+		pcall(function()
+			-- upvalues: (copy) v_u_9
+			v_u_9.TreeFarm.Value = nil
+		end)
+	end
+	v_u_4 = {}
+	local v10 = workspace:GetPartBoundsInRadius(script.Parent.Center.Position, 120, v_u_8)
+	for _, v11 in pairs(v10) do
+		local v12 = v11.Parent
+		if v12:FindFirstChild("TreeFarm") then
+			if v12.TreeFarm.Value == nil then
+				::l8::
+				local v13 = v12:GetAttribute("Name")
+				if v13 ~= "TreeFarmController" and (v13 ~= "IglooFarmController" and not table.find(v_u_4, v12)) then
+					local v14 = v_u_4
+					table.insert(v14, v12)
+				end
+			elseif v12.TreeFarm.Value.Parent == nil then
+				v12.TreeFarm.Value = nil
+				goto l8
+			end
+		end
+	end
+	return v_u_4
+end
+local v_u_16 = true
+script.Parent.Parent.ChildAdded:Connect(function()
+	-- upvalues: (ref) v_u_16
+	v_u_16 = true
+end)
+script.Parent.Parent.ChildRemoved:Connect(function()
+	-- upvalues: (ref) v_u_16
+	v_u_16 = true
+end)
+local v17 = {}
+local v_u_18 = {}
+local v_u_19 = {}
+local v_u_20 = {}
+local v_u_21 = {}
+local v_u_22 = 0
+local v_u_23 = false
+local v_u_24 = OverlapParams.new()
+v_u_24.FilterType = Enum.RaycastFilterType.Include
+local function v_u_45()
+	-- upvalues: (ref) v_u_16, (copy) v_u_19, (copy) v_u_18, (copy) v_u_20, (copy) v_u_21, (copy) v_u_15, (ref) v_u_4, (copy) v_u_24
+	v_u_16 = false
+	tick()
+	table.clear(v_u_19)
+	table.clear(v_u_18)
+	table.clear(v_u_20)
+	table.clear(v_u_21)
+	v_u_15()
+	if #v_u_4 ~= 0 then
+		for _, v25 in pairs(v_u_4) do
+			v25.TreeFarm.Value = script.Parent
+			local v26 = v25:GetAttribute("Name")
+			if v26 == "Tree" or (v26 == "ChristmasTree" or (v26 == "CandyCaneTree" or v26 == "ClassicTree")) then
+				v25.TreeFarm:SetAttribute("InRange", false)
+			elseif v26 == "TreeFarmWaterTank" then
+				local v27 = v_u_20
+				table.insert(v27, v25)
+			end
+		end
+		local v28 = 0
+		for _, v29 in pairs(v_u_4) do
+			v29.TreeFarm.Value = script.Parent
+			local v30 = v29:GetAttribute("Name")
+			if v30 == "TreeFarmSprinkler" and v28 / (#v_u_20 * 3) <= 1 then
+				v_u_24.FilterDescendantsInstances = v_u_4
+				local v31 = workspace:GetPartBoundsInRadius(v29.Base.Position, 25, v_u_24)
+				local v32 = {}
+				for _, v33 in pairs(v31) do
+					local v34 = v33.Parent
+					if v34:FindFirstChild("TreeFarm") and not table.find(v_u_19, v34) then
+						local v35 = v34:GetAttribute("Name")
+						if v35 == "Tree" or (v35 == "ChristmasTree" or (v35 == "CandyCaneTree" or v35 == "ClassicTree")) then
+							local v36 = v_u_19
+							table.insert(v36, v34)
+							table.insert(v32, v34)
+						end
+					end
+				end
+				v28 = v28 + 1
+				local v37 = v_u_18
+				table.insert(v37, { v29, v32 })
+			elseif v30 == "FarmHarvester" then
+				v_u_24.FilterDescendantsInstances = v_u_4
+				local v38 = workspace:GetPartBoundsInRadius(v29.Base.Position, 55, v_u_24)
+				local v39 = {}
+				local v40 = nil
+				for _, v41 in pairs(v38) do
+					local v42 = v41.Parent
+					if v42:FindFirstChild("TreeFarm") and not table.find(v39, v42) then
+						local v43 = v42:GetAttribute("Name")
+						if v42:FindFirstChild("OwnerTreeArm") then
+							table.insert(v39, v42)
+						elseif v43 == "TreeFarmOutput" then
+							v40 = v42
+						end
+					end
+				end
+				if v40 then
+					local v44 = v_u_21
+					table.insert(v44, { v29, v39, v40 })
+				end
+			end
+		end
+	end
+end
+OverlapParams.new().FilterType = Enum.RaycastFilterType.Include
+local v_u_46 = 0
+if script.Parent:GetAttribute("Name") == "IglooFarmController" then
+	v_u_46 = game.ReplicatedStorage.MonthOfTheYear.Value == "December" and 1 or (game.ReplicatedStorage.MonthOfTheYear.Value == "January" and 1 or (game.ReplicatedStorage.MonthOfTheYear.Value == "Febraury" and 1 or v_u_46))
+end
+local v_u_47 = 0
+function v17.tick()
+	-- upvalues: (ref) v_u_47, (ref) v_u_16, (copy) v_u_45, (ref) v_u_23, (copy) v_u_18, (copy) v_u_6, (ref) v_u_22, (copy) v_u_5, (copy) v_u_19, (copy) v_u_3, (copy) v_u_21, (ref) v_u_46, (copy) v_u_7, (copy) v_u_20
+	v_u_47 = v_u_47 + script:GetAttribute("UpdateEvery")
+	if v_u_16 and v_u_47 % 30 == 0 then
+		v_u_45()
+	end
+	if v_u_47 % 1000 == 0 then
+		v_u_23 = true
+		for _, v48 in pairs(v_u_18) do
+			local v_u_49 = v48[1]
+			local v50 = v48[2]
+			if v_u_6.Value == true and v_u_6.Level.Value == 1 then
+				v_u_22 = v_u_22 + 50
+			end
+			if v_u_22 >= 33 then
+				v_u_22 = v_u_22 - 33
+				if v_u_6.Value == false then
+					v_u_49.State.Value = "1"
+					task.spawn(function()
+						-- upvalues: (copy) v_u_49
+						task.wait(1)
+						v_u_49.State.Value = "0"
+					end)
+				end
+				v_u_49:SetAttribute("Effective", true)
+				for _, v51 in pairs(v50) do
+					v51.Grass.Color = Color3.fromRGB(132, 193, 101)
+					v51.TreeFarm:SetAttribute("InRange", true)
+					local v52 = v51.ModelData.Ticks
+					v52.Value = v52.Value + math.random(7, 11) * 100
+					for _, v53 in pairs(v51.Stages:GetDescendants()) do
+						if v53.Name == "Leaves" then
+							v53.Color = Color3.fromRGB(138, 171, 133)
+						elseif v53.Name == "Cane" then
+							v53.TextureID = "rbxassetid://15782988508"
+						end
+					end
+				end
+			else
+				v_u_49:SetAttribute("Effective", false)
+				for _, v54 in pairs(v50) do
+					v54.Grass.Color = Color3.fromRGB(171, 135, 94)
+					v54.TreeFarm:SetAttribute("InRange", false)
+					for _, v55 in pairs(v54.Stages:GetDescendants()) do
+						if v55.Name == "Leaves" then
+							v55.Color = Color3.fromRGB(171, 135, 94)
+						elseif v55.Name == "Cane" then
+							v55.TextureID = "rbxassetid://15782992123"
+						end
+					end
+				end
+			end
+		end
+	end
+	if v_u_47 % 1300 == 0 then
+		v_u_23 = false
+	end
+	local v56 = 1
+	local v57 = v_u_5.Value / v_u_5:GetAttribute("Max")
+	if v57 > 0 then
+		v56 = 1 + 0.5 * v57 - v57 ^ 2
+	elseif v57 < -0.6 then
+		v56 = v57 / 2 + 1.25
+	end
+	local v58 = math.clamp(v56, 0.5, 1.2)
+	for _, v_u_59 in pairs(v_u_19) do
+		local v_u_60 = v_u_59.State
+		local v_u_61 = v_u_59.ModelData
+		if v_u_6.Value and v_u_6.Level.Value ~= 1 then
+			v_u_59.Grass.Color = Color3.fromRGB(109, 95, 59)
+			for _, v62 in pairs(v_u_59.Stages:GetDescendants()) do
+				if v62.Name == "Leaves" then
+					v62.Color = Color3.fromRGB(171, 135, 94)
+				elseif v62.Name == "Cane" then
+					v62.TextureID = "rbxassetid://15782992123"
+				end
+			end
+		end
+		local v63 = v_u_60.Value
+		if tonumber(v63) ~= v_u_61.Stage.Value then
+			local v64 = v_u_61.Stage.Value
+			v_u_60.Value = tostring(v64)
+		end
+		if v_u_59.TreeFarm:GetAttribute("MaxStage") == v_u_61.Stage.Value and (v_u_59.OwnerTreeArm.Value == nil and v_u_3:hasPower(200000)) then
+			local v_u_65 = nil
+			for _, v66 in pairs(v_u_21) do
+				if table.find(v66[2], v_u_59) and v66[1].State.Value == "" then
+					v_u_65 = v66
+					break
+				end
+			end
+			if v_u_65 ~= nil and v_u_65[1].State.Value == "" then
+				task.spawn(function()
+					-- upvalues: (ref) v_u_3, (copy) v_u_59, (ref) v_u_65, (copy) v_u_61, (copy) v_u_60, (ref) v_u_46, (ref) v_u_7
+					v_u_3:removePower(200000)
+					v_u_59.OwnerTreeArm.Value = v_u_65[1]
+					v_u_65[1].State2.Value = "1"
+					v_u_65[1].State.Value = v_u_59.Name
+					task.wait(7)
+					v_u_59.Base.TreeChop:Play()
+					v_u_61.Stage.Value = 1
+					v_u_60.Value = "1"
+					v_u_65[1].State.Value = v_u_65[3].Name
+					v_u_65[1].State2.Value = ""
+					task.wait(4)
+					v_u_65[3].Account:SetAttribute("Material", v_u_59.TreeFarm:GetAttribute("Material"))
+					local v67 = v_u_59.TreeFarm:GetAttribute("Amount")
+					if v_u_59:GetAttribute("Name") ~= "CandyCaneTree" then
+						v67 = v67 + v_u_46
+					end
+					v_u_65[3].Account.Value = v67
+					v_u_65[1].State.Value = ""
+					v_u_7.giveBadge(2151559595)
+					v_u_59.OwnerTreeArm.Value = nil
+				end)
+			end
+		end
+		if v_u_61.Ticks.Value >= v_u_59.TreeFarm:GetAttribute("GrowthTime") / v58 then
+			v_u_61.Ticks.Value = 0
+			if v_u_59.TreeFarm:GetAttribute("MaxStage") ~= v_u_61.Stage.Value then
+				local v68 = v_u_61.Stage
+				v68.Value = v68.Value + 1
+				local v69 = v_u_61.Stage.Value
+				v_u_60.Value = tostring(v69)
+			end
+		end
+	end
+	for _, v70 in pairs(v_u_20) do
+		if v_u_22 < #v_u_20 * 100 and v70.ModelData.Water.Value > 0 then
+			local v71 = v70.ModelData.Water.Value
+			local v72 = #v_u_20 * 100 - v_u_22
+			local v73 = math.clamp(v71, 0, v72)
+			v_u_22 = v_u_22 + v73
+			local v74 = v70.ModelData.Water
+			v74.Value = v74.Value - v73
+		end
+	end
+end
+return v17

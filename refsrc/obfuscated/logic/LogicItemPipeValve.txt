@@ -1,0 +1,34 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PipeUtilsV2)
+local v3 = require(v1.Modules.PowerUtilsV2)
+local v_u_4 = v2.loadConnector(script.Parent.MainPipe, true)
+local v_u_5 = v2.loadConnector(script.Parent.MainPipeOut, true)
+local v_u_6 = v3.loadConnector(script.Parent.InMainConnector)
+local v_u_7 = script.Parent.ModelData.Played.Value
+local v8 = {}
+local _ = script.Parent.ModelData.State
+function v8.tick() -- name: tick
+	-- upvalues: (copy) v_u_6, (copy) v_u_4, (copy) v_u_5, (ref) v_u_7
+	if v_u_6:getBuffer() >= 1 then
+		v_u_6:removePower(v_u_6:getBuffer())
+		local v9 = v_u_4:getItem()
+		local v10 = v_u_4:getBuffer()
+		local v11 = v_u_5:getMax() - v_u_5:getBuffer()
+		local v12 = math.clamp(v10, 0, v11)
+		if v12 == 0 then
+			return
+		end
+		v_u_5:setUsedTemperature(v_u_4:getTemp())
+		v_u_5:addItemAmount(v9, v12)
+		v_u_4:removeItem(v12)
+		if not v_u_7 then
+			script.Parent.Base.Open:Play()
+			v_u_7 = true
+			return
+		end
+	elseif v_u_7 then
+		script.Parent.Base.Close:Play()
+		v_u_7 = false
+	end
+end
+return v8

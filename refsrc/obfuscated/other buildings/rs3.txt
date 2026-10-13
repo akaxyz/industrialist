@@ -1,0 +1,192 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v_u_4 = v3.loadConnector(script.Parent.MainPipe1)
+local v_u_5 = v3.loadConnector(script.Parent.MainPipe2)
+local v_u_6 = v2.loadConnector(script.Parent.MainConnector)
+local _ = script.Parent.State
+local v_u_7 = require(v1.Modules.Enums.Items)
+local v_u_8 = script.Parent.Monitor.SurfaceGui.Display.Body
+local v9 = {}
+local v_u_10 = require(game:GetService("ReplicatedStorage").FormatNumber.Main).NumberFormatter.with()
+local v_u_11 = 0
+function round(p12, p13)
+	if p13 == 0 then
+		local v14 = p12 + 0.5
+		return math.floor(v14)
+	end
+	local v15 = 10 ^ (p13 or 0)
+	local v16 = p12 * v15 + 0.5
+	return math.floor(v16) / v15
+end
+local v_u_17 = game:GetService("TweenService")
+local v_u_18 = script.Parent.RS4Move.CFrame
+local v_u_19 = script.Parent.RS4Connection.CFrame
+local function v21(p20)
+	-- upvalues: (copy) v_u_18, (copy) v_u_17, (copy) v_u_19
+	if script.Parent.Neighbor.Value == nil and not p20 then
+		script.Parent.RS4Remove.Transparency = 0
+		script.Parent.RS4Move.Position = v_u_18.Position
+		script.Parent.RS4Connection.HydraulicEnd:Play()
+		v_u_17:Create(script.Parent.RS4Connection, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+			["Position"] = v_u_19.Position
+		}):Play()
+	elseif script.Parent.Neighbor.Value ~= nil then
+		script.Parent.RS4Remove.Transparency = 1
+		script.Parent.RS4Move.Position = v_u_18.Position + v_u_18.LookVector * 0.8
+		v_u_17:Create(script.Parent.RS4Connection, TweenInfo.new(3.8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+			["Position"] = v_u_19.Position + v_u_19.RightVector * 7
+		}):Play()
+		script.Parent.RS4Connection.Hydraulic:Play()
+		task.wait(3.7)
+		script.Parent.RS4Connection["Metal Door Close"]:Play()
+	end
+end
+script.Parent.Neighbor:GetPropertyChangedSignal("Value"):Connect(v21)
+task.spawn(v21, true)
+local v22 = script.Parent.Detector
+local v23 = RaycastParams.new()
+v23.FilterDescendantsInstances = { workspace.Plots.Misc }
+v23.FilterType = Enum.RaycastFilterType.Include
+local v24 = workspace:Raycast(v22.Position, v22.CFrame.LookVector * 6, v23)
+if v24 and (v24.Instance.Name == "Detector" and v24.Instance.Parent:GetAttribute("Name") == "ResearchStation4") then
+	script.Parent.Neighbor.Value = v24.Instance.Parent
+	v24.Instance.Parent.Neighbor.Value = script.Parent
+end
+local v_u_25 = false
+local v_u_26 = game.ReplicatedStorage.Statistics.Radiation
+function v9.tick()
+	-- upvalues: (ref) v_u_25, (copy) v_u_6, (copy) v_u_8, (ref) v_u_11, (copy) v_u_10, (copy) v_u_4, (copy) v_u_5, (copy) v_u_7, (copy) v_u_26
+	if script.Parent.Neighbor.Value and script.Parent.Neighbor.Value.Parent == nil then
+		script.Parent.Neighbor.Value = nil
+	end
+	if script.Parent.ModelData.LogicBuff.Value > 0 then
+		local v27 = script.Parent.ModelData.LogicBuff
+		v27.Value = v27.Value - 1
+	elseif script.Parent.ModelData.LogicBuff.Value == -1 then
+		script.Parent.ModelData.LogicBuff.Value = 0
+	end
+	local v28 = 600000
+	if script.Parent.Neighbor.Value then
+		v28 = 5000000
+		if not v_u_25 then
+			v_u_25 = true
+			v_u_6:setMax(5500000)
+		end
+	elseif v_u_25 then
+		v_u_25 = false
+		v_u_6:setMax(700000)
+	end
+	local v29 = 1
+	if v_u_6:hasPower(v28) then
+		v_u_8.Parent.Parent.Enabled = true
+		if script.Parent.Neighbor.Value then
+			local v30 = v_u_8.ResearchCap
+			local v31 = v_u_10
+			local v32 = workspace:GetAttribute("ResearchStation4Cap")
+			v30.Text = ("RS4 Efficient Cap: %*RP"):format((v31:Format((math.floor(v32)))))
+			v_u_8.Parent.Frame.TextLabel.Text = "Research Station 4"
+			v_u_8.Information0.Visible = true
+			v_u_8.Information00.Visible = true
+			v_u_8.Information0.Text = "Research station 4 active."
+			if script.Parent.ModelData.LogicBuff.Value > 0 then
+				v_u_8.Information00.Text = ("Logic buff active (%*s left)"):format(script.Parent.ModelData.LogicBuff.Value)
+				v29 = 2
+			else
+				v_u_8.Information00.Text = "Logic buff inactive (check description)"
+			end
+		else
+			local v33 = v_u_8.ResearchCap
+			local v34 = v_u_10
+			local v35 = workspace:GetAttribute("ResearchStation3Cap")
+			v33.Text = ("RS3 Efficient Cap: %*RP"):format((v34:Format((math.floor(v35)))))
+			v_u_8.Parent.Frame.TextLabel.Text = "Research Station 3"
+			v_u_8.Information0.Visible = false
+			v_u_8.Information00.Visible = false
+		end
+		v_u_8.GlobalResearch.Text = ("Global Research speed: %*RP/s"):format((v_u_10:Format(round(workspace:GetAttribute("ResearchPointGain"), 2))))
+		v_u_8.Information1.Text = ""
+		v_u_8.Information2.Text = ""
+		local v36 = { false, false }
+		if not v_u_4:hasAmount(0.1) then
+			script.Parent.State.Value = ""
+			v_u_8.Item1.Text = "Item 1: LACK OF INPUT"
+			v_u_11 = 0
+			v36[1] = true
+		end
+		if not v_u_5:hasAmount(0.1) then
+			script.Parent.State.Value = ""
+			v_u_8.Item2.Text = "Item 2: LACK OF INPUT"
+			v_u_11 = 0
+			v36[2] = true
+		end
+		if v36[2] or v36[1] then
+			return
+		else
+			local v37 = v_u_4:getItem()
+			local v38 = v_u_5:getItem()
+			local v39 = v_u_7.findItemByDisplayName(v37)
+			local v40 = v_u_7.findItemByDisplayName(v38)
+			local v41 = v39.RPMultiplier or 1
+			local v42 = v40.RPMultiplier or 1
+			local v43 = 2.9 * ((v39.Price or 0) + (v40.Price or 0)) / 2
+			if v39.Radiation ~= nil then
+				local v44 = v_u_26
+				v44.Value = v44.Value + v39.Radiation * 10
+			end
+			if v40.Radiation ~= nil then
+				local v45 = v_u_26
+				v45.Value = v45.Value + v40.Radiation * 10
+			end
+			local v46 = v43 / 600
+			local v47
+			if v46 < 1 then
+				local v48 = math.clamp(v46, -0, 1) + 1
+				v47 = math.log(v48, 2)
+			else
+				v47 = math.log(v46, 4) + 1
+			end
+			local v49 = v37 == v38 and 0.7 or 1
+			if v_u_11 % 2 == 1 or v_u_11 == 0 then
+				v_u_8.Item1.Text = ("Item 1: %*"):format(v37)
+				v_u_8.Item2.Text = ("Item 2: %*"):format(v38)
+				if v37 == v38 then
+					v_u_8.Information1.Text = "Item1 and Item2 are the same!"
+					v_u_8.Information2.Text = "RS3 suffers a 30% speed loss."
+				elseif v43 < 600 then
+					v_u_8.Information1.Text = "Average item value is below $600!"
+					local v50 = v_u_8.Information2
+					local v51 = (1 - v47) * 100
+					v50.Text = ("RS3 suffers a %*%% cap loss."):format((math.floor(v51)))
+				elseif v43 >= 600 then
+					v_u_8.Information1.Text = "Average item value is above $600!"
+					local v52 = v_u_8.Information2
+					local v53 = (v47 - 1) * 100
+					v52.Text = ("RS3 benefits a %*%% cap gain."):format((math.floor(v53)))
+				end
+			end
+			v_u_11 = v_u_11 + 1
+			v_u_4:removeItem(0.1)
+			v_u_5:removeItem(0.1)
+			local v54 = script.Parent.State
+			local v55 = v41 + v42
+			v54.Value = tostring(v55)
+			v_u_6:removePower(v28)
+			if script.Parent.Neighbor.Value then
+				workspace:SetAttribute("ResearchStation4ActiveRaw", workspace:GetAttribute("ResearchStation4ActiveRaw") + 1)
+				workspace:SetAttribute("ResearchStation4Active", workspace:GetAttribute("ResearchStation4Active") + v47 * v29)
+				workspace:SetAttribute("ResearchStation4Speed", workspace:GetAttribute("ResearchStation4Speed") + (v41 + v42) * v49)
+			else
+				workspace:SetAttribute("ResearchStation3ActiveRaw", workspace:GetAttribute("ResearchStation3ActiveRaw") + 1)
+				workspace:SetAttribute("ResearchStation3Active", workspace:GetAttribute("ResearchStation3Active") + v47)
+				workspace:SetAttribute("ResearchStation3Speed", workspace:GetAttribute("ResearchStation3Speed") + (v41 + v42) * v49)
+			end
+		end
+	else
+		v_u_8.Parent.Parent.Enabled = false
+		script.Parent.State.Value = ""
+		v_u_11 = 0
+		return
+	end
+end
+return v9

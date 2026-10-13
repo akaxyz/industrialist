@@ -1,0 +1,31 @@
+local v_u_1 = game:GetService("ReplicatedStorage")
+local v_u_2 = script.Parent.State
+script.Parent.Base.ProximityPrompt.Enabled = true
+local v3 = {
+    ["localUpdate"] = function() -- name: localUpdate
+        -- upvalues: (copy) v_u_2
+        if v_u_2.Value == "" then
+            script.Parent.Particle.ParticleEmitter.Rate = 5
+            script.Parent.Particle.ParticleEmitter.Enabled = false
+        elseif v_u_2.Value == "More" then
+            script.Parent.Particle.ParticleEmitter.Enabled = true
+            script.Parent.Particle.ParticleEmitter.Rate = 30
+            script.Parent.Base["Sleigh Bells"]:Play()
+        end
+    end
+}
+if game.Players.LocalPlayer == nil then
+    script.Parent.Base.ProximityPrompt.Triggered:Connect(function(_)
+        -- upvalues: (copy) v_u_2, (copy) v_u_1
+        script.Parent.Base.ProximityPrompt.Enabled = false
+        v_u_2.Value = "More"
+        if math.random(1, 100) <= 2 then
+            v_u_1.Raining.Value = true
+        end
+        task.wait(5)
+        v_u_2.Value = ""
+        script.Parent.Base.ProximityPrompt.Enabled = true
+    end)
+end
+function v3.tick() -- name: tick end
+return v3

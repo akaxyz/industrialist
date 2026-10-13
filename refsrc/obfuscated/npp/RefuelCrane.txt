@@ -1,0 +1,321 @@
+local v1 = {}
+local v_u_2 = game:GetService("TweenService")
+local v_u_3 = script.Parent.Parent.Parent
+local v_u_4 = v_u_3.FuelRefPoint.CFrame
+local v_u_5 = v_u_3.FuelRodPickupSpot.CFrame
+local v_u_6 = v_u_3.CoreRefPoint.CFrame
+local _ = v_u_3.Parent.ModelData
+local v_u_7 = require(script.Parent.FuelTypes)
+local _ = #v_u_7.FuelTypes
+local _ = v_u_7.quickAccessColorTable
+local v_u_8 = v_u_7.quickAccessCapColorTable
+local _ = v_u_7.quickAccessFullNameTable
+local _ = v_u_7.quickAccessIDTable
+local v_u_9 = v_u_3.RefuelMachine
+local v_u_10 = v_u_3.RefuelMachineSegment
+local v_u_11 = v_u_10.Union
+local v12 = v_u_3.Ref2.Position - v_u_3.Ref1.Position
+local v13 = v12.X
+local v14 = math.abs(v13)
+local v15 = v12.Y
+local v16 = math.abs(v15)
+local v17 = v12.Z
+local v18 = math.abs(v17)
+local v_u_19 = Vector3.new(v14, v16, v18)
+local v20 = 1 - v_u_19.X
+local v21 = 1 - v_u_19.Y
+local v22 = 1 - v_u_19.Z
+local v_u_23 = Vector3.new(v20, v21, v22)
+local v24 = 1 - v_u_19.X
+local v25 = 1 - v_u_19.Z
+Vector3.new(v24, 0, v25)
+local v_u_26 = v_u_3.RodModel:Clone()
+v_u_26.Parent = v_u_3
+v_u_26.Name = "PseudoRod"
+v_u_26.Cap.CanCollide = false
+v_u_26["rod.001"].CanCollide = false
+local v_u_27 = nil
+script.Position.Value = v_u_3.FuelRefPoint.CFrame
+function v1.waitForPower() -- name: waitForPower
+	if script.Parent.RefuelingCranePowerDebt.Value ~= 0 then
+		repeat
+			task.wait(1)
+		until script.Parent.RefuelingCranePowerDebt.Value == 0
+	end
+end
+function repeatPowerConsumption(p_u_28, p_u_29) -- name: repeatPowerConsumption
+	task.spawn(function()
+		-- upvalues: (copy) p_u_29, (copy) p_u_28
+		for _ = 1, p_u_29 do
+			task.wait(1)
+			local v30 = script.Parent.RefuelingCranePowerDebt
+			v30.Value = v30.Value + p_u_28
+		end
+	end)
+end
+function v1.pickupRods(p31, p32) -- name: pickupRods
+	-- upvalues: (copy) v_u_5, (copy) v_u_2, (copy) v_u_11, (copy) v_u_26, (copy) v_u_8, (ref) v_u_27, (copy) v_u_10
+	local v33 = (script.Position.Value.Position - v_u_5.Position).Magnitude
+	local v34 = {
+		["Value"] = v_u_5
+	}
+	v_u_2:Create(script.Position, TweenInfo.new(v33 / 5), v34):Play()
+	v_u_11.motor_running:Play()
+	task.wait(v33 / 5)
+	v_u_11.motor_running:Stop()
+	v_u_11.motor_stop:Play()
+	local v35 = script.Parent.RefuelingCranePowerDebt
+	v35.Value = v35.Value + 1000
+	v_u_26:PivotTo(v_u_5)
+	v_u_26.Cap.Color = v_u_8[p31]
+	local v36 = script.Parent.RefuelingCranePowerDebt
+	v36.Value = v36.Value + 600
+	for _ = 1, p32 do
+		task.wait(0.1)
+		v_u_11.hoist_begin:Play()
+		v_u_27 = nil
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 2
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 2.5
+		}):Play()
+		task.wait(1)
+		v_u_11.connect:Play()
+		task.wait(0.2)
+		v_u_11.hoist_begin:Play()
+		v_u_27 = v_u_26
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(0.5, Enum.EasingStyle.Linear), {
+			["Value"] = 0
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = -15.8
+		}):Play()
+		task.wait(1)
+		v_u_11.hoist_end:Play()
+		for _ = 1, 60 do
+			task.wait()
+			v_u_10.Spin.Orientation = v_u_10.Spin.Orientation + Vector3.new(0, 1, 0)
+		end
+	end
+end
+function v1.oneRodTaskLoop(p37, p38, p39, p40) -- name: oneRodTaskLoop
+	-- upvalues: (copy) v_u_6, (copy) v_u_2, (copy) v_u_11, (ref) v_u_27, (copy) v_u_3, (copy) v_u_26, (copy) v_u_8, (copy) v_u_10
+	local v41 = tonumber(p38) / 100
+	local v42 = math.floor(v41)
+	local v43 = v_u_6 + (tonumber(p38) - v42 * 100) * v_u_6.RightVector + v42 * v_u_6.LookVector
+	local v44 = (script.Position.Value.Position - v43.Position).Magnitude
+	v_u_2:Create(script.Position, TweenInfo.new(v44 / 5), {
+		["Value"] = v43
+	}):Play()
+	local v45 = script.Parent.RefuelingCranePowerDebt
+	v45.Value = v45.Value + 600
+	v_u_11.motor_running:Play()
+	task.wait(v44 / 5)
+	v_u_11.motor_running:Stop()
+	v_u_11.motor_stop:Play()
+	task.wait(0.1)
+	if not p37 then
+		local v46 = script.Parent.RefuelingCranePowerDebt
+		v46.Value = v46.Value + 600
+		v_u_11.hoist_begin:Play()
+		v_u_27 = nil
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 8.1
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 2.5
+		}):Play()
+		task.wait(1)
+		task.wait(0.2)
+		v_u_11.connect:Play()
+		local v47 = v_u_3.FuelRods[p38]
+		v_u_26:PivotTo(v43 - Vector3.new(0, 1.593, 0))
+		v_u_26.Cap.Color = v47.Cap.Color
+		v47:Destroy()
+		v_u_27 = v_u_26
+		task.wait(0.1)
+		v_u_11.hoist_begin:Play()
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 0
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = -15.8
+		}):Play()
+		task.wait(1)
+		v_u_11.hoist_end:Play()
+	end
+	v_u_26.Cap.Color = v_u_8[p40]
+	local v48 = script.Parent.RefuelingCranePowerDebt
+	v48.Value = v48.Value + 600
+	for _ = 1, 60 do
+		task.wait()
+		v_u_10.Spin.Orientation = v_u_10.Spin.Orientation - Vector3.new(0, 1, 0)
+	end
+	task.wait(0.1)
+	if p39 ~= "none" then
+		v_u_11.hoist_begin:Play()
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 8.1
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 2.535
+		}):Play()
+		task.wait(1)
+		task.wait(0.2)
+		v_u_11.connect:Play()
+		v_u_27 = nil
+		task.wait(0.1)
+		v_u_11.hoist_begin:Play()
+		v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = 0
+		}):Play()
+		v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+			["Value"] = -15.8
+		}):Play()
+		task.wait(1.1)
+		v_u_11.hoist_end:Play()
+		local v49 = v_u_3.RodModel:Clone()
+		v49.Cap.Color = v_u_8[p39]
+		v49.Parent = v_u_3.FuelRods
+		v49:PivotTo(v43 - Vector3.new(0, 1.593, 0))
+		v49.Name = p38
+		v_u_27 = v_u_26
+		task.wait(0.1)
+	end
+end
+function v1.spentFuel(p50, p51) -- name: spentFuel
+	-- upvalues: (copy) v_u_7, (copy) v_u_4, (copy) v_u_2, (copy) v_u_11, (copy) v_u_10, (ref) v_u_27, (copy) v_u_26, (copy) v_u_8, (copy) v_u_3
+	local v52 = (p50 - 1) / v_u_7.spentFuelWidth
+	local v53 = math.floor(v52)
+	local v54 = p50 - 1 - v53 * v_u_7.spentFuelWidth
+	local v55 = v_u_4 - v53 * v_u_4.RightVector * 1.25 - v54 * v_u_4.LookVector * 1.25
+	local v56 = (script.Position.Value.Position - v55.Position).Magnitude
+	v_u_2:Create(script.Position, TweenInfo.new(v56 / 5), {
+		["Value"] = v55
+	}):Play()
+	local v57 = script.Parent.RefuelingCranePowerDebt
+	v57.Value = v57.Value + 1000
+	v_u_11.motor_running:Play()
+	task.wait(v56 / 5)
+	v_u_11.motor_running:Stop()
+	v_u_11.motor_stop:Play()
+	for _ = 1, 60 do
+		task.wait()
+		v_u_10.Spin.Orientation = v_u_10.Spin.Orientation + Vector3.new(0, 1, 0)
+	end
+	task.wait(0.1)
+	v_u_11.hoist_begin:Play()
+	v_u_27 = v_u_26
+	v_u_26.Cap.Color = v_u_8[p51]
+	v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 7.5
+	}):Play()
+	v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 2.5
+	}):Play()
+	task.wait(1)
+	task.wait(0.2)
+	v_u_11.connect:Play()
+	local v58 = v_u_26:Clone()
+	v58.Name = p50
+	v58.Parent = v_u_3.FuelRods
+	v58:PivotTo(v55 - Vector3.new(0, 0.8, 0))
+	v_u_27 = nil
+	task.wait(0.1)
+	v_u_11.hoist_begin:Play()
+	v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 0
+	}):Play()
+	v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = -15.8
+	}):Play()
+	task.wait(1)
+	v_u_11.hoist_end:Play()
+end
+function v1.spentControlRod() -- name: spentControlRod
+	-- upvalues: (copy) v_u_5, (copy) v_u_2, (copy) v_u_11, (copy) v_u_26, (copy) v_u_8, (copy) v_u_10, (ref) v_u_27
+	local v59 = script.Parent.RefuelingCranePowerDebt
+	v59.Value = v59.Value + 1000
+	local v60 = (script.Position.Value.Position - v_u_5.Position).Magnitude
+	local v61 = {
+		["Value"] = v_u_5
+	}
+	v_u_2:Create(script.Position, TweenInfo.new(v60 / 5), v61):Play()
+	if v60 > 0.1 then
+		v_u_11.motor_running:Play()
+		task.wait(v60 / 5)
+		v_u_11.motor_running:Stop()
+		v_u_11.motor_stop:Play()
+	end
+	v_u_26.Cap.Color = v_u_8.rod
+	for _ = 1, 60 do
+		task.wait()
+		v_u_10.Spin.Orientation = v_u_10.Spin.Orientation + Vector3.new(0, 1, 0)
+	end
+	v_u_27 = v_u_26
+	task.wait(0.1)
+	v_u_11.hoist_begin:Play()
+	v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 2
+	}):Play()
+	v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 2.5
+	}):Play()
+	task.wait(1)
+	task.wait(0.2)
+	v_u_11.connect:Play()
+	v_u_27 = nil
+	task.wait(0.1)
+	v_u_11.hoist_begin:Play()
+	v_u_2:Create(script.MainInsertion, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = 0
+	}):Play()
+	v_u_2:Create(script.TinyArm, TweenInfo.new(1, Enum.EasingStyle.Linear), {
+		["Value"] = -15.8
+	}):Play()
+	task.wait(1)
+	v_u_11.hoist_end:Play()
+end
+function v1.returnHome() -- name: returnHome
+	-- upvalues: (copy) v_u_5, (copy) v_u_2, (copy) v_u_11
+	local v62 = (script.Position.Value.Position - v_u_5.Position).Magnitude
+	local v63 = {
+		["Value"] = v_u_5
+	}
+	v_u_2:Create(script.Position, TweenInfo.new(v62 / 5), v63):Play()
+	if v62 > 0.1 then
+		v_u_11.motor_running:Play()
+		task.wait(v62 / 5)
+		v_u_11.motor_running:Stop()
+		v_u_11.motor_stop:Play()
+	end
+end
+local v_u_64 = v_u_3.Parent.Base.Orientation.Y
+local function v77() -- name: updatePosition
+	-- upvalues: (copy) v_u_10, (copy) v_u_9, (ref) v_u_19, (copy) v_u_3, (copy) v_u_23, (copy) v_u_64, (ref) v_u_27
+	v_u_10:PivotTo(script.Position.Value)
+	local v65 = v_u_64
+	v_u_9:PivotTo(CFrame.new(script.Position.Value.Position * v_u_19 + v_u_3.Ref1.Position * v_u_23) * CFrame.Angles(0, 3.141592653589793 + math.rad(v65), 0))
+	local v66 = v_u_10.Insert.Union
+	local v67 = v_u_10.Union.Attachment.WorldPosition
+	local v68 = script.MainInsertion.Value
+	v66.Position = v67 - Vector3.new(0, v68, 0)
+	local v69 = v_u_10.Insert.Part
+	local v70 = v_u_10.Insert.Union.Attachment.WorldPosition
+	local v71 = script.TinyArm.Value
+	local v72 = math.clamp(v71, 0, 4)
+	v69.Position = v70 - Vector3.new(0, v72, 0)
+	if v_u_27 ~= nil then
+		local v73 = script.TinyArm.Value >= 0 and 0 or script.TinyArm.Value
+		local v74 = v_u_27
+		local v75 = v_u_10.Insert.Part:GetPivot()
+		local v76 = v73 + 1.823
+		v74:PivotTo(v75 - Vector3.new(0, v76, 0))
+	end
+end
+script.Position:GetPropertyChangedSignal("Value"):Connect(v77)
+script.TinyArm:GetPropertyChangedSignal("Value"):Connect(v77)
+script.MainInsertion:GetPropertyChangedSignal("Value"):Connect(v77)
+v77()
+return v1

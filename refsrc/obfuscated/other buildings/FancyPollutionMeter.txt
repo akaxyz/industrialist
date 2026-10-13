@@ -1,0 +1,173 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v4 = {}
+local v_u_5 = 1
+local v_u_6 = {
+	{
+		["sample"] = 1,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["sample"] = 2,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	},
+	{
+		["sample"] = 10,
+		["average"] = 0,
+		["data"] = nil,
+		["data"] = {}
+	}
+}
+local v_u_7 = require(v1.Modules.GraphV2)
+local v_u_8 = nil
+local v_u_9 = script.Parent.Screen
+local v_u_10 = Color3.fromRGB(97, 62, 16)
+local v_u_11 = Color3.fromRGB(255, 166, 42)
+local v_u_12 = script.Parent.Radar
+local v_u_13 = script.Parent.State
+function v4.localStart() -- name: localStart
+	-- upvalues: (ref) v_u_8, (copy) v_u_7, (copy) v_u_9, (copy) v_u_11, (copy) v_u_10, (ref) v_u_5, (copy) v_u_6, (copy) v_u_13, (copy) v_u_12
+	local v14 = {
+		["TextColor"] = v_u_11,
+		["GridColor"] = v_u_11
+	}
+	v_u_8 = v_u_7.new(v_u_9.AdvancedRate.Frame.MainGraph, { v_u_9.AdvancedRate.Frame.MainGraph.Graph.Path2D_1 }, v14)
+	local v_u_15 = v_u_9.AdvancedRate.Frame.Bottom
+	local function v_u_18(p16) -- name: colorChanging
+		-- upvalues: (copy) v_u_15, (ref) v_u_10, (ref) v_u_11
+		for _, v17 in pairs(v_u_15:GetChildren()) do
+			if v17:IsA("TextButton") then
+				v17.BackgroundColor3 = v_u_10
+			end
+		end
+		p16.BackgroundColor3 = v_u_11
+	end
+	v_u_15.short.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_5, (copy) v_u_18, (copy) v_u_15
+		v_u_5 = 1
+		v_u_18(v_u_15.short)
+	end)
+	v_u_15.medium.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_5, (copy) v_u_18, (copy) v_u_15
+		v_u_5 = 2
+		v_u_18(v_u_15.medium)
+	end)
+	v_u_15.long.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_5, (copy) v_u_18, (copy) v_u_15
+		v_u_5 = 3
+		v_u_18(v_u_15.long)
+	end)
+	v_u_15.clear.MouseButton1Click:Connect(function()
+		-- upvalues: (ref) v_u_6
+		table.clear(v_u_6[1].data)
+		table.clear(v_u_6[2].data)
+		table.clear(v_u_6[3].data)
+	end)
+	while task.wait(0.05) do
+		if v_u_13.Value == "off" then
+			if script.Parent.Base.Radar.Playing == true then
+				script.Parent.Base.Radar:Pause()
+			end
+		else
+			local v19 = v_u_13.Value
+			if tonumber(v19) then
+				v_u_12:PivotTo(v_u_12:GetPivot() * CFrame.Angles(0, 0.06981317007977318, 0))
+				if script.Parent.Base.Radar.Playing == false then
+					script.Parent.Base.Radar:Resume()
+				end
+			end
+		end
+	end
+end
+local v_u_20 = workspace:GetAttribute("Difficulty")
+local v_u_21 = 9
+function v4.localUpdate() -- name: localUpdate
+	-- upvalues: (copy) v_u_9, (ref) v_u_8, (ref) v_u_21, (copy) v_u_20, (copy) v_u_6, (ref) v_u_5
+	if script.Parent.State.Value == "off" then
+		v_u_9.BasicRate.Enabled = false
+		v_u_9.AdvancedRate.Enabled = false
+	elseif game.ReplicatedStorage.PlacementSystem.Buildings.Misc.AdvancedPollutionMeter:GetAttribute("ResearchLocked") == false then
+		v_u_9.BasicRate.Enabled = false
+		v_u_9.AdvancedRate.Enabled = true
+	else
+		v_u_9.BasicRate.Enabled = true
+		v_u_9.AdvancedRate.Enabled = false
+	end
+	if v_u_8 == nil then
+		return
+	else
+		local v22 = script.Parent.State.Value
+		if tonumber(v22) == nil then
+			return
+		else
+			v_u_21 = v_u_21 + 1
+			local v23 = game.ReplicatedStorage.Pollution.Value / game.ReplicatedStorage.Pollution:GetAttribute("Max") * 100
+			if v_u_9.AdvancedRate.Enabled then
+				local v24 = script.Parent.State.Value
+				local v25 = tonumber(v24) * 100 + 0.5
+				local v26 = math.floor(v25) / 100
+				if v_u_20 == 5 then
+					v23 = math.random(-400000, 400000) / 1000
+					v26 = "N/A"
+				end
+				for _, v27 in pairs(v_u_6) do
+					if v_u_21 % v27.sample == 0 then
+						v27.average = v27.average + v23
+						local v28 = v27.data
+						local v29 = v27.average / v27.sample
+						table.insert(v28, v29)
+						v27.average = 0
+						if #v27.data == 101 then
+							table.remove(v27.data, 1)
+						end
+					else
+						v27.average = v27.average + v23
+					end
+				end
+				local v30 = v_u_9.AdvancedRate.Frame.Top.Number
+				local v31 = v23 * 1000 + 0.5
+				v30.Text = math.floor(v31) / 1000 .. "%" .. "  " .. v26 .. "%/h"
+				local v32 = {}
+				for v33 = 1, #v_u_6[v_u_5].data do
+					v32[v33] = -v_u_6[v_u_5].sample * #v_u_6[v_u_5].data + v_u_6[v_u_5].sample * (v33 - 1)
+				end
+				v_u_8:RefreshNGraphs(v32, { v_u_6[v_u_5].data })
+			else
+				local v34 = v_u_9.BasicRate.TextLabel
+				local v35 = v23 * 1 + 0.5
+				v34.Text = math.floor(v35) / 1 .. "%"
+			end
+		end
+	end
+end
+local v_u_36 = game.ReplicatedStorage.Pollution.Value
+local v_u_37 = tick()
+local v_u_38 = 0
+local v_u_39 = tick()
+function v4.tick() -- name: tick
+	-- upvalues: (ref) v_u_37, (ref) v_u_38, (ref) v_u_36, (ref) v_u_39, (copy) v_u_3
+	if tick() - v_u_37 > 1 then
+		v_u_37 = tick()
+		local v40 = game.ReplicatedStorage.Pollution.Value
+		v_u_38 = (v40 - v_u_36) / 500000 * 3600
+		v_u_36 = v40
+	end
+	if tick() - v_u_39 >= 1 then
+		v_u_39 = tick()
+		if v_u_3:hasPower(30000) then
+			v_u_3:removePower(30000)
+			local v41 = script.Parent.State
+			local v42 = v_u_38 + math.random(-20, 20) / 10000000
+			v41.Value = tostring(v42)
+			return
+		end
+		script.Parent.State.Value = "off"
+	end
+end
+return v4

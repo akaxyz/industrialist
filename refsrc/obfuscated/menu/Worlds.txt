@@ -1,0 +1,556 @@
+local v1 = gameGetService(Players)
+local v_u_2 = gameGetService(ReplicatedStorage)
+local v_u_3 = gameGetService(TweenService)
+gameGetService(RunService)
+gameGetService(UserInputService)
+gameGetService(GuiService)
+local v_u_4 = gameGetService(MarketplaceService)
+local v_u_5 = v1.LocalPlayer
+local v_u_6 = v_u_2WaitForChild(Values).IsMobile
+local v_u_7 = v_u_5WaitForChild(PlayerScripts).sfxLibrary
+local v_u_8 = require(script.Parent.Transitions)
+local v_u_9 = require(script.Parent.UIReferences)
+local v_u_10 = require(script.FormattingStuff)
+local v_u_11 = {}
+local v_u_12 = {
+	[0] = Color3.fromRGB(25, 255, 255),
+	[1] = Color3.fromRGB(51, 249, 51),
+	[2] = Color3.fromRGB(255, 217, 25),
+	[3] = Color3.fromRGB(255, 25, 25),
+	[4] = Color3.fromRGB(255, 25, 217),
+	[5] = Color3.fromRGB(77, 77, 77),
+	[6] = Color3.fromRGB(128, 25, 255)
+}
+local v_u_13 = {
+	123701026448779,
+	77619421497521,
+	110567785013411,
+	97403877801136,
+	126297320508545,
+	86821414877739,
+	133944941067223,
+	108908950305384,
+	85717493989532,
+	13333189485,
+	7212066712,
+	132979170550292,
+	4530791709
+}
+local function v_u_19(p14, p15) -- name applyDifficultyColors
+	-- upvalues (copy) v_u_12
+	local v16, v17, v18 = (v_u_12[p15] or v_u_12[2])ToHSV()
+	p14.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.5)
+	p14.CollapsedForm.Play.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.9)
+	p14.ExpandedForm.World.ButtonHolder.Play.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.9)
+	p14.UpdateImageForm.Main.Frame.Presets.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+	p14.UpdateImageForm.Main.Frame.TextHolder.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+	p14.CollapsedForm.Main.IconHolder.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+	p14.ExpandedForm.World.Main.IconHolder.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+	p14.ExpandedForm.WorldDeletion.Main.IconHolder.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+	p14.UpdateImageForm.Main.PreviewIcon.BackgroundColor3 = Color3.fromHSV(v16, v17, v18  0.16)
+end
+local function v_u_29(p20, p21, p22) -- name updateName
+	-- upvalues (copy) v_u_2, (copy) v_u_3
+	local v23 = p21.CollapsedForm.Main.InfoContainer.InfoHolder.WorldName
+	local v24 = p21.ExpandedForm.World.Main.InfoHolder.WorldName
+	local v25, v26 = v_u_2.Events.EditWorldInvokeServer(p20, Title, p22.Text)
+	if v26 then
+		local v27 = TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 2, true)
+		local v28 = {
+			[TextColor3] = Color3.new(1, 0, 0)
+		}
+		v_u_3Create(v23, v27, v28)Play()
+		v_u_3Create(v24, v27, v28)Play()
+		script.Parent.Parent.NotificationPlay()
+	end
+	v23.Text = v25
+	v24.Text = v25
+end
+local function v_u_36(p30, p31, p32) -- name updateDescription
+	-- upvalues (copy) v_u_2, (copy) v_u_3
+	local v33 = p31.ExpandedForm.World.Main.InfoHolder.Description
+	local v34, v35 = v_u_2.Events.EditWorldInvokeServer(p30, Description, p32.Text)
+	if v35 then
+		v_u_3Create(v33, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 2, true), {
+			[TextColor3] = Color3.new(1, 0, 0)
+		})Play()
+		script.Parent.Parent.NotificationPlay()
+	end
+	v33.Text = v34
+end
+local function v_u_38() -- name joinWorldScreen
+	-- upvalues (copy) v_u_9, (copy) v_u_8
+	local v_u_37 = v_u_9.Transition.Frame.BottomSection
+	v_u_37.Parent.FunFact.Visible = true
+	v_u_8.blackSceneOn()
+	task.wait(8)
+	v_u_37.Cancel.Visible = true
+	v_u_37.TextLabel.Text = Not loading Cancel and try again!
+	v_u_37.Cancel.MouseButton1ClickOnce(function()
+		-- upvalues (ref) v_u_8, (copy) v_u_37
+		v_u_8.blackSceneOff()
+		v_u_37.Cancel.Visible = false
+		v_u_37.TextLabel.Text = Loading...
+		v_u_37.Parent.FunFact.Visible = false
+	end)
+end
+local function v_u_48(p_u_39, p_u_40, p_u_41) -- name initiateDeletion
+	-- upvalues (copy) v_u_7
+	local v_u_42 = p_u_40.ExpandedForm.World
+	local v_u_43 = p_u_40.ExpandedForm.WorldDeletion
+	local v_u_44 = v_u_43.Delete
+	local v_u_45 = {
+		[canDelete] = false,
+		[canceled] = false
+	}
+	v_u_43.Main.IconHolder.Icon.Image = p_u_40.CollapsedForm.Main.IconHolder.Icon.Image
+	v_u_43.Main.InfoHolder.WorldName.Text = p_u_39.Title.Value
+	task.spawn(function()
+		-- upvalues (copy) v_u_44, (copy) v_u_45
+		v_u_44.BackgroundColor3 = Color3.fromRGB(129, 129, 129)
+		for v46 = 30, 0, -1 do
+			if v_u_45.canceled then
+				break
+			end
+			v_u_44.Text = ( .. v46  10 .. )
+			script.CountdownDeletePlay()
+			task.wait(0.1)
+			if v46 = 0 then
+				v_u_45.canDelete = true
+				v_u_44.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+				v_u_44.Text = Delete
+				script.CountdownFinishPlay()
+			end
+		end
+	end)
+	local v_u_47 = v_u_44.MouseButton1ClickConnect(function()
+		-- upvalues (copy) v_u_45, (ref) v_u_7, (copy) p_u_39, (copy) p_u_40
+		if v_u_45.canDelete then
+			game.ReplicatedStorage.DeleteWorldFireServer(p_u_39, p_u_40)
+			script.RemoveSoundPlay()
+		else
+			v_u_7.ClickPlay()
+		end
+	end)
+	v_u_43.Cancel.MouseButton1ClickOnce(function()
+		-- upvalues (copy) v_u_43, (copy) v_u_42, (copy) p_u_41, (copy) v_u_45, (ref) v_u_47
+		v_u_43.Visible = false
+		v_u_42.Visible = true
+		p_u_41.Value = false
+		v_u_45.canceled = true
+		v_u_47Disconnect()
+	end)
+	v_u_42.Visible = false
+	v_u_43.Visible = true
+	p_u_41.Value = true
+end
+local function v_u_56(p_u_49, p_u_50) -- name setupHoverHighlight
+	-- upvalues (copy) v_u_7, (copy) v_u_6
+	local function v_u_51() -- name highlightParent
+		-- upvalues (ref) v_u_7, (copy) p_u_49
+		v_u_7.InventoryHover.PlaybackSpeed = Random.new()NextNumber(0.8, 1.2)
+		v_u_7.InventoryHoverPlay()
+		p_u_49.CollapsedForm.Toggle.ImageColor3 = Color3.new(1, 1, 1)
+		p_u_49.ExpandedForm.World.Toggle.ImageColor3 = Color3.new(1, 1, 1)
+		p_u_49.BorderStroke.Color = Color3.new(1, 1, 1)
+	end
+	local function v_u_52() -- name unhighlightParent
+		-- upvalues (copy) p_u_49
+		p_u_49.CollapsedForm.Toggle.ImageColor3 = Color3.fromRGB(229, 229, 229)
+		p_u_49.ExpandedForm.World.Toggle.ImageColor3 = Color3.fromRGB(229, 229, 229)
+		p_u_49.BorderStroke.Color = Color3.new(0, 0, 0)
+	end
+	local v_u_53 = nil
+	p_u_49.MouseEnterConnect(function()
+		-- upvalues (ref) v_u_6, (copy) p_u_50, (ref) v_u_53, (copy) v_u_51
+		if not (v_u_6.Value or p_u_50.Value) then
+			if not v_u_53 then
+				v_u_51()
+			end
+		end
+	end)
+	p_u_49.MouseLeaveConnect(function()
+		-- upvalues (copy) v_u_52
+		v_u_52()
+	end)
+	local v_u_54 = v_u_53
+	for _, v_u_55 in ipairs(p_u_49GetDescendants()) do
+		if v_u_55IsA(GuiButton) or v_u_55IsA(TextBox) then
+			v_u_55.MouseEnterConnect(function()
+				-- upvalues (ref) v_u_6, (copy) p_u_50, (copy) v_u_55, (ref) v_u_54, (copy) v_u_52
+				if not (v_u_6.Value or p_u_50.Value) then
+					v_u_54 = v_u_55
+					v_u_52()
+				end
+			end)
+			v_u_55.MouseLeaveConnect(function()
+				-- upvalues (copy) v_u_55, (ref) v_u_54, (ref) v_u_6, (copy) p_u_50, (copy) v_u_51
+				if v_u_54 == v_u_55 then
+					v_u_54 = nil
+				end
+				if not (v_u_6.Value or (p_u_50.Value or v_u_54)) then
+					v_u_51()
+				end
+			end)
+		end
+	end
+end
+local function v_u_88(p_u_57, p_u_58, p_u_59) -- name registerEvents
+	-- upvalues (copy) v_u_36, (copy) v_u_2, (copy) v_u_38, (copy) v_u_7, (copy) v_u_48, (copy) v_u_29, (copy) v_u_13, (copy) v_u_6, (copy) v_u_5, (copy) v_u_4
+	local v60 = p_u_58.CollapsedForm.Main.InfoContainer.InfoHolder.WorldName
+	local v61 = p_u_58.ExpandedForm.World.Main.InfoHolder.WorldName
+	local v_u_62 = p_u_58.ExpandedForm.World.Main.InfoHolder.Description
+	v_u_62.MouseEnterConnect(function() end)
+	local v_u_63 = 
+	v_u_62.FocusedConnect(function()
+		-- upvalues (ref) v_u_63, (copy) v_u_62
+		v_u_63 = v_u_62.Text
+	end)
+	v_u_62.FocusLostConnect(function()
+		-- upvalues (copy) v_u_62, (ref) v_u_63, (ref) v_u_36, (copy) p_u_57, (copy) p_u_58
+		if v_u_62.Text ~= v_u_63 then
+			v_u_36(p_u_57, p_u_58, v_u_62)
+		end
+	end)
+	p_u_58.CollapsedForm.Play.MouseButton1ClickConnect(function()
+		-- upvalues (copy) p_u_57, (ref) v_u_2, (ref) v_u_38
+		local v64 = p_u_57
+		v_u_2.Events.GetWJIDInvokeServer(v64.Name)
+		v_u_38()
+	end)
+	p_u_58.ExpandedForm.World.ButtonHolder.Play.MouseButton1ClickConnect(function()
+		-- upvalues (copy) p_u_57, (ref) v_u_2, (ref) v_u_38
+		local v65 = p_u_57
+		v_u_2.Events.GetWJIDInvokeServer(v65.Name)
+		v_u_38()
+	end)
+	local function v66() -- name toggleWorldForms
+		-- upvalues (copy) p_u_59, (copy) p_u_58, (ref) v_u_7
+		if not p_u_59.Value then
+			p_u_58.CollapsedForm.Visible = not p_u_58.CollapsedForm.Visible
+			p_u_58.ExpandedForm.Visible = not p_u_58.ExpandedForm.Visible
+			v_u_7.InventoryClickPlay()
+		end
+	end
+	p_u_58.MouseButton1ClickConnect(v66)
+	p_u_58.ExpandedForm.World.ButtonHolder.Delete.MouseButton1ClickConnect(function()
+		-- upvalues (ref) v_u_48, (copy) p_u_57, (copy) p_u_58, (copy) p_u_59
+		v_u_48(p_u_57, p_u_58, p_u_59)
+	end)
+	for _, v_u_67 in ipairs({ v60, v61 }) do
+		v_u_67.MouseEnterConnect(function() end)
+		local v_u_68 = 
+		v_u_67.FocusedConnect(function()
+			-- upvalues (ref) v_u_68, (copy) v_u_67
+			v_u_68 = v_u_67.Text
+		end)
+		v_u_67.FocusLostConnect(function()
+			-- upvalues (copy) v_u_67, (ref) v_u_68, (ref) v_u_29, (copy) p_u_57, (copy) p_u_58
+			if v_u_67.Text ~= v_u_68 then
+				v_u_29(p_u_57, p_u_58, v_u_67)
+			end
+		end)
+	end
+	local v_u_69 = p_u_58.CollapsedForm.Main.IconHolder
+	local v70 = p_u_58.ExpandedForm.World.Main.IconHolder
+	local v_u_71 = p_u_58.UpdateImageForm.Main.Frame.TextHolder.TextBox
+	local v_u_72 = p_u_58.UpdateImageForm.Main.Frame.Presets.ScrollingFrame
+	local v_u_73 = p_u_58.UpdateImageForm.Main.PreviewIcon
+	local v_u_74 = p_u_58.CollapsedForm
+	local v_u_75 = Instance.new(BoolValue)
+	local function v_u_78() -- name openIconMenu
+		-- upvalues (copy) p_u_59, (copy) p_u_58, (copy) v_u_73, (copy) v_u_69, (copy) v_u_71, (copy) v_u_72, (ref) v_u_13, (ref) v_u_6, (ref) v_u_7, (copy) v_u_75
+		p_u_59.Value = true
+		(p_u_58.CollapsedForm.Visible and p_u_58.CollapsedForm or p_u_58.ExpandedForm).Visible = false
+		p_u_58.UpdateImageForm.Visible = true
+		v_u_73.Icon.Image = v_u_69.Icon.Image
+		v_u_71.Text = v_u_69.Icon.Imagegsub(rbxthumbtype=Asset&id=, )gsub(&w=420&h=420, )
+		if not v_u_72GetAttribute(Loaded) then
+			for _, v76 in ipairs(v_u_13) do
+				local v_u_77 = script.IconClone()
+				v_u_77.Parent = v_u_72
+				v_u_77.Icon.Image = (rbxthumbtype=Asset&id=%&w=420&h=420)format(v76)
+				v_u_77.MouseEnterConnect(function()
+					-- upvalues (ref) v_u_6, (copy) v_u_77, (ref) v_u_7
+					if not v_u_6.Value then
+						v_u_77.BorderStroke.Color = Color3.new(1, 1, 1)
+						v_u_7.InventoryHover.PlaybackSpeed = Random.new()NextNumber(0.8, 1.2)
+						v_u_7.InventoryHoverPlay()
+					end
+				end)
+				v_u_77.MouseLeaveConnect(function()
+					-- upvalues (copy) v_u_77
+					v_u_77.BorderStroke.Color = Color3.new(0, 0, 0)
+				end)
+				v_u_77.MouseButton1ClickConnect(function()
+					-- upvalues (ref) v_u_75, (ref) v_u_7, (ref) v_u_71, (copy) v_u_77, (ref) v_u_73
+					if not v_u_75.Value then
+						v_u_7.InventoryClickPlay()
+						v_u_71.Text = v_u_77.Icon.Imagegsub(rbxthumbtype=Asset&id=, )gsub(&w=420&h=420, )
+						v_u_73.Icon.Image = v_u_77.Icon.Image
+					end
+				end)
+			end
+			v_u_72SetAttribute(Loaded, true)
+		end
+	end
+	v_u_69.MouseButton1ClickConnect(function()
+		-- upvalues (copy) v_u_78, (ref) v_u_74, (copy) p_u_58
+		v_u_78()
+		v_u_74 = p_u_58.CollapsedForm
+	end)
+	v70.MouseButton1ClickConnect(function()
+		-- upvalues (copy) v_u_78, (ref) v_u_74, (copy) p_u_58
+		v_u_78()
+		v_u_74 = p_u_58.ExpandedForm
+	end)
+	p_u_58.UpdateImageForm.Cancel.MouseButton1ClickConnect(function()
+		-- upvalues (copy) p_u_58, (ref) v_u_74, (copy) p_u_59
+		p_u_58.UpdateImageForm.Visible = false
+		v_u_74.Visible = true
+		p_u_59.Value = false
+	end)
+	p_u_58.UpdateImageForm.Apply.MouseButton1ClickConnect(function()
+		-- upvalues (copy) v_u_75, (copy) v_u_73, (copy) p_u_58, (ref) v_u_2, (ref) v_u_5, (ref) v_u_74, (copy) p_u_59
+		if not v_u_75.Value then
+			local v79 = v_u_73.Icon.Imagegsub(rbxthumbtype=Asset&id=, )gsub(&w=420&h=420, )
+			local v80 = p_u_58
+			local v81 = v80.CollapsedForm.Main.IconHolder
+			local v82 = v80.ExpandedForm.World.Main.IconHolder
+			local v83 = tonumber(v79)
+			if v83 then
+				local v84 = (rbxthumbtype=Asset&id=%&w=420&h=420)format((v_u_2.Events.ApplyImageInvokeServer(v_u_5.Worlds[v80.Name], v83)))
+				v81.Icon.Image = v84
+				v82.Icon.Image = v84
+			end
+			p_u_58.UpdateImageForm.Visible = false
+			v_u_74.Visible = true
+			p_u_59.Value = false
+		end
+	end)
+	v_u_75GetPropertyChangedSignal(Value)Connect(function()
+		-- upvalues (copy) v_u_75, (copy) p_u_58
+		if v_u_75.Value then
+			p_u_58.UpdateImageForm.Apply.BackgroundColor3 = Color3.fromRGB(129, 129, 129)
+			p_u_58.UpdateImageForm.Apply.Text = Loading...
+		else
+			p_u_58.UpdateImageForm.Apply.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+			p_u_58.UpdateImageForm.Apply.Text = Apply
+		end
+	end)
+	local v_u_85 = 
+	v_u_71.FocusedConnect(function()
+		-- upvalues (ref) v_u_85, (copy) v_u_71
+		v_u_85 = v_u_71.Text
+	end)
+	v_u_71.FocusLostConnect(function()
+		-- upvalues (copy) v_u_71, (ref) v_u_85, (copy) v_u_75, (ref) v_u_4, (copy) v_u_73
+		if v_u_71.Text ~= v_u_85 then
+			v_u_75.Value = true
+			v_u_71.Text = v_u_71.Textgsub(%D+, )
+			if #v_u_71.Text  0 then
+				local v_u_86 = v_u_71.Text
+				if not pcall(function()
+					-- upvalues (ref) v_u_4, (copy) v_u_86, (ref) v_u_73, (ref) v_u_71
+					local v87 = v_u_4GetProductInfo(v_u_86)
+					if v87.AssetTypeId == 13 or v87.AssetTypeId == 1 then
+						v_u_73.Icon.Image = (rbxthumbtype=Asset&id=%&w=420&h=420)format(v_u_86)
+					else
+						v_u_71.Text = (% (Invalid ID))format(v_u_71.Text)
+					end
+				end) then
+					v_u_71.Text = (% (Invalid ID))format(v_u_71.Text)
+				end
+			end
+			v_u_75.Value = false
+		end
+	end)
+	v_u_71.Parent.MouseEnterConnect(function() end)
+	v_u_71.Parent.MouseLeaveConnect(function()
+		-- upvalues (copy) v_u_71
+		v_u_71.Parent.BorderStroke.Color = Color3.new(0, 0, 0)
+	end)
+	v_u_71.Parent.MouseEnterConnect(function()
+		-- upvalues (ref) v_u_6, (copy) v_u_71
+		if not v_u_6.Value then
+			v_u_71.Parent.BorderStroke.Color = Color3.new(1, 1, 1)
+		end
+	end)
+end
+local function v_u_103(p89, p90) -- name buildWorldUI
+	-- upvalues (copy) v_u_10, (copy) v_u_19, (copy) v_u_56, (copy) v_u_88
+	local v91 = script.WorldClone()
+	v91.Parent = p89.Frame.WorldsFrame.Frame.Container.WorldsScrollingFrame
+	v91.Name = p90.Name
+	local v92 = v_u_10.formatTimestamp(p90.TimeCreated.Value or 0)
+	local v93 = p90.Difficulty.Value or 2
+	v91.CollapsedForm.Main.InfoContainer.InfoHolder.WorldName.Text = p90.Title.Value
+	v91.ExpandedForm.World.Main.InfoHolder.WorldName.Text = p90.Title.Value
+	v91.ExpandedForm.World.Main.InfoHolder.Description.Text = p90.Description.Value
+	v91.CollapsedForm.Main.InfoContainer.InfoHolder.CreationDate.Text = v92
+	v91.ExpandedForm.World.Main.InfoHolder.CreationDate.Text = v92
+	local v94 = p90.Thumbnail.Value
+	local v95 = v91.CollapsedForm.Main.IconHolder
+	local v96 = v91.ExpandedForm.World.Main.IconHolder
+	local v97 = tonumber(v94)
+	if v97 then
+		local v98 = (rbxthumbtype=Asset&id=%&w=420&h=420)format(v97)
+		v95.Icon.Image = v98
+		v96.Icon.Image = v98
+	end
+	local v99 = v91.ExpandedForm.World.WorldInfoHolder
+	if p90.WorldData.Money.Value == 0 then
+		v99.Cash.Text = 
+	else
+		v99.Cash.Text = $ .. v_u_10.formatNumber(p90.WorldData.Money.Value)
+	end
+	if p90.WorldData.Research.Value == 0 then
+		v99.RP.Text = 
+	else
+		v99.RP.Text = v_u_10.formatNumber(p90.WorldData.Research.Value) .. RP
+	end
+	if p90.WorldData.Models.Value == 0 then
+		v99.Models.Text = 
+	else
+		v99.Models.Text = p90.WorldData.Models.Value ..  Models
+	end
+	if p90.WorldData.Time.Value == 0 then
+		v99.Time.Text = 
+	else
+		local v100 = v99.Time
+		local v101 = p90.WorldData.Time.Value  3600  100
+		v100.Text = math.floor(v101)  100 .. h
+	end
+	v_u_19(v91, v93)
+	local v102 = Instance.new(BoolValue)
+	v102.Value = false
+	v102.Parent = v91
+	v_u_56(v91, v102)
+	v_u_88(p90, v91, v102)
+	return v91
+end
+function v_u_11.refreshWorlds(p104) -- name refreshWorlds
+	-- upvalues (copy) v_u_5, (copy) v_u_103
+	local v105 = v_u_5WaitForChild(Worlds)
+	local v106 = p104.Frame.WorldsFrame.Frame.Container.WorldsScrollingFrame
+	for _, v107 in ipairs(v106GetChildren()) do
+		if v107.Name ~= CreateWorld and (v107IsA(TextButton) and not v105FindFirstChild(v107.Name)) then
+			v107Destroy()
+		end
+	end
+	for _, v108 in ipairs(v105GetChildren()) do
+		if not v106FindFirstChild(v108.Name) then
+			v_u_103(p104, v108)
+		end
+	end
+end
+v_u_5WaitForChild(Worlds).ChildAddedConnect(function()
+	-- upvalues (copy) v_u_5, (copy) v_u_11
+	if v_u_5GetAttribute(WorldsLoaded) then
+		task.wait()
+		v_u_11.refreshWorlds(v_u_5.PlayerGui.Worlds)
+	end
+end)
+v_u_5WaitForChild(Worlds).ChildRemovedConnect(function()
+	-- upvalues (copy) v_u_5, (copy) v_u_11
+	if v_u_5GetAttribute(WorldsLoaded) then
+		if not v_u_5FindFirstChild(PlayerGui) then
+			return
+		end
+		v_u_11.refreshWorlds(v_u_5.PlayerGui.Worlds)
+	end
+end)
+local v_u_109 = v_u_5.PlayerGui.Worlds.Frame.WorldsFrame.Frame.Container.OthersScrollingFrame.JoinByCode.Container
+local function v111() -- name updateTextBox
+	-- upvalues (copy) v_u_109, (copy) v_u_3
+	local v110 = v_u_109.TextBox.TextBox.Text
+	if string.len(v110) == 10 and string.find(v_u_109.TextBox.TextBox.Text, -) then
+		v_u_3Create(v_u_109.join, TweenInfo.new(0.1), {
+			[BackgroundColor3] = Color3.fromRGB(0, 222, 0)
+		})Play()
+		v_u_109.join.Interactable = true
+	else
+		v_u_3Create(v_u_109.join, TweenInfo.new(0.1), {
+			[BackgroundColor3] = Color3.fromRGB(60, 60, 60)
+		})Play()
+		v_u_109.join.Interactable = false
+	end
+end
+v_u_109.TextBox.TextBox.FocusLostConnect(v111)
+v_u_109.join.MouseButton1ClickConnect(function()
+	-- upvalues (copy) v_u_38, (copy) v_u_109
+	v_u_38()
+	game.ReplicatedStorage.Events.JoinWorldInvokeServer(v_u_109.TextBox.TextBox.Text)
+end)
+v_u_109.TextBox.TextBoxGetPropertyChangedSignal(Text)Connect(v111)
+v111()
+local v_u_112 = require(game.ReplicatedStorage.SharedID)
+local v_u_113 = v_u_109.Parent.Parent.FriendHolder.FriendContainer.FriendHolder
+local v_u_114 = script.FriendButton
+local function v_u_123() -- name refreshFriends
+	-- upvalues (copy) v_u_112, (copy) v_u_113, (copy) v_u_114, (copy) v_u_7, (copy) v_u_38, (copy) v_u_6
+	local v115 = game.Players.LocalPlayerGetFriendsOnline(200)
+	local v116 = tick()
+	local v117 = 0
+	for _, v_u_118 in pairs(v115) do
+		if v_u_118.IsOnline == true and v_u_118.PlaceId == v_u_112 then
+			v117 = v117 + 1
+			if v_u_113FindFirstChild(v_u_118.VisitorId) then
+				v_u_113[v_u_118.VisitorId]SetAttribute(t, v116)
+			else
+				local v_u_119 = v_u_114Clone()
+				v_u_119SetAttribute(t, v116)
+				v_u_119.Name = v_u_118.VisitorId
+				v_u_119.MouseButton1ClickConnect(function()
+					-- upvalues (ref) v_u_7, (copy) v_u_118, (ref) v_u_38
+					v_u_7.InventoryClickPlay()
+					game.ReplicatedStorage.Events.JoinFriendFireServer(v_u_118.VisitorId)
+					v_u_38()
+				end)
+				v_u_119.PlayerName.Text = @ .. v_u_118.UserName
+				if v_u_6.Value then
+					v_u_119.PlayerName.Visible = true
+				end
+				v_u_119.MouseEnterConnect(function()
+					-- upvalues (ref) v_u_7, (copy) v_u_119, (ref) v_u_6
+					v_u_7.InventoryHover.PlaybackSpeed = Random.new()NextNumber(0.8, 1.2)
+					v_u_7.InventoryHoverPlay()
+					v_u_119.BorderStroke.Color = Color3.fromRGB(255, 255, 255)
+					if not v_u_6.Value then
+						v_u_119.PlayerName.Visible = true
+					end
+				end)
+				v_u_119.MouseLeaveConnect(function()
+					-- upvalues (copy) v_u_119, (ref) v_u_6
+					v_u_119.BorderStroke.Color = Color3.fromRGB(0, 0, 0)
+					if not v_u_6.Value then
+						v_u_119.PlayerName.Visible = false
+					end
+				end)
+				local v120, v121 = game.PlayersGetUserThumbnailAsync(v_u_118.VisitorId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+				v_u_119.FriendIcon.Image = v121 and v120 and v120 or rbxassetid15476451150
+				v_u_119.Parent = v_u_113
+			end
+		end
+	end
+	for _, v122 in pairs(v_u_113GetChildren()) do
+		if v122IsA(TextButton) and v122GetAttribute(t) ~= v116 then
+			v122Destroy()
+		end
+	end
+	if v117 == 0 then
+		v_u_113.Parent.Visible = false
+		v_u_113.Parent.Parent.NoFriendsPlaying.Visible = true
+	else
+		v_u_113.Parent.Visible = true
+		v_u_113.Parent.Parent.NoFriendsPlaying.Visible = false
+	end
+end
+task.spawn(function()
+	-- upvalues (copy) v_u_123
+	while true do
+		v_u_123()
+		task.wait(30)
+	end
+end)
+return v_u_11

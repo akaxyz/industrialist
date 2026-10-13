@@ -1,0 +1,797 @@
+local v_u_1 = game:GetService("TweenService")
+local v_u_2 = game:GetService("ReplicatedStorage")
+local v_u_3 = game:GetService("UserInputService")
+game:GetService("TweenService")
+local v4 = game.Players.LocalPlayer
+local v_u_5 = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut)
+local v6 = require(game:GetService("ReplicatedStorage").FormatNumber.Main)
+local v_u_7 = require(v4.PlayerScripts:WaitForChild("uiScripts").Modules:WaitForChild("TierColors"))
+local v_u_8 = v6.NumberFormatter.with()
+local v_u_9 = require(v4.PlayerScripts.uiScripts.Modules.TextFormatAlgo)
+local v_u_10 = Color3.fromRGB(229, 229, 229)
+local v_u_11 = ""
+local v_u_12 = game.ReplicatedStorage.ResearchPoints
+local v_u_13 = script.Parent.SideFrame
+local v_u_14 = script.Parent.Frame.Container.Explorer
+local v_u_15 = v_u_14.Requirements.Additional
+local v_u_16 = v_u_14.Research
+local v_u_17 = v_u_13.Frame.Container.ScrollHolder.UnlockedItems
+v4.PlayerGui:WaitForChild("Settings")
+local v_u_18 = v4.PlayerScripts.sfxLibrary
+if not game:GetService("RunService"):IsStudio() then
+	repeat
+		wait()
+	until game.ReplicatedStorage.WorldOwner.Value ~= 0 and game.ReplicatedStorage.LoadingDone.Value
+	task.wait(4)
+end
+task.wait(0.1)
+local v_u_19 = v_u_14.Frame.DraggableTree
+local v_u_20 = 7
+local v_u_21 = 7
+local _ = v_u_19.Size
+game.Players.LocalPlayer:GetMouse()
+local function v_u_34(p22, p23) -- name: zoomToExtents
+	local v24 = p23:IsA("Model")
+	local v25 = v24 and p23:GetModelCFrame() or p23.CFrame
+	local v26 = v24 and p23:GetExtentsSize() or p23.Size
+	local v27 = p22.FieldOfView
+	local v28 = v26.Magnitude / 2
+	local v29 = v27 / 2
+	local v30 = math.rad(v29)
+	local v31 = v28 / math.tan(v30)
+	local v32 = p22.CFrame - p22.CFrame.p
+	local v33 = v25.p
+	p22.CFrame = v32 + v33 + -v32.LookVector * v31
+	p22.Focus = v32 + v33
+end
+local function v_u_39(p35, p36, p37) -- name: convertPositionFromTo
+	local v38 = Vector2.new(p35.X - (p37.X - p36.X) / 2, p35.Y - (p37.Y - p36.Y) / 2)
+	return Vector2.new(v38.X / p36.X, v38.Y / p36.Y), v38
+end
+local function v_u_52(_, p40) -- name: updateZoom
+	-- upvalues: (copy) v_u_3, (copy) v_u_14, (copy) v_u_39, (copy) v_u_19, (ref) v_u_20, (copy) v_u_18
+	if p40 == nil then
+		p40 = v_u_3:GetMouseLocation()
+	end
+	local v41 = v_u_14.Frame.AbsoluteSize
+	local _ = v_u_14.Frame.DraggableTree.AbsolutePosition
+	local v42 = workspace.CurrentCamera.ViewportSize
+	local _, v43 = v_u_39(Vector2.new(p40.X, p40.Y), v41, v42)
+	local v44 = v_u_14.Frame.Reference
+	local v45 = Vector2.new(v44.AbsolutePosition.X - v_u_19.AbsolutePosition.X, v44.AbsolutePosition.Y - v_u_19.AbsolutePosition.Y)
+	local v46 = Vector2.new((v43.X + v45.X) / v_u_19.AbsoluteSize.X, (v43.Y + v45.Y) / v_u_19.AbsoluteSize.Y)
+	v_u_19.Size = UDim2.fromScale(v_u_20, v_u_20)
+	local v47 = v_u_18.ResearchZoom
+	local v48 = v_u_19.Size.Y.Scale / 10 * 4
+	v47.PlaybackSpeed = math.clamp(v48, 1, (1 / 0))
+	local v49 = Vector2.new(v44.AbsolutePosition.X - v_u_19.AbsolutePosition.X, v44.AbsolutePosition.Y - v_u_19.AbsolutePosition.Y)
+	local v50 = Vector2.new((v43.X + v49.X) / v_u_19.AbsoluteSize.X, (v43.Y + v49.Y) / v_u_19.AbsoluteSize.Y) - v46
+	local v51 = Vector2.new(v50.X * v_u_19.AbsoluteSize.X, v50.Y * v_u_19.AbsoluteSize.Y)
+	v_u_19.Position = v_u_19.Position + UDim2.fromScale(v51.X / v_u_14.Frame.AbsoluteSize.X, v51.Y / v_u_14.Frame.AbsoluteSize.Y)
+end
+v_u_14.Frame.MouseWheelForward:Connect(function()
+	-- upvalues: (ref) v_u_20, (ref) v_u_21, (copy) v_u_52
+	if v_u_20 == 10 then
+		local v53 = v_u_20 + 1.0743446497636442
+		v_u_20 = math.clamp(v53, 1, 10)
+	else
+		local v54 = v_u_20 + 2.5 / (11 - v_u_20) * 1
+		v_u_20 = math.clamp(v54, 1, 10)
+	end
+	if v_u_20 ~= v_u_21 then
+		v_u_52(1, nil)
+	end
+	v_u_21 = v_u_20
+end)
+v_u_14.Frame.MouseWheelBackward:Connect(function()
+	-- upvalues: (ref) v_u_20, (ref) v_u_21, (copy) v_u_52
+	if v_u_20 == 10 then
+		local v55 = v_u_20 + -1.0743446497636442
+		v_u_20 = math.clamp(v55, 1, 10)
+	else
+		local v56 = v_u_20 + 2.5 / (11 - v_u_20) * -1
+		v_u_20 = math.clamp(v56, 1, 10)
+	end
+	if v_u_20 ~= v_u_21 then
+		v_u_52(-1, nil)
+	end
+	v_u_21 = v_u_20
+end)
+local v_u_57 = 0
+v_u_3.TouchPinch:Connect(function(p58, p59, _, p60)
+	-- upvalues: (copy) v_u_14, (ref) v_u_57, (ref) v_u_20, (ref) v_u_21, (copy) v_u_52
+	if p60 == Enum.UserInputState.Change or p60 == Enum.UserInputState.End then
+		v_u_14.Frame.DraggableTree.Drag:SetAttribute("Zooming", true)
+		local v61 = Vector2.new(0, 0)
+		for _, v62 in pairs(p58) do
+			v61 = v61 + v62
+		end
+		local v63 = p59 - v_u_57
+		local v64 = v_u_14.Frame.Reference.AbsolutePosition + v_u_14.Frame.Reference.AbsoluteSize / 2
+		local v65 = v63 * 10
+		if v_u_20 == 10 then
+			local v66 = v_u_20 + 1.0743446497636442 * v65
+			v_u_20 = math.clamp(v66, 1, 10)
+		else
+			local v67 = v_u_20 + 2.5 / (11 - v_u_20) * v65
+			v_u_20 = math.clamp(v67, 1, 10)
+		end
+		if v_u_20 ~= v_u_21 then
+			v_u_52(v65, v64)
+		end
+		v_u_21 = v_u_20
+	end
+	v_u_57 = p59
+	if p60 == Enum.UserInputState.End then
+		v_u_14.Frame.DraggableTree.Drag:SetAttribute("Zooming", false)
+		v_u_57 = 0
+	end
+end)
+local v_u_68 = game.ReplicatedStorage.Research.Get:InvokeServer()
+local v_u_69 = v_u_19.AbsoluteSize
+function drawLine(p70, p71, p72, p73) -- name: drawLine
+	-- upvalues: (copy) v_u_69
+	local _ = workspace.CurrentCamera.ViewportSize
+	local v74 = p71.X.Scale
+	local v75 = p71.Y.Scale
+	local v76 = p72.X.Scale
+	local v77 = p72.Y.Scale
+	local v78 = (Vector2.new(v74, v75) - Vector2.new(v76, v77)).Magnitude
+	p70.AnchorPoint = Vector2.new(0.5, 0.5)
+	p70.Position = UDim2.new((v74 + v76) / 2, 0, (v75 + v77) / 2, 0)
+	if p73 then
+		p70.Size = UDim2.new(7 / v_u_69.X, 0, v78, 0)
+	else
+		p70.Size = UDim2.new(v78, 0, 7 / v_u_69.Y, 0)
+	end
+end
+v_u_13.Frame:GetPropertyChangedSignal("Visible"):Connect(function()
+	-- upvalues: (copy) v_u_13
+	local v79
+	if v_u_13.Frame.Visible then
+		v_u_13.CloseSidebar.Visible = true
+		v79 = -0.102
+	else
+		v_u_13.CloseSidebar.Visible = false
+		v79 = 0.102
+	end
+	for _, v80 in pairs(v_u_13.Parent:GetChildren()) do
+		if v80:IsA("GuiObject") then
+			v80.Position = UDim2.new(v80.Position.X.Scale + v79, 0, v80.Position.Y.Scale, 0)
+		elseif v80:IsA("Folder") then
+			for _, v81 in pairs(v80:GetChildren()) do
+				v81.Position = UDim2.new(v81.Position.X.Scale + v79, 0, v81.Position.Y.Scale, 0)
+			end
+		end
+	end
+end)
+v_u_13.CloseSidebar.MouseButton1Click:Connect(function()
+	-- upvalues: (copy) v_u_13
+	for _, v82 in pairs(v_u_13:GetChildren()) do
+		v82.Visible = false
+	end
+end)
+local v_u_83 = Color3.fromRGB(25, 255, 255)
+local v_u_84 = Color3.fromRGB(77, 77, 77)
+local v_u_85 = {}
+local v_u_86 = v_u_21
+local v_u_87 = v_u_20
+local function v_u_90(p88) -- name: updateButton
+	-- upvalues: (copy) v_u_85, (copy) v_u_13, (copy) v_u_84, (copy) v_u_83
+	if typeof(p88) == "string" then
+		p88 = v_u_85[p88]
+	end
+	if p88:GetAttribute("Disabled") == true then
+		return
+	else
+		for _, v89 in pairs(v_u_85) do
+			v_u_13.Frame.Container.ScrollHolder[v89.Name].Visible = false
+			if v89:GetAttribute("Disabled") ~= true then
+				v89.BackgroundColor3 = v_u_84
+			end
+		end
+		p88.BackgroundColor3 = v_u_83
+		v_u_13.Frame.Container.ScrollHolder[p88.Name].Visible = true
+		if p88.Name == "RequiredItems" then
+			v_u_13.Frame.Container.TopText.Text = "Requirements:"
+			return
+		elseif p88.Name == "Description" then
+			v_u_13.Frame.Container.TopText.Text = "Description:"
+		elseif p88.Name == "UnlockedItems" then
+			v_u_13.Frame.Container.TopText.Text = "Unlocks:"
+		end
+	end
+end
+for _, v_u_91 in pairs(v_u_13.CategorySelection.ButtonsFrame:GetChildren()) do
+	if v_u_91:IsA("ImageButton") then
+		v_u_85[v_u_91.Name] = v_u_91
+		v_u_91.MouseButton1Click:Connect(function()
+			-- upvalues: (copy) v_u_90, (copy) v_u_91
+			v_u_90(v_u_91)
+		end)
+	end
+end
+local _ = workspace.CurrentCamera.ViewportSize
+local _ = v_u_13.Frame.Container.ScrollHolder.UnlockedItems
+local _ = v_u_14.Requirements
+local v_u_92 = require(game.ReplicatedStorage.Modules.Enums.Items)
+local function v_u_133(p93, p94) -- name: updateInfo
+	-- upvalues: (ref) v_u_68, (ref) v_u_11, (copy) v_u_13, (copy) v_u_14, (copy) v_u_8, (copy) v_u_85, (copy) v_u_84, (copy) v_u_90, (copy) v_u_92, (copy) v_u_16, (copy) v_u_17, (copy) v_u_2, (copy) v_u_9, (copy) v_u_34, (copy) v_u_7, (copy) v_u_12, (copy) v_u_15
+	local v_u_95
+	if p94 == nil or p94 == false then
+		v_u_95 = v_u_68[p93]
+		v_u_11 = p93
+	else
+		v_u_95 = v_u_68[v_u_11]
+	end
+	if v_u_11 ~= nil then
+		v_u_13.Frame.Visible = true
+		v_u_13.CategorySelection.Visible = true
+		v_u_14.ResearchName:SetAttribute("Changed", "")
+		v_u_14.ResearchName.Text = v_u_11
+		v_u_14.Requirements.Price.Text = v_u_8:Format(v_u_95.price) .. "RP"
+		v_u_14.Requirements.Price.Visible = true
+		local v96 = v_u_95.description
+		if v96 == nil then
+			local v97 = "Unlocks "
+			local v98 = {}
+			if v_u_95.unlocks == nil then
+				v96 = "This is a Theory Research. Researching it will allow you to progress further."
+			else
+				for _, v99 in pairs(v_u_95.unlocks) do
+					if typeof(v99) == "string" then
+						table.insert(v98, v99)
+					end
+				end
+				v96 = v97 .. table.concat(v98, ", ") .. "."
+			end
+		end
+		v_u_13.Frame.Container.ScrollHolder.Description.ItemDescription.Text = "<stroke>" .. v96 .. "</stroke>"
+		for _, v100 in pairs(v_u_13.Frame.Container.ScrollHolder.RequiredItems:GetChildren()) do
+			if v100:IsA("Frame") then
+				v100:Destroy()
+			end
+		end
+		local v101 = true
+		local v102 = {}
+		if v_u_95.itemRequirements == nil then
+			if v_u_95.unlocks == {} or v_u_95.unlocks == nil then
+				v_u_85.RequiredItems:SetAttribute("Disabled", true)
+				v_u_85.RequiredItems.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+				v_u_85.UnlockedItems:SetAttribute("Disabled", true)
+				v_u_85.UnlockedItems.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+				v_u_85.Description:SetAttribute("Disabled", false)
+				v_u_85.Description.BackgroundColor3 = v_u_84
+				v_u_90("Description")
+			else
+				v_u_85.RequiredItems:SetAttribute("Disabled", true)
+				v_u_85.RequiredItems.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+				v_u_85.UnlockedItems:SetAttribute("Disabled", false)
+				v_u_85.UnlockedItems.BackgroundColor3 = v_u_84
+				v_u_85.Description:SetAttribute("Disabled", false)
+				v_u_85.Description.BackgroundColor3 = v_u_84
+				v_u_90("UnlockedItems")
+			end
+		else
+			script.RequirementsAvailable.Value = true
+			v_u_85.RequiredItems:SetAttribute("Disabled", false)
+			v_u_85.RequiredItems.BackgroundColor3 = v_u_84
+			v_u_85.UnlockedItems:SetAttribute("Disabled", false)
+			v_u_85.UnlockedItems.BackgroundColor3 = v_u_84
+			v_u_85.Description:SetAttribute("Disabled", false)
+			v_u_85.Description.BackgroundColor3 = v_u_84
+			v_u_90("UnlockedItems")
+			for _, v103 in pairs(v_u_95.itemRequirements) do
+				local v_u_104 = v103[1]
+				local v_u_105 = v103[2]
+				local v_u_106 = script.Item:Clone()
+				local v_u_107 = game.ReplicatedStorage.Statistics.SoldEver:FindFirstChild(v_u_104)
+				local v_u_108
+				if v_u_107 then
+					local v109 = v_u_107.Value
+					v_u_108 = math.floor(v109)
+				else
+					v_u_108 = 0
+				end
+				local v110 = v_u_92.findItemByDisplayName(v_u_104)
+				if v110.Icon == nil then
+					v_u_106.ItemIcon.Image = "rbxassetid://15476451150"
+				else
+					v_u_106.ItemIcon.Image = "rbxassetid://" .. v110.Icon
+				end
+				v_u_106.ItemName.Text = ("Sell %*"):format(v_u_104)
+				v_u_106.BottomText.Text = ("%*/%*"):format(v_u_108, v_u_105)
+				if v_u_105 <= v_u_108 then
+					v_u_106.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+				else
+					local v111 = ("%* (%*/%*)"):format(v_u_104, v_u_108, v_u_105)
+					table.insert(v102, v111)
+					v101 = false
+				end
+				v_u_106.Parent = v_u_13.Frame.Container.ScrollHolder.RequiredItems
+				local v_u_112 = v_u_11
+				task.spawn(function()
+					-- upvalues: (ref) v_u_107, (copy) v_u_104, (ref) v_u_108, (copy) v_u_106, (copy) v_u_105, (ref) v_u_11, (copy) v_u_112
+					while true do
+						v_u_107 = game.ReplicatedStorage.Statistics.SoldEver:FindFirstChild(v_u_104)
+						v_u_108 = 0
+						if v_u_107 then
+							local v113 = v_u_107.Value
+							v_u_108 = math.floor(v113)
+						end
+						if v_u_106:FindFirstChild("AmountRequired") == nil then
+							break
+						end
+						v_u_106.BottomText.Text = ("%*/%*"):format(v_u_108, v_u_105)
+						if v_u_105 <= v_u_108 then
+							v_u_106.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+						end
+						task.wait(0.5)
+						if v_u_11 ~= v_u_112 then
+							break
+						end
+					end
+				end)
+			end
+			local v_u_114 = script.Item:Clone()
+			v_u_114.ItemIcon.Image = "rbxassetid://17127716527"
+			v_u_114.LayoutOrder = -99999
+			v_u_114.ItemName.Text = "Research Points"
+			local v_u_115 = game.ReplicatedStorage.ResearchPoints
+			local v116 = v_u_114.BottomText
+			local v117 = v_u_115.Value
+			v116.Text = ("%*/%*RP"):format(math.floor(v117), v_u_95.price)
+			if v_u_115.Value >= v_u_95.price then
+				v_u_114.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+			end
+			task.spawn(function()
+				-- upvalues: (ref) v_u_11, (copy) v_u_114, (copy) v_u_115, (ref) v_u_95
+				local v118 = v_u_11
+				while v_u_114 ~= nil and v_u_114:FindFirstChild("AmountRequired") ~= nil do
+					v_u_114.BottomText.Text = ("%*/%*RP"):format(v_u_115.Value, v_u_95.price)
+					if v_u_115.Value >= v_u_95.price then
+						v_u_114.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+					end
+					task.wait(1)
+					if v_u_11 ~= v118 then
+						break
+					end
+				end
+			end)
+			v_u_114.Parent = v_u_13.Frame.Container.ScrollHolder.RequiredItems
+		end
+		local v119 = {}
+		local v120 = true
+		for _, v121 in pairs(v_u_95.requires) do
+			if v121 ~= true and type(v121) ~= "number" then
+				if v_u_68[v121].unlocked == false then
+					table.insert(v119, v121)
+					v120 = false
+				end
+			end
+		end
+		v_u_16.Visible = true
+		for _, v122 in pairs(v_u_17:GetChildren()) do
+			if v122:IsA("Frame") then
+				v122:Destroy()
+			end
+		end
+		if v_u_95.unlocks then
+			for _, v123 in pairs(v_u_95.unlocks) do
+				local v124 = nil
+				for _, v125 in pairs(v_u_2.PlacementSystem.Buildings:GetChildren()) do
+					v124 = v125:FindFirstChild(v123)
+					if v124 ~= nil then
+						break
+					end
+				end
+				if v124 then
+					local v126 = tonumber(v124:GetAttribute("Tier")) or 1
+					local v127 = script.Item:Clone()
+					local v128 = v124:Clone()
+					v127.Parent = v_u_17
+					v127.Name = v123
+					v127.ItemName.Text = v_u_9.Algo(v123)
+					v128.Parent = v127.ViewportFrame
+					local v129 = Instance.new("Camera")
+					v129.Parent = v127.ViewportFrame
+					v_u_34(v129, v128)
+					v127.ViewportFrame.CurrentCamera = v129
+					local v130, v131, v132 = v_u_7.findColor(v126):ToHSV()
+					v127.BottomText.Text = "Tier" .. v126
+					v127.BackgroundColor3 = Color3.fromHSV(v130, v131, v132 / 2)
+					v127.LayoutOrder = v126
+				end
+			end
+		end
+		if v120 and (v_u_95.price <= v_u_12.Value and v101) then
+			v_u_16.Visible = true
+			v_u_16.BackgroundColor3 = Color3.fromRGB(25, 255, 255)
+			v_u_15.Visible = false
+		elseif v120 and v101 then
+			v_u_16.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_16.Visible = true
+			v_u_15.TextColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_15.Text = "Research points missing."
+			v_u_15.Visible = true
+		elseif v120 then
+			if not v101 then
+				v_u_16.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+				v_u_16.Visible = true
+				v_u_15.TextColor3 = Color3.fromRGB(255, 25, 25)
+				v_u_15.Text = "Missing sold resources: " .. table.concat(v102, ", ")
+				v_u_15.Visible = true
+			end
+		else
+			v_u_16.BackgroundColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_16.Visible = true
+			v_u_15.TextColor3 = Color3.fromRGB(255, 25, 25)
+			v_u_15.Text = "Dependents missing: " .. table.concat(v119, ", ")
+			v_u_15.Visible = true
+		end
+		if v_u_95.unlocked then
+			v_u_16.Visible = false
+			v_u_15.TextColor3 = Color3.fromRGB(25, 255, 25)
+			v_u_15.Text = "Already unlocked!"
+			v_u_15.Visible = true
+		end
+	end
+end
+v_u_14.Research.MouseButton1Click:Connect(function()
+	-- upvalues: (copy) v_u_2, (ref) v_u_11
+	v_u_2.Research.Unlock:InvokeServer(v_u_11)
+end)
+local function v_u_146() -- name: update
+	-- upvalues: (copy) v_u_14, (ref) v_u_68, (copy) v_u_10
+	for _, v134 in v_u_14.Frame.DraggableTree:GetChildren() do
+		v134:SetAttribute("DefaultColor", nil)
+		v134:SetAttribute("DefaultZIndex", nil)
+		if v134:IsA("ImageButton") then
+			v134.elementName:SetAttribute("DefaultColor", nil)
+		end
+	end
+	for v135, v136 in pairs(v_u_68) do
+		local v137 = v_u_14.Frame.DraggableTree[v135]
+		v137:SetAttribute("DefaultZIndex", 100)
+		local v138 = true
+		local v139 = false
+		for _, v140 in pairs(v136.requires) do
+			if v140 ~= true and type(v140) ~= "number" then
+				if v_u_68[v140].unlocked == false then
+					v138 = false
+				else
+					v139 = true
+				end
+			end
+		end
+		if not v138 then
+			v137:SetAttribute("DefaultColor", Color3.fromRGB(77, 77, 77))
+			v137.elementName:SetAttribute("DefaultColor", Color3.new(1, 1, 1))
+		end
+		if v138 then
+			v137:SetAttribute("DefaultColor", Color3.fromRGB(229, 229, 229))
+			v137.elementName:SetAttribute("DefaultColor", Color3.new(1, 1, 1))
+		end
+		if v139 and not v138 then
+			v137:SetAttribute("DefaultColor", Color3.fromRGB(141, 141, 141))
+			v137.elementName:SetAttribute("DefaultColor", Color3.new(1, 1, 1))
+		end
+		if v136.unlocked == true then
+			v137:SetAttribute("DefaultColor", Color3.fromRGB(25, 255, 25))
+			for _, v141 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+				local v142 = v141.Name
+				if tonumber(v142) == v136._system.id then
+					v141:SetAttribute("DefaultColor", Color3.fromRGB(25, 255, 25))
+					v141:SetAttribute("DefaultZIndex", 4)
+				end
+			end
+		else
+			for _, v143 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+				if v143:GetAttribute("descendant") == v136._system.id then
+					v143:SetAttribute("DefaultColor", Color3.fromRGB(77, 77, 77))
+				end
+				local v144 = v143.Name
+				local _ = tonumber(v144) == v136._system.id and not v138
+			end
+		end
+		if workspace:GetAttribute("Difficulty") >= (v136.diff or 100) then
+			v137:SetAttribute("DefaultColor", Color3.fromRGB(255, 25, 25))
+			v137.elementName:SetAttribute("DefaultColor", Color3.fromRGB(255, 25, 25))
+			v137.elementName.Visible = false
+			v137.ImageColor3 = Color3.fromRGB(255, 25, 25)
+			v137.NotPossible.Visible = true
+		end
+	end
+	for _, v145 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+		if v145:IsA("Frame") or v145:IsA("ImageButton") then
+			v145.BackgroundColor3 = v145:GetAttribute("DefaultColor") or v_u_10
+			if v145.BackgroundColor3 == v_u_10 and v145:IsA("GuiButton") then
+				v145:SetAttribute("DefaultZIndex", 3)
+			end
+			if v145:IsA("ImageButton") then
+				v145.ImageColor3 = v145:GetAttribute("DefaultColor") or v_u_10
+			else
+				v145.ZIndex = v145:GetAttribute("DefaultZIndex") or 1
+			end
+		end
+	end
+end
+game.ReplicatedStorage.Research.Update.OnClientEvent:Connect(function(p147, p148)
+	-- upvalues: (copy) v_u_18, (ref) v_u_68, (copy) v_u_133, (copy) v_u_146
+	if p148 then
+		v_u_18.ResearchSuccessful:Play()
+	end
+	v_u_68[p147].unlocked = true
+	v_u_133(nil, true)
+	v_u_146()
+end)
+local v_u_149 = {}
+local v150 = 0
+for v_u_151, v_u_152 in pairs(v_u_68) do
+	v_u_152._system = {}
+	v_u_152._system.id = v150
+	v_u_152._system.ownerIDs = {}
+	local v_u_153 = script.Research:Clone()
+	v_u_153:SetAttribute("OriginalSize", v_u_153.Size)
+	v_u_153.Name = v_u_151
+	v_u_153.elementName.Text = v_u_151
+	v_u_153.Parent = v_u_14.Frame.DraggableTree
+	local v154 = 0.2 * v_u_152.position.sub * 1.5
+	local v155 = 0.02 * (v_u_152.position.offset + 2) * 1.5
+	local v156 = 0.035 * (v_u_152.position.head + 1) * 1.5
+	v_u_153.Position = UDim2.new(v154 + v155 - 0.4, 0, v156, 0)
+	v_u_153.MouseButton1Click:Connect(function()
+		-- upvalues: (copy) v_u_153, (copy) v_u_133, (copy) v_u_151, (copy) v_u_18
+		if v_u_153.NotPossible.Visible ~= true then
+			v_u_133(v_u_151)
+			v_u_18.ResearchClick:Play()
+		end
+	end)
+	v_u_153.MouseLeave:Connect(function()
+		-- upvalues: (copy) v_u_1, (copy) v_u_153, (copy) v_u_5
+		v_u_1:Create(v_u_153, v_u_5, {
+			["Size"] = v_u_153:GetAttribute("OriginalSize")
+		}):Play()
+	end)
+	v_u_153.MouseEnter:Connect(function()
+		-- upvalues: (copy) v_u_18, (copy) v_u_1, (copy) v_u_153, (copy) v_u_5, (copy) v_u_14, (copy) v_u_152, (ref) v_u_68
+		v_u_18.ResearchHover:Play()
+		v_u_1:Create(v_u_153, v_u_5, {
+			["Size"] = UDim2.new(v_u_153:GetAttribute("OriginalSize").X.Scale + 0.005, 0, v_u_153:GetAttribute("OriginalSize").Y.Scale + 0.005, 0)
+		}):Play()
+		for _, v157 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+			local v158 = v157.Name
+			if tonumber(v158) == v_u_152._system.id then
+				local v159 = v157:GetAttribute("descendant")
+				for _, v161 in pairs(v_u_68) do
+					if v161._system.id == v159 then
+						::l8::
+						if v161.unlocked == true then
+							v_u_1:Create(v157, TweenInfo.new(0.1), {
+								["BackgroundColor3"] = Color3.fromRGB(25, 255, 25)
+							}):Play()
+						else
+							v_u_1:Create(v157, TweenInfo.new(0.1), {
+								["BackgroundColor3"] = Color3.fromRGB(255, 25, 25)
+							}):Play()
+						end
+						v157.ZIndex = 9
+						goto l4
+					end
+				end
+				local v161 = nil
+				goto l8
+			end
+			::l4::
+			if v157:GetAttribute("descendant") == v_u_152._system.id then
+				v_u_1:Create(v157, TweenInfo.new(0.1), {
+					["BackgroundColor3"] = Color3.fromRGB(255, 255, 25)
+				}):Play()
+				v157.ZIndex = 9
+			end
+		end
+		for _, v162 in pairs(v_u_152.requires) do
+			if v162 ~= true and type(v162) ~= "number" then
+				local v163 = v_u_14.Frame.DraggableTree[v162]
+				if v_u_68[v162].unlocked == true then
+					v_u_1:Create(v163, TweenInfo.new(0.1), {
+						["ImageColor3"] = Color3.fromRGB(25, 255, 25)
+					}):Play()
+				else
+					local v164 = v_u_1:Create(v163, TweenInfo.new(0.1), {
+						["ImageColor3"] = Color3.fromRGB(255, 25, 25)
+					})
+					local v165 = v_u_1:Create(v163.elementName, TweenInfo.new(0.1), {
+						["TextColor3"] = Color3.fromRGB(255, 25, 25)
+					})
+					v164:Play()
+					v165:Play()
+				end
+			end
+		end
+		for v166, v167 in pairs(v_u_68) do
+			if table.find(v167.requires, v_u_153.Name) then
+				local v168 = v_u_14.Frame.DraggableTree[v166]
+				local v169 = v_u_1:Create(v168, TweenInfo.new(0.1), {
+					["ImageColor3"] = Color3.fromRGB(255, 255, 25)
+				})
+				local v170 = v_u_1:Create(v168.elementName, TweenInfo.new(0.1), {
+					["TextColor3"] = Color3.fromRGB(255, 255, 25)
+				})
+				v169:Play()
+				v170:Play()
+			end
+		end
+	end)
+	v_u_153.MouseLeave:Connect(function()
+		-- upvalues: (copy) v_u_149, (copy) v_u_152, (copy) v_u_1, (copy) v_u_10, (copy) v_u_14, (ref) v_u_68, (copy) v_u_153
+		for _, v_u_171 in pairs(v_u_149[v_u_152._system.id]) do
+			local v172 = v_u_171.Name
+			if tonumber(v172) == v_u_152._system.id then
+				v_u_1:Create(v_u_171, TweenInfo.new(0.1), {
+					["BackgroundColor3"] = v_u_171:GetAttribute("DefaultColor") or v_u_10
+				}):Play()
+				v_u_171.ZIndex = v_u_171:GetAttribute("DefaultZIndex") or 2
+				task.delay(0.11, function()
+					-- upvalues: (copy) v_u_171
+					v_u_171.ZIndex = v_u_171:GetAttribute("DefaultZIndex") or 1
+				end)
+			end
+			if v_u_171:GetAttribute("descendant") == v_u_152._system.id then
+				v_u_1:Create(v_u_171, TweenInfo.new(0.1), {
+					["BackgroundColor3"] = v_u_171:GetAttribute("DefaultColor") or v_u_10
+				}):Play()
+				v_u_171.ZIndex = v_u_171:GetAttribute("DefaultZIndex") or 2
+				task.delay(0.11, function()
+					-- upvalues: (copy) v_u_171
+					v_u_171.ZIndex = v_u_171:GetAttribute("DefaultZIndex") or 1
+				end)
+			end
+			for _, v173 in pairs(v_u_152.requires) do
+				if v173 ~= true and type(v173) ~= "number" then
+					local v174 = v_u_14.Frame.DraggableTree[v173]
+					local v175 = v_u_1:Create(v174, TweenInfo.new(0.1), {
+						["ImageColor3"] = v174:GetAttribute("DefaultColor") or v_u_10
+					})
+					local v176 = v_u_1:Create(v174.elementName, TweenInfo.new(0.1), {
+						["TextColor3"] = v174.elementName:GetAttribute("DefaultColor") or Color3.new(1, 1, 1)
+					})
+					v175:Play()
+					v176:Play()
+				end
+			end
+			for v177, v178 in pairs(v_u_68) do
+				if table.find(v178.requires, v_u_153.Name) then
+					local v179 = v_u_14.Frame.DraggableTree[v177]
+					local v180 = v_u_1:Create(v179, TweenInfo.new(0.1), {
+						["ImageColor3"] = v179:GetAttribute("DefaultColor") or v_u_10
+					})
+					local v181 = v_u_1:Create(v179.elementName, TweenInfo.new(0.1), {
+						["TextColor3"] = v179.elementName:GetAttribute("DefaultColor") or Color3.new(1, 1, 1)
+					})
+					v180:Play()
+					v181:Play()
+				end
+			end
+		end
+		for _, v182 in pairs(v_u_152.requires) do
+			if v182 ~= true and type(v182) ~= "number" then
+				local v183 = v_u_14.Frame.DraggableTree[v182]
+				local _ = v_u_68[v182]
+				v_u_1:Create(v183, TweenInfo.new(0.1), {
+					["ImageColor3"] = v183:GetAttribute("DefaultColor") or v_u_10
+				}):Play()
+				v_u_1:Create(v183.elementName, TweenInfo.new(0.1), {
+					["TextColor3"] = v183.elementName:GetAttribute("DefaultColor") or Color3.new(1, 1, 1)
+				}):Play()
+			end
+		end
+		for v184, v185 in pairs(v_u_68) do
+			if table.find(v185.requires, v_u_153.Name) then
+				local v186 = v_u_14.Frame.DraggableTree[v184]
+				v_u_1:Create(v186, TweenInfo.new(0.1), {
+					["ImageColor3"] = v186:GetAttribute("DefaultColor") or v_u_10
+				}):Play()
+				v_u_1:Create(v186.elementName, TweenInfo.new(0.1), {
+					["TextColor3"] = v186.elementName:GetAttribute("DefaultColor") or Color3.new(1, 1, 1)
+				}):Play()
+			end
+		end
+	end)
+	v_u_153:SetAttribute("ID", v150)
+	v150 = v150 + 1
+end
+for _, v187 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+	if v187:IsA("ImageButton") then
+		local v188 = v_u_68[v187.Name]
+		local v189 = false
+		local v190 = 0.5
+		for _, v191 in pairs(v188.requires) do
+			if v191 == true then
+				v189 = true
+			elseif type(v191) == "number" then
+				v190 = v191
+			else
+				local v192 = v_u_14.Frame.DraggableTree[v191]
+				local v193 = v_u_68[v191]
+				local v194 = v193._system.ownerIDs
+				local v195 = v188._system.id
+				table.insert(v194, v195)
+				local v196 = v192.Position
+				local v197 = v187.Position
+				local v198 = v197.Height.Scale - v196.Height.Scale
+				local v199 = math.abs(v198)
+				local v200 = {}
+				for _ = 1, 3 do
+					local v201 = script.Line:Clone()
+					v201.Name = v188._system.id
+					v201.Parent = v_u_14.Frame.DraggableTree
+					v201:SetAttribute("descendant", v193._system.id)
+					table.insert(v200, v201)
+				end
+				local v202 = v_u_68[v191].position.head - v188.position.head
+				math.abs(v202)
+				if v189 == false then
+					local v203 = UDim2.new(v196.Width.Scale, 0, v196.Height.Scale + v199 * v190, 0)
+					local v204 = UDim2.new(v197.Width.Scale, 0, v196.Height.Scale + v199 * v190, 0)
+					drawLine(v200[1], v196, v203, true)
+					drawLine(v200[2], v203, v204)
+					drawLine(v200[3], v204, v197, true)
+				else
+					local v205 = UDim2.new(v197.Width.Scale, 0, v196.Height.Scale, 0)
+					drawLine(v200[1], v196, v205, false)
+					drawLine(v200[2], v205, v197, true)
+					v200[3]:Destroy()
+				end
+				v189 = false
+				v190 = 0.5
+			end
+		end
+	end
+end
+v_u_146()
+for _, v206 in pairs(v_u_14.Frame.DraggableTree:GetChildren()) do
+	local v207 = v206.Name
+	local v208 = tonumber(v207)
+	if v208 ~= nil then
+		if v_u_149[v208] == nil then
+			v_u_149[v208] = {}
+		end
+		local v209 = v_u_149[v208]
+		table.insert(v209, v206)
+	end
+	local v210 = v206:GetAttribute("descendant")
+	if v210 ~= nil then
+		if v_u_149[v210] == nil then
+			v_u_149[v210] = {}
+		end
+		local v211 = v_u_149[v210]
+		table.insert(v211, v206)
+	end
+end
+task.delay(2, function()
+	-- upvalues: (copy) v_u_14, (ref) v_u_87, (ref) v_u_86, (copy) v_u_52
+	local v212 = v_u_14.Frame.Reference.AbsolutePosition + v_u_14.Frame.Reference.AbsoluteSize / 2
+	if v_u_87 == 10 then
+		local v213 = v_u_87 + -5.3717232488182205
+		v_u_87 = math.clamp(v213, 1, 10)
+	else
+		local v214 = v_u_87 + 2.5 / (11 - v_u_87) * -5
+		v_u_87 = math.clamp(v214, 1, 10)
+	end
+	if v_u_87 ~= v_u_86 then
+		v_u_52(-5, v212)
+	end
+	v_u_86 = v_u_87
+end)
+v_u_3.InputBegan:Connect(function(p215)
+	-- upvalues: (copy) v_u_14
+	if p215.UserInputType == Enum.UserInputType.Touch then
+		if not v_u_14.ResearchName:GetAttribute("Changed") then
+			v_u_14.ResearchName.Text = "Navigate the canvas with your finger and zoom by pinching."
+			return
+		end
+	elseif not v_u_14.ResearchName:GetAttribute("Changed") then
+		v_u_14.ResearchName.Text = "Use your mouse to navigate the canvas and scroll to zoom."
+	end
+end)

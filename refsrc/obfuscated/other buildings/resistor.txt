@@ -1,0 +1,20 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.MainConnector2)
+return {
+    ["localUpdate"] = function() -- name: localUpdate end,
+    ["tick"] = function() -- name: tick
+        -- upvalues: (copy) v_u_3, (copy) v_u_4
+        local v5 = v_u_3:getBuffer() / 10
+        local v6 = math.floor(v5)
+        local v7 = v_u_4:getMax() - v_u_4:getBuffer()
+        local v8 = math.clamp(v6, 0, v7)
+        if v_u_4:canHoldXMore(v8 - 1) then
+            v_u_3:removePower(v8)
+            v_u_4:addPower(v8)
+        end
+    end
+}

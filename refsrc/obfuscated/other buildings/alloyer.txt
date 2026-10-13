@@ -1,0 +1,141 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local PowerUtilsV2 = require(ReplicatedStorage.Modules.PowerUtilsV2)
+local PipeUtilsV2 = require(ReplicatedStorage.Modules.PipeUtilsV2)
+local v1 = PipeUtilsV2.loadConnector(script.Parent.InMainPipe)
+local v2 = PipeUtilsV2.loadConnector(script.Parent.In1MainPipe)
+local v3 = PipeUtilsV2.loadConnector(script.Parent.MainPipe)
+local v4 = PipeUtilsV2.loadConnector(script.Parent.OutMainPipe)
+local v5 = PowerUtilsV2.loadConnector(script.Parent.MainConnector)
+local State = script.Parent.State
+local Pollution = game.ReplicatedStorage.Pollution
+local t = {}
+local Base = script.Parent.Base
+local TweenService = game:GetService("TweenService")
+local v6 = script.Parent["Molten Metal"]
+local Position = v6.Position
+function t.localUpdate() --[[ localUpdate | Line: 25 | Upvalues: State (copy), Base (copy), TweenService (copy), v6 (copy), Position (copy) ]]
+    local v2 = tonumber(State.Value)
+    if v2 then
+        Base.Steam1.ParticleEmitter.Enabled = true
+        Base.Steam2.ParticleEmitter.Enabled = true
+        if Base.furnace.Playing == false then
+            Base.furnace:Play()
+        end
+        Base.Lava.ParticleEmitter.Enabled = true
+        task.wait(2)
+        TweenService:Create(v6, TweenInfo.new(v2 - 2), {
+            Position = Position + Vector3.new(0, 0.7, 0),
+            Color = Color3.fromRGB(234, 184, 68)
+        }):Play()
+        TweenService:Create(Base.Lava.ParticleEmitter, TweenInfo.new((v2 - 2) / 2, Enum.EasingStyle.Linear), {
+            Rate = 3
+        }):Play()
+    elseif State.Value == "Output" then
+        Base.Steam1.ParticleEmitter.Enabled = false
+        Base.Steam2.ParticleEmitter.Enabled = false
+        Base.Lava.ParticleEmitter.Enabled = false
+        Base.Lava.ParticleEmitter.Rate = 0
+        TweenService:Create(v6, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+            Position = Position,
+            Color = Color3.fromRGB(218, 115, 56)
+        }):Play()
+    elseif State.Value == "Idle" then
+        Base.Steam1.ParticleEmitter.Enabled = false
+        Base.Steam2.ParticleEmitter.Enabled = false
+        Base.Lava.ParticleEmitter.Enabled = false
+        Base.Lava.ParticleEmitter.Rate = 0
+        Base.furnace:Stop()
+    end
+end
+local t2 = {
+    {
+        { "Iron Ingot", 4 },
+        { "Aluminium Ingot", 2 },
+        { "Molten Ferroaluminium Alloy", 2 },
+        40,
+        150000
+    },
+    {
+        { "Gold Ingot", 1 },
+        { "Aluminium Ingot", 2 },
+        { "Molten Purple Gold", 2 },
+        40,
+        150000
+    },
+    {
+        { "Copper Ingot", 6 },
+        { "Zinc", 3 },
+        { "Liquid Brass", 9 },
+        40,
+        150000
+    }
+}
+local v7 = require(ReplicatedStorage.Modules.NextTicks).new()
+function t.tick() --[[ tick | Line: 82 | Upvalues: v7 (copy), v3 (copy), t2 (copy), v1 (copy), v2 (copy), v4 (copy), v5 (copy), State (copy), Pollution (copy) ]]
+    if not v7:tickIsBusy() and v3:hasAmountOf("Steam", 200) then
+        for k, v in pairs(t2) do
+            local v12 = 1
+            local v22, v32, v42, v52, v6
+            if v1:hasAmountOf(v[2][1], v[2][2]) then
+                if v2:hasAmountOf(v[1][1], v[1][2]) and v1:hasAmountOf(v[2][1], v[2][2]) then
+                    v12 = 2
+                    if v4:canHoldXMoreOf(v[3][1], v[3][2]) and v5:hasPower(v[4] * v[5]) then
+                        v22 = 1 + v3:getTemp() / 100
+                        if v12 == 1 then
+                            v1:removeItem(v[1][2])
+                            v2:removeItem(v[2][2])
+                        else
+                            v2:removeItem(v[1][2])
+                            v1:removeItem(v[2][2])
+                        end
+                        v3:removeItem(200)
+                        v32 = State
+                        v42 = v[4] / v22 + 0.5
+                        State.Value = math.floor(v42)
+                        v52 = v7
+                        v6 = v[4] / v22
+                        v7:nextTicks(math.ceil(v6), function(p1_2) --[[ Line: 122 | Upvalues: v4 (ref), v (copy), State (ref), v5 (ref), Pollution (ref) ]]
+                            if p1_2 == 1 then
+                                v4:setUsedTemperature(2000)
+                                v4:addItemAmount(v[3][1], v[3][2])
+                                State.Value = "Output"
+                            end
+                            v5:removePower(v[5])
+                            local v1 = Pollution
+                            v1.Value = v1.Value + 2
+                        end)
+                        return
+                    end
+                end
+            elseif v1:hasAmountOf(v[1][1], v[1][2]) and v2:hasAmountOf(v[2][1], v[2][2]) and (v4:canHoldXMoreOf(v[3][1], v[3][2]) and v5:hasPower(v[4] * v[5])) then
+                v22 = 1 + v3:getTemp() / 100
+                if v12 == 1 then
+                    v1:removeItem(v[1][2])
+                    v2:removeItem(v[2][2])
+                else
+                    v2:removeItem(v[1][2])
+                    v1:removeItem(v[2][2])
+                end
+                v3:removeItem(200)
+                v32 = State
+                v42 = v[4] / v22 + 0.5
+                State.Value = math.floor(v42)
+                v52 = v7
+                v6 = v[4] / v22
+                v7:nextTicks(math.ceil(v6), function(p1_2) --[[ Line: 122 | Upvalues: v4 (ref), v (copy), State (ref), v5 (ref), Pollution (ref) ]]
+                    if p1_2 == 1 then
+                        v4:setUsedTemperature(2000)
+                        v4:addItemAmount(v[3][1], v[3][2])
+                        State.Value = "Output"
+                    end
+                    v5:removePower(v[5])
+                    local v1 = Pollution
+                    v1.Value = v1.Value + 2
+                end)
+                return
+            end
+        end
+        State.Value = "Idle"
+    end
+end
+return t

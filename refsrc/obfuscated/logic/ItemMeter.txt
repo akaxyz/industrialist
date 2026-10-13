@@ -1,0 +1,63 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_4 = require(game.ReplicatedStorage.Modules.MachineSettingsRelay).new()
+local v_u_5 = v2.loadConnector(script.Parent.InMainConnector)
+local v_u_6 = v2.loadConnector(script.Parent.OutMainConnector)
+local v_u_7 = v3.loadConnector(script.Parent.PipeA)
+script.Parent.Base.ProximityPrompt.Enabled = true
+script.Parent.Base.ProximityPrompt.Triggered:Connect(function(p8)
+	-- upvalues: (copy) v_u_4
+	v_u_4:openMenu(p8)
+end)
+local v_u_9 = script.Parent.ModelData.Function
+local v_u_10 = script.Parent.ModelData.Level
+local v_u_11 = script.Parent.ModelData.GreaterThan
+v_u_4:addSetting(3, v_u_9, "Function of meter. 1 - Temperature, 2 - Fill, 3 - Flow rate (L/s)", 1, 3)
+v_u_4:addSetting(1, v_u_10, "Number to compare (depends on function)", 0, 400)
+v_u_4:addSetting(2, v_u_11, "False = Less than num, True = Greater than num")
+local v12 = {
+	["localUpdate"] = function() -- name: localUpdate end
+}
+local v_u_13 = 0
+local v_u_14 = 0
+local v_u_15 = tick()
+function v12.tick() -- name: tick
+	-- upvalues: (copy) v_u_7, (ref) v_u_13, (ref) v_u_15, (ref) v_u_14, (copy) v_u_5, (copy) v_u_9, (copy) v_u_11, (copy) v_u_10, (copy) v_u_6
+	v_u_13 = v_u_13 + v_u_7:getFlow()
+	v_u_7:setFlow(0)
+	local v16 = tick() - v_u_15
+	if v16 > 1 then
+		v_u_14 = (v_u_14 + v_u_13 / v16) / 2
+		v_u_13 = 0
+		v_u_15 = tick()
+	end
+	if v_u_5:hasPower(1) then
+		local v17 = false
+		if v_u_9.Value == 3 then
+			if v_u_11.Value then
+				v17 = v_u_14 > v_u_10.Value and true or v17
+			else
+				v17 = v_u_14 < v_u_10.Value and true or v17
+			end
+		elseif v_u_9.Value == 2 then
+			if v_u_11.Value then
+				v17 = v_u_7:getBuffer() > v_u_10.Value and true or v17
+			else
+				v17 = v_u_7:getBuffer() < v_u_10.Value and true or v17
+			end
+		elseif v_u_9.Value == 1 then
+			if v_u_11.Value then
+				v17 = v_u_7:getTemp() > v_u_10.Value and true or v17
+			else
+				v17 = v_u_7:getTemp() < v_u_10.Value and true or v17
+			end
+		end
+		if v17 then
+			v_u_6:addPower(1000)
+		end
+	end
+	v_u_5:removePower(v_u_5:getBuffer())
+end
+return v12

@@ -1,0 +1,65 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+local v3 = require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_4 = v3.loadConnector(script.Parent.CoolantInMainPipe)
+local v_u_5 = v3.loadConnector(script.Parent.CoolantOutMainPipe)
+local v_u_6 = v3.loadConnector(script.Parent.SteamInMainPipe)
+local v_u_7 = v3.loadConnector(script.Parent.OutWaterMainPipe)
+local v_u_8 = v2.loadConnector(script.Parent.MainConnector)
+local v_u_9 = script.Parent.ModelData.Temp
+return {
+	["localUpdate"] = function() end,
+	["tick"] = function()
+		-- upvalues: (copy) v_u_8, (copy) v_u_4, (copy) v_u_5, (copy) v_u_9, (copy) v_u_6, (copy) v_u_7
+		if v_u_8:hasPower(500000) then
+			v_u_8:removePower(500000)
+			local v10 = v_u_4:getTemp()
+			if v_u_4:getItem() == "Distilled Water" then
+				local v11 = v_u_4:getBuffer()
+				local v12 = v_u_5:getMax() - v_u_5:getBuffer()
+				local v13 = math.clamp(v11, 0, v12)
+				local v14 = math.clamp(v13, 0, 800)
+				local v15 = v10 - v_u_9.Value
+				local v16 = v15 * 1000 * v14 / 3000000
+				local v17 = v_u_9
+				v17.Value = v17.Value + v16
+				v_u_5:setUsedTemperature(v10 - v15)
+				v_u_4:removeItem(v14)
+				v_u_5:addItemAmount("Distilled Water", v14)
+				script.Parent.CoolantFlow.Value = v14
+			else
+				if v_u_9.Value > 18 then
+					v_u_9.Value = v_u_9.Value - 0.75
+				end
+				script.Parent.CoolantFlow.Value = 0
+			end
+			if v_u_6:getItem() == "Low Pressure Steam" then
+				local v18 = v_u_6:getTemp()
+				local v19 = v_u_6:getBuffer()
+				local v20 = (v_u_7:getMax() - v_u_7:getBuffer()) * 30
+				local v21 = math.clamp(v19, 0, v20)
+				local v22 = math.clamp(v21, 0, 24000)
+				local v23 = (v_u_9.Value - v18) * 1000 * (v22 / 30) / 4
+				local _ = 3000000 * v_u_9.Value
+				local v24 = v_u_9.Value - v23 / 3000000
+				local v25 = v18 * 0.5
+				if v24 < math.clamp(v25, 40, 100) then
+					local v26 = v_u_9
+					v26.Value = v26.Value - v23 / 3000000
+					v_u_6:removeItem(v22)
+					v_u_7:setUsedTemperature(v_u_9.Value)
+					v_u_7:addItemAmount("Condensate", v22 / 30)
+					script.Parent.CondensateProd.Value = v22 / 30
+				else
+					script.Parent.CondensateProd.Value = 0
+				end
+			else
+				script.Parent.CondensateProd.Value = 0
+				return
+			end
+		else
+			return
+		end
+	end
+}

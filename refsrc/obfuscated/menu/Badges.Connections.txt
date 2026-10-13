@@ -1,0 +1,179 @@
+local v_u_1 = game:GetService("CollectionService")
+local v2 = require(script.Parent.UIReferences)
+local v_u_3 = require(script.Parent.Transitions)
+require(script.Parent.Parent.Parent.Modules.TweenButtons)
+require(script.Parent.Worlds)
+local v_u_4 = game.Players.LocalPlayer
+local v_u_5 = v2.Menu
+local v6 = v2.Badges
+local v7 = v2.Leaderboards
+local v_u_8 = v2.Worlds
+local v9 = v_u_4.PlayerGui.Credits
+local v10 = v_u_4.PlayerGui.UpdateLogs
+local v_u_11 = v_u_8.Frame.CreateWorld.Frame.Create
+local v12 = {}
+local v_u_17 = {
+	{
+		["Button"] = v_u_5.Frame.ButtonsHolder.MoreButtonsHolder.Changelog,
+		["From"] = v_u_5,
+		["To"] = v10
+	},
+	{
+		["Button"] = v_u_5.Frame.ButtonsHolder.MoreButtonsHolder.Achievements,
+		["From"] = v_u_5,
+		["To"] = v6
+	},
+	{
+		["Button"] = v_u_5.Frame.ButtonsHolder.leaderboard,
+		["From"] = v_u_5,
+		["To"] = v7
+	},
+	{
+		["Button"] = v_u_5.Frame.ButtonsHolder.worlds,
+		["From"] = v_u_5,
+		["To"] = v_u_8
+	},
+	{
+		["Button"] = v_u_5.Frame.ButtonsHolder.MoreButtonsHolder.credits,
+		["From"] = v_u_5,
+		["To"] = v9
+	},
+	{
+		["Button"] = v_u_8.Frame.WorldsFrame.Frame.Container.WorldsScrollingFrame.CreateWorld,
+		["CustomConnection"] = function() -- name: CustomConnection
+			-- upvalues: (copy) v_u_8
+			v_u_8.Frame.WorldsFrame.Visible = false
+			v_u_8.Frame.CreateWorld.Visible = true
+		end
+	},
+	{
+		["Button"] = v_u_8.Frame.CreateWorld.Frame.Cancel,
+		["CustomConnection"] = function() -- name: CustomConnection
+			-- upvalues: (copy) v_u_8
+			v_u_8.Frame.WorldsFrame.Visible = true
+			v_u_8.Frame.CreateWorld.Visible = false
+		end
+	},
+	{
+		["Button"] = v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Worlds,
+		["CustomConnection"] = function() -- name: CustomConnection
+			-- upvalues: (copy) v_u_8
+			v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Others.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Worlds.BackgroundColor3 = Color3.fromRGB(229, 229, 229)
+			v_u_8.Frame.WorldsFrame.Frame.Container.WorldsScrollingFrame.Visible = true
+			v_u_8.Frame.WorldsFrame.Frame.Container.OthersScrollingFrame.Visible = false
+			v_u_8.Frame.WorldsFrame.TextLabel.Text = "My Worlds"
+		end,
+		["InitialTrigger"] = function() -- name: InitialTrigger
+			task.wait()
+		end
+	},
+	{
+		["Button"] = v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Others,
+		["CustomConnection"] = function() -- name: CustomConnection
+			-- upvalues: (copy) v_u_8
+			v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Others.BackgroundColor3 = Color3.fromRGB(229, 229, 229)
+			v_u_8.Frame.WorldsFrame.Categories.ButtonsFrame.Worlds.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+			v_u_8.Frame.WorldsFrame.Frame.Container.OthersScrollingFrame.Visible = true
+			v_u_8.Frame.WorldsFrame.Frame.Container.WorldsScrollingFrame.Visible = false
+			v_u_8.Frame.WorldsFrame.TextLabel.Text = "Other Worlds"
+		end,
+		["InitialTrigger"] = function() -- name: InitialTrigger
+			task.wait()
+		end
+	},
+	{
+		["Button"] = v_u_11,
+		["CustomConnection"] = function() -- name: CustomConnection
+			-- upvalues: (copy) v_u_4, (copy) v_u_8
+			local v13 = 0
+			local v14 = v_u_4.Settings.World["Game Mode"].Value
+			print(v14)
+			local v15
+			if v14 == 1 then
+				local v16 = 2 + v_u_4.Settings.World["Challenge Difficulty"].Value * 3
+				v15 = math.round(v16)
+			else
+				v15 = v14 == 0.5 and 2 or (v14 == 0 and 0 or v13)
+			end
+			if v_u_4.CanHaveCreative.Value == true or (v_u_4.CanHaveCreative:GetAttribute("HasGamepass") == true or v15 ~= 0) then
+				v_u_8.Frame.WorldsFrame.Visible = true
+				v_u_8.Frame.CreateWorld.Visible = false
+				game.ReplicatedStorage.Events.CreateWorld:InvokeServer(v_u_4.Settings.Basic["World Name"].Value, {
+					["difficulty"] = v15,
+					["oreNodes"] = v_u_4.Settings.World["Ore nodes"].Value
+				})
+			end
+		end
+	}
+}
+v_u_4:WaitForChild("Settings"):WaitForChild("World"):WaitForChild("Game Mode"):GetPropertyChangedSignal("Value"):Connect(function()
+	-- upvalues: (copy) v_u_4, (copy) v_u_11
+	if v_u_4.Settings.World["Game Mode"].Value == 0 then
+		if not v_u_4.CanHaveCreative.Value and v_u_4.CanHaveCreative:GetAttribute("HasGamepass") == false then
+			v_u_11.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+			v_u_11.Lock.Visible = true
+			v_u_11:SetAttribute("Disabled", true)
+			v_u_11.Text = ""
+			return
+		end
+	else
+		v_u_11.BackgroundColor3 = Color3.fromRGB(25, 255, 25)
+		v_u_11.Lock.Visible = false
+		v_u_11:SetAttribute("Disabled", false)
+		v_u_11.Text = "Create"
+	end
+end)
+local function v_u_22() -- name: setupConnections
+	-- upvalues: (copy) v_u_17, (copy) v_u_3
+	for _, v_u_18 in ipairs(v_u_17) do
+		local v_u_19 = v_u_18.Button
+		local v_u_20 = v_u_18.From
+		local v_u_21 = v_u_18.To
+		v_u_19.MouseButton1Click:Connect(function()
+			-- upvalues: (copy) v_u_19, (copy) v_u_18, (copy) v_u_20, (copy) v_u_21, (ref) v_u_3
+			if v_u_19:GetAttribute("Disabled") then
+				return
+			else
+				if v_u_18.InitialTrigger then
+					v_u_18.InitialTrigger()
+				end
+				if v_u_18.SkipTransition then
+					if v_u_18.CustomConnection then
+						v_u_18.CustomConnection()
+					else
+						v_u_20.Enabled = false
+						v_u_21.Enabled = true
+					end
+				else
+					v_u_3.blackSceneOn()
+					if v_u_18.CustomConnection then
+						v_u_18.CustomConnection()
+					else
+						v_u_20.Enabled = false
+						v_u_21.Enabled = true
+					end
+					v_u_3.blackSceneOff()
+					return
+				end
+			end
+		end)
+	end
+end
+function v12.setupConnections(_) -- name: setupConnections
+	-- upvalues: (copy) v_u_1, (copy) v_u_17, (copy) v_u_5, (copy) v_u_22
+	for _, v23 in pairs(v_u_1:GetTagged("MenuButton")) do
+		local v24 = v23:FindFirstAncestorOfClass("ScreenGui")
+		if v24 then
+			local v25 = v_u_17
+			local v26 = {
+				["Button"] = v23,
+				["From"] = v24,
+				["To"] = v_u_5
+			}
+			table.insert(v25, v26)
+		end
+	end
+	v_u_22()
+end
+return v12

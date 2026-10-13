@@ -1,0 +1,82 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v2 = require(v1.Modules.PowerUtilsV2)
+require(v1.Modules.PipeUtilsV2)
+require(v1.Modules.Enums.Items)
+local v_u_3 = v2.loadConnector(script.Parent.In1MainConnector)
+local v_u_4 = v2.loadConnector(script.Parent.In2MainConnector)
+local v_u_5 = v2.loadConnector(script.Parent.In3MainConnector)
+local v_u_6 = v2.loadConnector(script.Parent.In4MainConnector)
+local v_u_7 = v2.loadConnector(script.Parent.Out4MainConnector)
+local v_u_8 = v2.loadConnector(script.Parent.Out3MainConnector)
+local v_u_9 = v2.loadConnector(script.Parent.Out2MainConnector)
+local v_u_10 = v2.loadConnector(script.Parent.Out1MainConnector)
+local v_u_11 = {
+	["0000"] = { "0000" },
+	["0001"] = { "0001" },
+	["0010"] = { "0010" },
+	["0011"] = { "0011" },
+	["0100"] = { "0100" },
+	["0101"] = { "1000" },
+	["0110"] = { "1001" },
+	["0111"] = { "1010" },
+	["1000"] = { "1011" },
+	["1001"] = { "1100" },
+	["1010"] = { "0000" },
+	["1011"] = { "0000" },
+	["1100"] = { "0000" },
+	["1101"] = { "0000" },
+	["1110"] = { "0000" },
+	["1111"] = { "0000" }
+}
+return {
+	["localUpdate"] = function() -- name: localUpdate end,
+	["tick"] = function() -- name: tick
+		-- upvalues: (copy) v_u_3, (copy) v_u_4, (copy) v_u_5, (copy) v_u_6, (copy) v_u_11, (copy) v_u_7, (copy) v_u_8, (copy) v_u_9, (copy) v_u_10
+		local v12 = ""
+		local v13
+		if v_u_3:hasPower(1) then
+			v_u_3:removePower(v_u_3:getBuffer())
+			v13 = v12 .. "1"
+		else
+			v13 = v12 .. "0"
+		end
+		local v14
+		if v_u_4:hasPower(1) then
+			v_u_4:removePower(v_u_4:getBuffer())
+			v14 = v13 .. "1"
+		else
+			v14 = v13 .. "0"
+		end
+		local v15
+		if v_u_5:hasPower(1) then
+			v_u_5:removePower(v_u_5:getBuffer())
+			v15 = v14 .. "1"
+		else
+			v15 = v14 .. "0"
+		end
+		local v16
+		if v_u_6:hasPower(1) then
+			v_u_6:removePower(v_u_6:getBuffer())
+			v16 = v15 .. "1"
+		else
+			v16 = v15 .. "0"
+		end
+		local v17 = v_u_11[v16]
+		if v17[1] ~= "0000" then
+			local v18 = string.split(v17[1], "")
+			for v19, v20 in ipairs(v18) do
+				if v20 == "1" then
+					if v19 == 1 then
+						v_u_7:addPower(1000)
+					elseif v19 == 2 then
+						v_u_8:addPower(1000)
+					elseif v19 == 3 then
+						v_u_9:addPower(1000)
+					elseif v19 == 4 then
+						v_u_10:addPower(1000)
+					end
+				end
+			end
+		end
+	end
+}

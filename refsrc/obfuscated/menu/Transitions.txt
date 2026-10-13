@@ -1,0 +1,37 @@
+local v_u_1 = game:GetService("TweenService")
+local v2 = game:GetService("Players")
+local v3 = require(script.Parent.UIReferences)
+local v4 = v2.LocalPlayer
+local v_u_5 = v3.Transition.Frame
+local v6 = {}
+local v_u_7 = {
+	"Player1 does not like pollution.",
+	"There are secret recipes...",
+	"The cat can explode. Wait what?",
+	"Lower your pollution by using Scrubbers.",
+	"Using Distilled or Filtered Water will increase your scrubber\'s efficiency!",
+	("Your name is %*."):format(v4.DisplayName),
+	"mamytema was here",
+	"remember to drink water!"
+}
+function v6.blackSceneOn() -- name: blackSceneOn
+	-- upvalues: (copy) v_u_5, (copy) v_u_7, (copy) v_u_1
+	v_u_5.FunFact.Text = ("Fun Fact: %*"):format(v_u_7[math.random(#v_u_7)])
+	v_u_5.GroupTransparency = 1
+	v_u_5.Parent.Enabled = true
+	v_u_1:Create(v_u_5, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+		["GroupTransparency"] = 0
+	}):Play()
+	task.wait(0.5)
+end
+function v6.blackSceneOff(p8) -- name: blackSceneOff
+	-- upvalues: (copy) v_u_5, (copy) v_u_1
+	task.wait(p8)
+	v_u_5.GroupTransparency = 0
+	v_u_1:Create(v_u_5, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+		["GroupTransparency"] = 1
+	}):Play()
+	task.wait(0.5)
+	v_u_5.Parent.Enabled = false
+end
+return v6

@@ -1,0 +1,9 @@
+v_u_3.GoldIngot = {
+    ["DisplayName"] = "Gold Ingot",
+    ["IsLiquid"] = false,
+    ["Price"] = 1465.5172413793105,
+    ["SalesTax"] = 0,
+    ["Icon"] = 16808512195,
+    ["ID"] = 62,
+    ["RPMultiplier"] = 70
+}

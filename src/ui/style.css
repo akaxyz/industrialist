@@ -1,0 +1,487 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#toolbar {
+  height: 30px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  padding-right: 12px;
+
+  background: #d8d8d8;
+
+  border-bottom: 1px solid #ccc;
+
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+}
+
+/* ─────────────────────────────────────────
+   Left side: menus
+   ───────────────────────────────────────── */
+
+#toolbar-menus {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-menu-container {
+  position: relative;
+}
+
+.toolbar-menu {
+  height: 32px;
+
+  padding: 0 10px;
+
+  border: 0;
+
+  background: transparent;
+
+  font: inherit;
+  cursor: pointer;
+}
+
+.toolbar-menu:hover {
+  background: #e8e8e8;
+}
+
+.toolbar-dropdown {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  padding: 4px 0;
+  background: #fff;
+  border: 1px solid #bbb;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 18%);
+}
+
+.toolbar-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.toolbar-dropdown-item:hover,
+.toolbar-dropdown-item:focus-visible {
+  background: #e8e8e8;
+}
+
+/* ─────────────────────────────────────────
+   Right side: simulation controls
+   ───────────────────────────────────────── */
+
+#simulation-controls {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#editor-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 12px;
+}
+
+#editor-view-toggle .toolbar-button[aria-pressed="true"] {
+  background: #dbeafe;
+  border-color: #2563eb;
+}
+
+.toolbar-button {
+  height: 26px;
+
+  padding: 0 8px;
+
+  border: 1px solid #888;
+  border-radius: 5px;
+
+  background: #f5f5f5;
+
+  font: inherit;
+  cursor: pointer;
+}
+
+.toolbar-button:hover {
+  background: #e8e8e8;
+}
+
+.toolbar-button:disabled {
+  color: #888;
+  cursor: default;
+}
+
+/* ─────────────────────────────────────────
+   Editor
+   ───────────────────────────────────────── */
+
+#editor {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+}
+
+/* ─────────────────────────────────────────
+   Side panels
+   ───────────────────────────────────────── */
+
+.side-panel {
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #f5f5f5;
+}
+
+#building-panel {
+  width: 300px;
+  border-right: 1px solid #ccc;
+}
+
+/* Make the category headers thinner */
+.category-summary {
+  padding: 6px 10px; 
+  background-color: #ccc;
+  font-weight: bold;
+  font-size: 13px; /* Slightly smaller text */
+  cursor: pointer;
+  margin-bottom: 2px; /* Tighter gap */
+  user-select: none;
+}
+
+/* Shrink the actual building buttons */
+.building-button {
+  padding: 4px 8px; /* Drastically cuts height */
+  font-size: 12px;  /* Smaller text */
+  margin-bottom: 2px; /* Tighter vertical stacking */
+  background-color: transparent;
+  border: 1px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.building-button:hover {
+  background-color: #444;
+}
+
+/* Target the container holding all your buildings */
+#building-list {
+  overflow-y: scroll; /* 'scroll' forces it to ALWAYS show, 'auto' hides it */
+  flex-grow: 1; /* Ensures it takes up the remaining sidebar space */
+  padding-right: 5px; /* Adds breathing room so text doesn't touch the scrollbar */
+}
+
+/* --- Custom Scrollbar Styling --- */
+
+/* 1. Set the width of the scrollbar */
+#building-list::-webkit-scrollbar {
+  width: 6px; /* Makes it nice and thin */
+}
+
+/* 2. Style the track (the background line) */
+#building-list::-webkit-scrollbar-track {
+  background: #ccc; /* Should roughly match your sidebar background */
+  border-radius: 4px;
+}
+
+/* 3. Style the thumb (the part you drag) */
+#building-list::-webkit-scrollbar-thumb {
+  background: #555; /* Visible gray */
+  border-radius: 4px;
+}
+
+/* 4. Style the thumb on hover */
+#building-list::-webkit-scrollbar-thumb:hover {
+  background: #777; /* Brightens when the user mouses over it */
+}
+
+#abstract-tools {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+#abstract-tools p {
+  margin: 0 0 8px;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#abstract-tools h3 {
+  margin: 8px 0 4px;
+  font-size: 12px;
+}
+
+#abstract-connection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.abstract-connection-button {
+  width: 100%;
+  overflow: hidden;
+  padding: 5px 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: #e8e8e8;
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.abstract-connection-button[aria-pressed="true"] {
+  border-color: #2563eb;
+  background: #dbeafe;
+}
+
+.abstract-empty {
+  margin: 4px 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+#properties-panel {
+  width: 280px;
+  border-left: 1px solid #ccc;
+}
+
+.panel-header {
+  height: 24px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 10px;
+
+  border-bottom: 1px solid #ccc;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+#building-search {
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+#building-list,
+#properties {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+}
+
+/* ─────────────────────────────────────────
+   Canvas viewport
+   ───────────────────────────────────────── */
+
+#viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+
+  background: #fff;
+}
+
+#canvas {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+}
+
+#abstract-view-status {
+  position: absolute;
+  z-index: 1;
+  inset: 50% auto auto 50%;
+  width: min(520px, calc(100% - 48px));
+  padding: 20px 24px;
+  transform: translate(-50%, -50%);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 12%);
+  color: #1f2937;
+  pointer-events: none;
+}
+
+#abstract-view-status h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+#abstract-view-status p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+#building-panel {
+  min-height: 0;
+}
+
+#building-panel[hidden] {
+  display: none;
+}
+
+#toolbar {
+  min-width: 0;
+}
+
+@media (max-width: 1000px) {
+  #toolbar {
+    height: auto;
+    min-height: 36px;
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding: 4px 8px 4px 0;
+  }
+
+  #toolbar-menus {
+    flex-wrap: wrap;
+  }
+
+  #editor-view-toggle {
+    margin-left: 4px;
+  }
+
+  #simulation-controls {
+    gap: 4px;
+  }
+
+  .toolbar-button {
+    padding: 0 6px;
+    font-size: 12px;
+  }
+}
+
+.building-button:hover {
+    background: #e8e8e8;
+}
+
+.building-image {
+    width: 40px;
+    height: 40px;
+
+    object-fit: contain;
+}
+
+.building-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-title {
+  margin: 10px;
+  font-size: 14px;
+}
+
+.property-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.property-input {
+  width: 100%;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 1px solid #a3a3a3;
+  border-radius: 3px;
+  font: inherit;
+}
+
+.property-input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  align-self: flex-start;
+}
+
+.property-json-input {
+  min-height: 72px;
+  resize: vertical;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+}
+
+.property-subrow {
+  padding-left: 18px;
+}
+
+.property-action-button {
+  width: calc(100% - 20px);
+  margin: 8px 10px;
+  padding: 6px 8px;
+  border: 1px solid #b91c1c;
+  border-radius: 4px;
+  background: #fff7f7;
+  color: #991b1b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.property-label {
+  color: #666;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.property-value {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}

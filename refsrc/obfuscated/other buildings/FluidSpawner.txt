@@ -1,0 +1,64 @@
+local v1 = game:GetService("ReplicatedStorage")
+local v_u_2 = require(v1.Modules.MachineSettingsRelay).new()
+local v3 = require(v1.Modules.PipeUtilsV2)
+local v_u_4 = require(v1.Modules.Enums.Items)
+local v_u_5 = v3.loadConnector(script.Parent.MainPipeOut)
+local v_u_6 = v3.loadConnector(script.Parent.LargePipeOut)
+local v7 = {}
+local v8 = script.Parent.PromptPart.ProximityPrompt
+local v_u_9 = script.Parent.ModelData.Text
+local v_u_10 = ""
+local v_u_11 = script.Parent.ModelData.Rate
+local v_u_12 = script.Parent.ModelData.Temperature
+local v_u_13 = script.Parent.ModelData.Amount
+local v_u_14 = v_u_13.Left
+v_u_2:addSetting(4, v_u_9, "Fluid Name (As shown in Recipe Book)")
+v_u_2:addSetting(1, v_u_11, "How many liters per second", 1, 12000)
+v_u_2:addSetting(1, v_u_12, "Fluid temperature", -273.15, 1000000)
+v_u_2:addSetting(1, v_u_13, "Amount of liters to spawn (0 for infinite)", 0, 1000000)
+v8.Enabled = true
+v8.Triggered:Connect(function(p15)
+	-- upvalues: (copy) v_u_2
+	v_u_2:openMenu(p15)
+end)
+local function v17() -- name: itemUpdated
+	-- upvalues: (copy) v_u_9, (ref) v_u_10, (copy) v_u_4
+	if v_u_9.Value ~= v_u_10 then
+		local v16 = v_u_4.findItemByClosestDisplayName(v_u_9.Value).DisplayName
+		v_u_10 = v16
+		v_u_9.Value = v16
+	end
+end
+v_u_9:GetPropertyChangedSignal("Value"):Connect(v17)
+if v_u_9.Value ~= v_u_10 then
+	local v18 = v_u_4.findItemByClosestDisplayName(v_u_9.Value).DisplayName
+	v_u_10 = v18
+	v_u_9.Value = v18
+end
+v_u_13:GetPropertyChangedSignal("Value"):Connect(function()
+	-- upvalues: (copy) v_u_14, (copy) v_u_13
+	v_u_14.Value = v_u_13.Value
+end)
+function v7.tick() -- name: tick
+	-- upvalues: (copy) v_u_9, (copy) v_u_11, (copy) v_u_13, (copy) v_u_14, (copy) v_u_5, (copy) v_u_4, (copy) v_u_12, (copy) v_u_6
+	if v_u_9.Value ~= "" and v_u_9.Value ~= nil then
+		local v19 = v_u_11.Value
+		local v20
+		if v_u_13.Value > 0 and v_u_14.Value > 0 then
+			local v21 = v_u_14.Value
+			local v22 = v_u_5:getMax() - v_u_5:getBuffer()
+			v20 = math.clamp(v21, 0, v22)
+			local v23 = v_u_14
+			v23.Value = v23.Value - v20
+		else
+			v20 = v_u_13.Value > 0 and 0 or v19
+		end
+		if v_u_4.findItemByDisplayName(v_u_9.Value) ~= v_u_4.None then
+			v_u_5:setUsedTemperature(v_u_12.Value)
+			v_u_5:addItemAmount(v_u_9.Value, v20)
+			v_u_6:setUsedTemperature(v_u_12.Value)
+			v_u_6:addItemAmount(v_u_9.Value, v20)
+		end
+	end
+end
+return v7

@@ -1,0 +1,722 @@
+local v_u_1 = game:GetService("Players")
+local v_u_2 = game:GetService("ReplicatedStorage")
+local v_u_3 = game:GetService("UserInputService")
+local v_u_4 = require(v_u_2.Modules.ModelUtils)
+local v5 = v_u_2:WaitForChild("TriggerTutorial")
+local v6 = v_u_1.LocalPlayer
+local v7 = v6.PlayerGui:WaitForChild("HUD")
+local v8 = v6.PlayerGui:WaitForChild("Inventory")
+v8:WaitForChild("Frame"):WaitForChild("Frame"):WaitForChild("Container")
+local v9 = v8:WaitForChild("Frame"):WaitForChild("SideFrame"):WaitForChild("Example")
+local v_u_10 = v9:WaitForChild("BottomSectionHolder"):WaitForChild("BuyElements"):WaitForChild("Buy")
+local v_u_11 = v7:WaitForChild("SideBar"):WaitForChild("Research")
+local v_u_12 = v7.SideBar:WaitForChild("Recipes")
+local v_u_13 = v_u_1.LocalPlayer.PlayerGui.Research:WaitForChild("Frame"):WaitForChild("NewResearch"):WaitForChild("Event")
+local v_u_14 = v9:WaitForChild("ViewportContainer"):WaitForChild("TopHolder"):WaitForChild("ItemName")
+local v_u_15 = v7:WaitForChild("Tools")
+local v_u_16 = v_u_15:WaitForChild("ToolHandler"):WaitForChild("Inventory")
+local v_u_17 = v6.PlayerGui:WaitForChild("Recipes"):WaitForChild("Frame"):WaitForChild("Frame"):WaitForChild("Container"):WaitForChild("ItemCodex"):WaitForChild("ItemInfo"):WaitForChild("TopContainer"):WaitForChild("AttributeContainer"):WaitForChild("ItemName")
+local v_u_18 = script.Parent
+local v_u_19 = v_u_18:WaitForChild("BottomFrame")
+local v_u_20 = v_u_18:WaitForChild("TopFrame")
+local v_u_21 = v_u_19:WaitForChild("TutorialFrame")
+local v_u_22 = v_u_19:WaitForChild("CogwheelLeft")
+local v_u_23 = v_u_19:WaitForChild("CogwheelRight")
+local v_u_24 = v_u_21:WaitForChild("TutorialText")
+local v_u_25 = v_u_21:WaitForChild("StepCounter")
+local v_u_26 = v_u_21:WaitForChild("Yes")
+local v_u_27 = v_u_21:WaitForChild("No")
+local v_u_28 = UDim2.fromScale(0.5, 0.2)
+local v_u_29 = UDim2.fromScale(0.5, 0.853)
+local function v_u_31(p30) -- name: displayTop
+    -- upvalues: (copy) v_u_22, (copy) v_u_23, (copy) v_u_21, (copy) v_u_28, (copy) v_u_24, (copy) v_u_20
+    v_u_22.Visible = true
+    v_u_23.Visible = true
+    v_u_21.Visible = true
+    v_u_21.Position = v_u_28
+    v_u_22.Position = UDim2.fromScale(v_u_22.Position.X.Scale, v_u_28.Y.Scale)
+    v_u_23.Position = UDim2.fromScale(v_u_23.Position.X.Scale, v_u_28.Y.Scale)
+    v_u_24.Text = p30
+    v_u_22.Parent = v_u_20
+    v_u_23.Parent = v_u_20
+    v_u_21.Parent = v_u_20
+end
+local function v_u_33(p32) -- name: displayBottom
+    -- upvalues: (copy) v_u_22, (copy) v_u_23, (copy) v_u_21, (copy) v_u_29, (copy) v_u_24, (copy) v_u_19
+    v_u_22.Visible = true
+    v_u_23.Visible = true
+    v_u_21.Visible = true
+    v_u_21.Position = v_u_29
+    v_u_22.Position = UDim2.fromScale(v_u_22.Position.X.Scale, v_u_29.Y.Scale)
+    v_u_23.Position = UDim2.fromScale(v_u_23.Position.X.Scale, v_u_29.Y.Scale)
+    v_u_24.Text = p32
+    v_u_22.Parent = v_u_19
+    v_u_23.Parent = v_u_19
+    v_u_21.Parent = v_u_19
+end
+local v_u_34 = v_u_14:GetPropertyChangedSignal("Text")
+local function v_u_43(p_u_35, p_u_36, p_u_37) -- name: forceBuildingSelect
+    -- upvalues: (copy) v_u_14, (copy) v_u_31, (copy) v_u_34, (copy) v_u_10, (copy) v_u_3
+    local v_u_38 = false
+    local v41 = task.spawn(function()
+        -- upvalues: (ref) v_u_14, (copy) p_u_35, (ref) v_u_31, (copy) p_u_36, (ref) v_u_34, (copy) p_u_37, (ref) v_u_10, (ref) v_u_3, (ref) v_u_38
+        local v_u_39 = true
+        local v40 = nil
+        while v_u_39 do
+            if v_u_14.Text ~= p_u_35 then
+                if v40 then
+                    v40:Disconnect()
+                    v40 = nil
+                end
+                v_u_31(p_u_36)
+                repeat
+                    v_u_34:Wait()
+                until v_u_14.Text == p_u_35
+            end
+            if v40 == nil then
+                v_u_31(p_u_37)
+                v40 = v_u_10.Activated:Once(function()
+                    -- upvalues: (ref) v_u_39
+                    v_u_39 = false
+                end)
+            end
+            if v_u_3:IsKeyDown(Enum.KeyCode.T) then
+                break
+            end
+            task.wait()
+        end
+        v_u_38 = true
+    end)
+    local v42 = task.spawn(function()
+        -- upvalues: (copy) p_u_35, (ref) v_u_38
+        while workspace.PlacingModels.ChildAdded:Wait().Name ~= string.gsub(p_u_35, "%s+", "") do
+
+        end
+        v_u_38 = true
+    end)
+    repeat
+        task.wait()
+    until v_u_38 == true
+    task.cancel(v41)
+    task.cancel(v42)
+end
+local v_u_44 = Instance.new("Folder")
+v_u_44.Name = "BlueprintHighlights"
+v_u_44.Parent = workspace
+local v_u_45 = nil
+local v_u_46 = Instance.new("Highlight")
+v_u_46.FillColor = Color3.fromRGB(25, 255, 255)
+v_u_46.FillTransparency = 0.95
+v_u_46.OutlineColor = Color3.fromRGB(255, 255, 255)
+v_u_46.OutlineTransparency = 0.8
+v_u_46.DepthMode = Enum.HighlightDepthMode.Occluded
+local v_u_47 = {}
+local v_u_48 = {}
+local function v_u_61(p49) -- name: setupBlueprint
+    -- upvalues: (ref) v_u_45, (copy) v_u_48, (copy) v_u_47, (copy) v_u_46
+    if v_u_45 ~= nil then
+        for _, _ in v_u_48 do
+            v_u_48.Parent = v_u_45
+        end
+        for _, v50 in v_u_47 do
+            v50:AddTag("Deletable")
+        end
+        v_u_45.Parent = script
+    end
+    for _, v51 in p49:GetChildren() do
+        local v52 = CFrame.new(v51.Base.Size.X / 2 % 2 == 1 and -1 or 0, 0, v51.Base.Size.Z / 2 % 2 == 1 and 1 or 0)
+        local v53 = CFrame.new
+        local v54 = v51.PrimaryPart.Position.X
+        local v55 = math.round(v54) / 2
+        local v56 = math.floor(v55) * 2
+        local v57 = v51.PrimaryPart.Position.Z
+        local v58 = math.round(v57) / 2
+        v51:PivotTo(v53(v56, 2.075, math.floor(v58) * 2) * v52 * v51.PrimaryPart.CFrame.Rotation)
+        local v59 = v_u_48
+        local v60 = v51.Name
+        v59[tonumber(v60) + 1] = v51
+    end
+    Instance.new("Humanoid").Parent = p49
+    v_u_46.Parent = p49
+    p49.Parent = workspace
+    v_u_45 = p49
+end
+local function v_u_79(p62) -- name: generateCoordinatesFromModel
+    local v63 = (p62.Base.CFrame.Rotation * CFrame.new(p62.Base.Size)).Position
+    local v64 = p62.Base.Position + v63 / 2
+    local v65 = p62.Base.Position - v63 / 2
+    local v66 = {}
+    local v67 = v64.z
+    local v68 = v65.z
+    local v69 = math.min(v67, v68)
+    v66.minY = math.round(v69)
+    local v70 = v64.z
+    local v71 = v65.z
+    local v72 = math.max(v70, v71)
+    v66.maxY = math.round(v72)
+    local v73 = v64.x
+    local v74 = v65.x
+    local v75 = math.min(v73, v74)
+    v66.minX = math.round(v75)
+    local v76 = v64.x
+    local v77 = v65.x
+    local v78 = math.max(v76, v77)
+    v66.maxX = math.round(v78)
+    return v66
+end
+local function v_u_118(p80, p81) -- name: highlightSteps
+    -- upvalues: (copy) v_u_48, (copy) v_u_44, (copy) v_u_46, (copy) v_u_79, (copy) v_u_47
+    local v_u_82 = p80 + 1
+    local v_u_83 = p81 + 1
+    local v_u_84 = {}
+    local v_u_85 = {}
+    for v86 = v_u_82, v_u_83 do
+        local v87 = v_u_48[v86]
+        v87.Parent = v_u_44
+        local v88 = v_u_46:Clone()
+        v88.FillColor = Color3.fromRGB(255, 255, 25)
+        v88.FillTransparency = 0.6
+        v88.Parent = v87
+        Instance.new("Humanoid").Parent = v87
+        v87.Parent = v_u_44
+        v_u_84[v86] = false
+        for _, v89 in workspace.Plots:GetChildren() do
+            for _, v90 in v89:GetChildren() do
+                if v90:IsA("Model") and (v90.PrimaryPart.CFrame:FuzzyEq(v87.PrimaryPart.CFrame) and v90:GetAttribute("Name") == v87:GetAttribute("Name")) then
+                    v_u_48[v86].Parent = script
+                    v_u_85[v86] = v90
+                    v_u_84[v86] = true
+                end
+            end
+        end
+    end
+    local v91 = {}
+    for _, v92 in workspace.Plots:GetChildren() do
+        local v93 = v92.ChildAdded
+        local function v97(p94)
+            -- upvalues: (copy) v_u_82, (copy) v_u_83, (ref) v_u_48, (copy) v_u_85, (copy) v_u_84
+            if p94:IsA("Model") then
+                local v95 = p94:GetAttribute("Name")
+                local _ = p94:WaitForChild("Root").CFrame
+                for v96 = v_u_82, v_u_83 do
+                    if v_u_48[v96]:GetAttribute("Name") == v95 and ((v_u_48[v96].PrimaryPart.Rotation - p94.PrimaryPart.Rotation).Magnitude <= 0.1 and (v_u_48[v96].PrimaryPart.Position - p94.PrimaryPart.Position).Magnitude <= 0.1) then
+                        v_u_48[v96].Parent = script
+                        v_u_85[v96] = p94
+                        v_u_84[v96] = true
+                    end
+                end
+            end
+        end
+        table.insert(v91, v93:Connect(v97))
+        local v98 = v92.ChildRemoved
+        local function v102(p99)
+            -- upvalues: (copy) v_u_82, (copy) v_u_83, (ref) v_u_48, (ref) v_u_44, (copy) v_u_85, (copy) v_u_84
+            if p99:IsA("Model") then
+                local v100 = p99:GetAttribute("Name")
+                local _ = p99:WaitForChild("Root").CFrame
+                for v101 = v_u_82, v_u_83 do
+                    if v_u_48[v101]:GetAttribute("Name") == v100 and ((v_u_48[v101].PrimaryPart.Rotation - p99.PrimaryPart.Rotation).Magnitude <= 0.1 and (v_u_48[v101].PrimaryPart.Position - p99.PrimaryPart.Position).Magnitude <= 0.1) then
+                        v_u_48[v101].Highlight.FillColor = Color3.fromRGB(255, 255, 25)
+                        v_u_48[v101].Parent = v_u_44
+                        v_u_85[v101] = nil
+                        v_u_84[v101] = false
+                    end
+                end
+            end
+        end
+        table.insert(v91, v98:Connect(v102))
+    end
+    local v_u_103 = false
+    local function v111(p104) -- name: handle
+        -- upvalues: (ref) v_u_103, (ref) v_u_79, (copy) v_u_82, (copy) v_u_83, (ref) v_u_48
+        if p104 == nil then
+            return
+        elseif p104:IsA("Model") and p104:GetAttribute("ID") ~= nil then
+            p104:WaitForChild("Root")
+            while p104 ~= nil and (p104.Parent == workspace.PlacingModels and not v_u_103) do
+                local v105 = v_u_79(p104)
+                for v106 = v_u_82, v_u_83 do
+                    local v107 = v_u_48[v106]
+                    local v108 = v_u_79(v107)
+                    local v109 = v107.Base.CFrame.Rotation:FuzzyEq(p104.Base.CFrame.Rotation, 0.1)
+                    if (v107.PrimaryPart.Position - p104.PrimaryPart.Position).Magnitude <= 0.1 and (v109 and v107:GetAttribute("Name") == p104.Name) then
+                        v107.Highlight.FillColor = Color3.fromRGB(25, 255, 25)
+                    elseif v105.minX < v108.maxX and (v105.maxX > v108.minX and (v105.minY < v108.maxY and v105.maxY > v108.minY)) then
+                        v107.Highlight.FillColor = Color3.fromRGB(255, 25, 25)
+                    else
+                        v107.Highlight.FillColor = Color3.fromRGB(255, 255, 25)
+                    end
+                end
+                task.wait()
+            end
+            if not v_u_103 then
+                for v110 = v_u_82, v_u_83 do
+                    v_u_48[v110].Highlight.FillColor = Color3.fromRGB(255, 255, 25)
+                end
+            end
+        end
+    end
+    task.spawn(v111, workspace.PlacingModels:FindFirstChildOfClass("Model"))
+    local v112 = workspace.PlacingModels.ChildAdded
+    table.insert(v91, v112:Connect(v111))
+    while task.wait() do
+        v_u_103 = true
+        for v113 = v_u_82, v_u_83 do
+            if not v_u_84[v113] then
+                v_u_103 = false
+                break
+            end
+        end
+        if v_u_103 then
+            break
+        end
+    end
+    for _, v114 in v91 do
+        v114:Disconnect()
+    end
+    table.clear(v91)
+    for v115, v116 in v_u_85 do
+        v_u_47[v115] = v116
+        v116:RemoveTag("Deletable")
+    end
+    for v117 = v_u_82, v_u_83 do
+        v_u_48[v117].Highlight:Destroy()
+    end
+end
+local function v_u_124(p119) -- name: raycastFromInput
+    -- upvalues: (copy) v_u_1
+    local v120 = workspace.CurrentCamera:ScreenPointToRay(p119.x, p119.y, 0)
+    local v121 = RaycastParams.new()
+    v121.FilterType = Enum.RaycastFilterType.Exclude
+    v121:AddToFilter(v_u_1.LocalPlayer.Character)
+    local v122 = workspace:Raycast(v120.Origin, v120.Direction * 1000, v121)
+    local v123
+    if v122 == nil then
+        v123 = nil
+    else
+        v123 = v122.Instance or nil
+    end
+    return v123, v122.Position
+end
+local v_u_125 = false
+local v126 = v6.PlayerGui:WaitForChild("TutorialRestrictions")
+local v_u_127 = v126:WaitForChild("ToolEquipped")
+local v_u_128 = v126:WaitForChild("NodeSelected")
+local function v_u_143(p129, p130, p131, p132, p133, p134) -- name: _clickMachinesLoop
+    -- upvalues: (ref) v_u_125, (copy) v_u_31, (copy) v_u_127, (copy) v_u_128, (copy) v_u_3, (copy) v_u_124, (copy) v_u_4
+    v_u_125 = false
+    ::l36::
+    p131.Adornee = p129
+    p131.Parent = p129
+    if p132 ~= nil then
+        v_u_31(p132)
+    end
+    while true do
+        repeat
+            task.wait()
+        until (v_u_127.Value == p134 or v_u_127.Value == nil) and v_u_128.Value == nil
+        local v135 = v_u_3.InputBegan:Wait()
+        if v135.UserInputType == Enum.UserInputType.MouseButton1 or v135.UserInputType == Enum.UserInputType.Touch then
+            local v136, v137 = v_u_124(v135.Position)
+            if v136 ~= nil then
+                local v138 = v_u_4.getModelFromPart(v136)
+                if v138 ~= nil and (v_u_4.xIsAConnector(v136.Name) or (v136.Name == "Base" or (v_u_4.findClosestPowerConnectorToPoint(v137, v138) ~= nil or v138:GetAttribute("Name") ~= "LV_Pole"))) and v138.Base.Position:FuzzyEq(p129.Base.Position, 0.001) then
+                    p131.Adornee = p130
+                    p131.Parent = p130
+                    if p133 ~= nil then
+                        v_u_31(p133)
+                    end
+                    while true do
+                        repeat
+                            task.wait()
+                        until v_u_127.Value == p134 or v_u_127.Value == nil
+                        local v139 = v_u_3.InputBegan:Wait()
+                        if v139.UserInputType == Enum.UserInputType.MouseButton1 or v139.UserInputType == Enum.UserInputType.Touch then
+                            local v140, v141 = v_u_124(v139.Position)
+                            if v140 ~= nil then
+                                local v142 = v_u_4.getModelFromPart(v140)
+                                if v142 ~= nil and (v_u_4.xIsAConnector(v140.Name) or (v140.Name == "Base" or (v_u_4.findClosestPowerConnectorToPoint(v141, v142) ~= nil or v142:GetAttribute("Name") ~= "LV_Pole"))) and v142.Base.Position:FuzzyEq(p130.Base.Position, 0.001) then
+                                    v_u_125 = true
+                                    return
+                                end
+                            end
+                            goto l36
+                        end
+                    end
+                end
+            end
+            goto l36
+        end
+    end
+end
+local function v_u_170(p144, p145, p_u_146, p_u_147, p_u_148) -- name: wireMachines
+    -- upvalues: (copy) v_u_46, (copy) v_u_47, (copy) v_u_79, (ref) v_u_125, (copy) v_u_143, (copy) v_u_31, (copy) v_u_15, (copy) v_u_16, (copy) v_u_22, (copy) v_u_23, (copy) v_u_21
+    local v_u_149 = v_u_46:Clone()
+    v_u_149.FillColor = Color3.fromRGB(255, 255, 25)
+    v_u_149.FillTransparency = 0.5
+    v_u_149.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    local v_u_150 = v_u_47[p144 + 1]
+    local v_u_151 = v_u_47[p145 + 1]
+    for _, v152 in v_u_150:GetDescendants() do
+        if v152:IsA("Folder") and v152.Name == "Power" then
+            for _, v153 in v152.Buffer:GetChildren() do
+                local v154 = string.split(string.gsub(v153.Name, "%a", ""), ", ")
+                local v155 = v154[1]
+                local v156 = tonumber(v155)
+                local v157 = v154[3]
+                local v158 = tonumber(v157)
+                local v159 = v_u_79(v_u_151)
+                if v156 <= v159.maxX and (v159.minX <= v156 and (v158 <= v159.maxY and v159.minY <= v158)) then
+                    return
+                end
+            end
+        end
+    end
+    v_u_125 = false
+    local v_u_160 = task.spawn(v_u_143, v_u_150, v_u_151, v_u_149, p_u_147, p_u_148, "Wire")
+    local v161 = {}
+    local function v_u_163() -- name: reset
+        -- upvalues: (ref) v_u_160, (ref) v_u_31, (copy) p_u_146, (ref) v_u_15, (ref) v_u_16, (ref) v_u_22, (ref) v_u_23, (ref) v_u_21, (ref) v_u_143, (copy) v_u_150, (copy) v_u_151, (copy) v_u_149, (copy) p_u_147, (copy) p_u_148
+        task.cancel(v_u_160)
+        v_u_31(p_u_146)
+        local v162 = v_u_15:FindFirstChild("Wire")
+        v162.Active = true
+        v162.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Wire").ToolEvent.Event:Wait()
+        v_u_22.Visible = false
+        v_u_23.Visible = false
+        v_u_21.Visible = false
+        v_u_160 = task.spawn(v_u_143, v_u_150, v_u_151, v_u_149, p_u_147, p_u_148, "Wire")
+    end
+    local v164 = v_u_16.Delete.ToolEvent.Event
+    table.insert(v161, v164:Connect(v_u_163))
+    local v165 = v_u_16.Pipe.ToolEvent.Event
+    table.insert(v161, v165:Connect(v_u_163))
+    local v166 = v_u_16.Placement.ToolEvent.Event
+    table.insert(v161, v166:Connect(v_u_163))
+    local v167 = v_u_16.Wire.ToolEvent.Event
+    table.insert(v161, v167:Connect(function(p168)
+        -- upvalues: (copy) v_u_163
+        if p168 == "unequip" then
+            v_u_163()
+        end
+    end))
+    repeat
+        task.wait()
+    until v_u_125
+    for _, v169 in v161 do
+        v169:Disconnect()
+    end
+    v_u_149:Destroy()
+end
+local function v_u_197(p171, p172, p_u_173, p_u_174, p_u_175) -- name: pipeMachines
+    -- upvalues: (copy) v_u_47, (copy) v_u_79, (copy) v_u_46, (ref) v_u_125, (copy) v_u_143, (copy) v_u_31, (copy) v_u_15, (copy) v_u_16, (copy) v_u_22, (copy) v_u_23, (copy) v_u_21
+    local v_u_176 = v_u_47[p171 + 1]
+    local v_u_177 = v_u_47[p172 + 1]
+    for _, v178 in v_u_176:GetDescendants() do
+        if v178:IsA("Folder") and v178.Name == "Pipe" then
+            for _, v179 in v178.PipeDecorations:GetChildren() do
+                local v180 = string.split(v179.Name, ", ")
+                local v181 = v180[1]
+                local v182 = tonumber(v181)
+                local v183 = v180[3]
+                local v184 = tonumber(v183)
+                local v185 = v_u_79(v_u_177)
+                if v182 <= v185.maxX and (v185.minX <= v182 and (v184 <= v185.maxY and v185.minY <= v184)) then
+                    return
+                end
+            end
+        end
+    end
+    local v_u_186 = v_u_46:Clone()
+    v_u_186.FillColor = Color3.fromRGB(255, 255, 25)
+    v_u_186.FillTransparency = 0.5
+    v_u_186.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    v_u_125 = false
+    local v_u_187 = task.spawn(v_u_143, v_u_176, v_u_177, v_u_186, p_u_174, p_u_175, "Pipe")
+    local v188 = {}
+    local function v_u_190() -- name: reset
+        -- upvalues: (ref) v_u_187, (ref) v_u_31, (copy) p_u_173, (ref) v_u_15, (ref) v_u_16, (ref) v_u_22, (ref) v_u_23, (ref) v_u_21, (ref) v_u_143, (copy) v_u_176, (copy) v_u_177, (copy) v_u_186, (copy) p_u_174, (copy) p_u_175
+        task.cancel(v_u_187)
+        v_u_31(p_u_173)
+        local v189 = v_u_15:FindFirstChild("Pipe")
+        v189.Active = true
+        v189.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Pipe").ToolEvent.Event:Wait()
+        v_u_22.Visible = false
+        v_u_23.Visible = false
+        v_u_21.Visible = false
+        v_u_187 = task.spawn(v_u_143, v_u_176, v_u_177, v_u_186, p_u_174, p_u_175, "Pipe")
+    end
+    local v191 = v_u_16.Delete.ToolEvent.Event
+    table.insert(v188, v191:Connect(v_u_190))
+    local v192 = v_u_16.Wire.ToolEvent.Event
+    table.insert(v188, v192:Connect(v_u_190))
+    local v193 = v_u_16.Placement.ToolEvent.Event
+    table.insert(v188, v193:Connect(v_u_190))
+    local v194 = v_u_16.Pipe.ToolEvent.Event
+    table.insert(v188, v194:Connect(function(p195)
+        -- upvalues: (copy) v_u_190
+        if p195 == "unequip" then
+            v_u_190()
+        end
+    end))
+    repeat
+        task.wait()
+    until v_u_125
+    for _, v196 in v188 do
+        v196:Disconnect()
+    end
+    v_u_186:Destroy()
+end
+local function v_u_199(p198) -- name: waitForRecipe
+    -- upvalues: (copy) v_u_17
+    repeat
+        v_u_17:GetPropertyChangedSignal("Text"):Wait()
+    until v_u_17.Text == p198
+end
+local v_u_206 = {
+    function()
+        -- upvalues: (copy) v_u_33, (copy) v_u_26, (copy) v_u_31, (copy) v_u_15, (copy) v_u_16, (copy) v_u_43
+        v_u_33("Hello and welcome to Industrialist! We\'ll go over the fundamentals to get you started. This is a somewhat complex game, and this tutorial will take you through the basics of how to play.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("The first thing we\'ll do is go over the tools and how to build factories. At the bottom of your screen is the toolbar")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_31("Begin by picking the first tool from your hotbar (the Build tool)!")
+        local v200 = v_u_15:FindFirstChild("Placement")
+        v200.Active = true
+        v200.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Placement").ToolEvent.Event:Wait()
+        v_u_31("This menu is where you will buy all your buildings. Its seperated into tiers to make it easy to find buildings as you research and unlock more.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_43("Coal Drill", "Go ahead and select the coal drill! Try using the search bar if you can\'t find it. ", "Now press the Start Placing button!")
+    end,
+    function()
+        -- upvalues: (copy) v_u_31, (copy) v_u_61, (copy) v_u_118
+        v_u_31("We created a blueprint for you to follow! Place two coal drills inside of the blueprint! For PC players, you can press R to quickly rotate the drills to the right orientation.")
+        v_u_61(game.ReplicatedStorage.Tutorials.MoneySchematic)
+        v_u_118(0, 1)
+    end,
+    function()
+        -- upvalues: (copy) v_u_31, (copy) v_u_43, (copy) v_u_118
+        v_u_31("Now open back up your inventory and select the pipe!")
+        v_u_43("Short Pipe", "Now open back up your inventory and select the short pipe!", "Now press the Start Placing button!")
+        v_u_31("You\'re also going to need the pipe turn and the pipe junction buildings. If you\'re on PC, you can press Q to quickly switch between pipe variations.")
+        v_u_118(2, 5)
+    end,
+    function()
+        -- upvalues: (copy) v_u_31, (copy) v_u_118
+        v_u_31("We will need a way to power the coal drills! Place down some solar panels")
+        v_u_118(9, 10)
+        v_u_31("Now place down a LV pole for the solar panels to connect to!")
+        v_u_118(8, 8)
+    end,
+    function()
+        -- upvalues: (copy) v_u_31, (copy) v_u_118
+        v_u_31("Lastly, place down a Truck Depot. Depots are how you will sell all items in Industrialist!")
+        v_u_118(7, 7)
+    end,
+    function()
+        -- upvalues: (copy) v_u_33, (copy) v_u_31, (copy) v_u_15, (copy) v_u_16, (copy) v_u_170, (copy) v_u_26
+        v_u_33("")
+        v_u_31("Although we have power generation, we haven\'t connected it to our production yet! Go ahead and select the wire tool in the 2nd slot.")
+        local v201 = v_u_15:FindFirstChild("Wire")
+        v201.Active = true
+        v201.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Wire").ToolEvent.Event:Wait()
+        v_u_170(9, 8, "Equip the wiring tool!", "Now click on the solar panel!", "Now click on the base of the LV pole to connect it!")
+        v_u_31("Connect the rest of the machines!")
+        v_u_170(10, 8, "Equip the wiring tool!", "Connect the rest of the machines!", "Connect the rest of the machines!")
+        v_u_31("Now that the solar panels are connected to the LV Pole, we need to connect the LV Pole to the coal drills.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_170(8, 0, "Equip the wiring tool!", "Connect the rest of the machines!", "Connect the rest of the machines!")
+        v_u_170(8, 1, "Equip the wiring tool!", "Connect the rest of the machines!", "Connect the rest of the machines!")
+    end,
+    function()
+        -- upvalues: (copy) v_u_33, (copy) v_u_26, (copy) v_u_31, (copy) v_u_15, (copy) v_u_16, (copy) v_u_197, (copy) v_u_48, (ref) v_u_45, (copy) v_u_47
+        v_u_33("Now we\'re going to handle piping. For the most part, Industrialist will automatically connect the pipes properly.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("However, there are some cases in which the piping is incorrect, or in the case of certain types of pipe, you need to manually pipe it.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_31("Go ahead and select the pipe tool in the 3rd slot.")
+        local v202 = v_u_15:FindFirstChild("Pipe")
+        v202.Active = true
+        v202.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Pipe").ToolEvent.Event:Wait()
+        v_u_197(0, 3, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        v_u_197(1, 2, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        v_u_197(2, 4, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        v_u_197(4, 3, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        v_u_197(3, 5, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        v_u_197(5, 7, "Equip the piping tool!", "Now click on the highlighted model.", "Now click on the other highlighted model to connect the two models together.")
+        for _, _ in v_u_48 do
+            v_u_48.Parent = v_u_45
+        end
+        for _, v203 in v_u_47 do
+            v203:AddTag("Deletable")
+        end
+        v_u_45.Parent = script
+    end,
+    function()
+        -- upvalues: (copy) v_u_33, (copy) v_u_26, (copy) v_u_11, (copy) v_u_31, (copy) v_u_2, (copy) v_u_13
+        v_u_33("Congrats, you just finished your first ever cash setup! As you progress in the game, things will get more and more complicated with larger setups")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("As you may have noticed, you can\'t make better setups yet. This is where the next feature of the game comes up, researching!")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("Go ahead and click on the blue button on the left.")
+        v_u_11.Activated:Wait()
+        v_u_31("As you can see, the research is divided into 3 sections based on what the research focuses on. In order to unlock a node, you must have ALL prior nodes unlocked.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_31("Go ahead and research the node \'Copper Extracting\'")
+        if (v_u_2.ResearchPoints.Value < 50 and "" or v_u_13.Event:Wait()) ~= "Copper Extracting" then
+            v_u_33("Oops, looks like you researched the wrong item! That\'s fine, we\'ll continue anyway.")
+            v_u_26.Visible = true
+            v_u_26.Text = "Next"
+            v_u_26.Activated:Wait()
+            v_u_26.Visible = false
+        end
+    end,
+    function()
+        -- upvalues: (copy) v_u_31, (copy) v_u_26, (copy) v_u_15, (copy) v_u_16, (copy) v_u_61, (copy) v_u_43, (copy) v_u_118, (copy) v_u_170, (copy) v_u_48, (ref) v_u_45, (copy) v_u_47
+        v_u_31("Looks like we\'re all out of RP. RP is generated from research stations. Lets build a quick research setup!")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_31("Close out of this window and equip the building tool!")
+        local v204 = v_u_15:FindFirstChild("Placement")
+        v204.Active = true
+        v204.BackgroundTransparency = 0
+        v_u_16:FindFirstChild("Placement").ToolEvent.Event:Wait()
+        v_u_61(game.ReplicatedStorage.Tutorials.ResearchBlueprint)
+        v_u_31("Go ahead and select the research station!")
+        v_u_43("Research Station1", "Select the research station!", "Now press the place button!")
+        v_u_31("You know the drill, go ahead and complete the blueprint!")
+        v_u_118(0, 1)
+        v_u_31("Now let\'s place the solar panels.")
+        v_u_118(2, 5)
+        v_u_170(2, 0, "Equip the wiring tool!", "Now, connect it all!", "Now, connect it all!")
+        v_u_170(3, 0, "Equip the wiring tool!", "Now, connect it all!", "Now, connect it all!")
+        v_u_170(4, 1, "Equip the wiring tool!", "Now, connect it all!", "Now, connect it all!")
+        v_u_170(5, 1, "Equip the wiring tool!", "Now, connect it all!", "Now, connect it all!")
+        v_u_31("Congrats! You have finished your first ever research setup. As you continute, these research stations will get more complicated, but will generate more RP")
+        for _, _ in v_u_48 do
+            v_u_48.Parent = v_u_45
+        end
+        for _, v205 in v_u_47 do
+            v205:AddTag("Deletable")
+        end
+        v_u_45.Parent = script
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+    end,
+    function()
+        -- upvalues: (copy) v_u_33, (copy) v_u_26, (copy) v_u_12, (copy) v_u_199
+        v_u_33("Lastly, and most importantly, is the recipe book. There are two ways to access this book: either from the button on the left, or you can see a specific machines recipes by clicking on the book in the build menu.")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("Go ahead and open up the recipe book by clicking on the left button!")
+        v_u_12.Activated:Wait()
+        v_u_33("You are able to find out everything you need from this book, including details such as power requirements, ratios, and production times! Try searching up \'Raw Copper\' to see what we can use it for!")
+        v_u_199("Raw Copper")
+        v_u_33("As you can see, the recipes are divided into two categories: one for how to produce the material, and one on what to use the material in. You are able to click on any of these recipes to see more information!")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("Try navigating using the recipe book to copper plates (Hint: Liquid Copper -> Copper Ingots -> Copper Plate)")
+        v_u_199("Copper Plate")
+        v_u_33("Each of those steps that you walked through in the recipe book would take a different machine! Thankfully, the recipe book tells you which machine to the right of the recipe, so if you\'re ever feeling stuck, just use the recipe book!")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+        v_u_33("If you are ever feeling stuck, want to talk with other players, report a bug, or anything else, make sure to join our communications server in the game description! Now, try and make it to the top of the leaderboards!")
+        v_u_26.Visible = true
+        v_u_26.Text = "Next"
+        v_u_26.Activated:Wait()
+        v_u_26.Visible = false
+    end
+}
+local function v_u_216() -- name: runTutorial
+    -- upvalues: (copy) v_u_27, (copy) v_u_15, (copy) v_u_206, (copy) v_u_25, (copy) v_u_18
+    v_u_27.Visible = false
+    local v207 = v_u_15:FindFirstChild("Delete")
+    v207.Active = false
+    v207.BackgroundTransparency = 0.5
+    local v208 = v_u_15:FindFirstChild("Pipe")
+    v208.Active = false
+    v208.BackgroundTransparency = 0.5
+    local v209 = v_u_15:FindFirstChild("Placement")
+    v209.Active = false
+    v209.BackgroundTransparency = 0.5
+    local v210 = v_u_15:FindFirstChild("Wire")
+    v210.Active = false
+    v210.BackgroundTransparency = 0.5
+    for v211 = 1, #v_u_206 do
+        v_u_25.Text = v211 .. " / " .. #v_u_206
+        v_u_206[v211]()
+    end
+    local v212 = v_u_15:FindFirstChild("Delete")
+    v212.Active = true
+    v212.BackgroundTransparency = 0
+    local v213 = v_u_15:FindFirstChild("Pipe")
+    v213.Active = true
+    v213.BackgroundTransparency = 0
+    local v214 = v_u_15:FindFirstChild("Placement")
+    v214.Active = true
+    v214.BackgroundTransparency = 0
+    local v215 = v_u_15:FindFirstChild("Wire")
+    v215.Active = true
+    v215.BackgroundTransparency = 0
+    v_u_18.Enabled = false
+end
+v5.OnClientEvent:Once(function()
+    -- upvalues: (copy) v_u_18, (copy) v_u_26, (copy) v_u_216, (copy) v_u_27
+    v_u_18.Enabled = true
+    local v_u_217 = nil
+    local v_u_218 = nil
+    v_u_217 = v_u_26.Activated:Once(function()
+        -- upvalues: (ref) v_u_217, (ref) v_u_218, (ref) v_u_216
+        v_u_217:Disconnect()
+        v_u_218:Disconnect()
+        v_u_216()
+    end)
+    v_u_218 = v_u_27.Activated:Once(function()
+        -- upvalues: (ref) v_u_217, (ref) v_u_218, (ref) v_u_18
+        v_u_217:Disconnect()
+        v_u_218:Disconnect()
+        v_u_18.Enabled = false
+    end)
+end)
