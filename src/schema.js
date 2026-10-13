@@ -110,7 +110,7 @@ project.sim.nodes[0] =
 
 
 // sim world data
-project.sim.world = 
+project.sim.world =
 {
   time: 0,
   pollution: 0,
@@ -179,7 +179,7 @@ const building =
     height: 2,
     offset: { x: 0, z: 0 }
   },
-  
+
   config: {}, // key: value
   data: {}, // key: value
 
