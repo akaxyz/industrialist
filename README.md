@@ -1,2 +1,2 @@
 # industrialist
-web app industrialist emulator with additional functionality for designing logic circuits
+factory game simulator simulator with advanced circuit building capabilties
