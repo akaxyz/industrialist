@@ -1,0 +1,9 @@
+   Compiling wasm-bindgen-shared v0.2.129
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling rustversion v1.0.23
+error: could not compile `quote` (build script) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `wasm-bindgen-shared` (build script) due to 1 previous error
+error: could not compile `proc-macro2` (build script) due to 1 previous error
+error: could not compile `rustversion` (build script) due to 1 previous error
