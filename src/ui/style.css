@@ -5,7 +5,7 @@
 @font-face {
   font-family: "Gill Sans Nova";
   src: local("Gill Sans Nova Medium"),
-       url("fonts/GillSansNova-Medium.ttf") format("truetype");
+       url("./fonts/GillSansNova-Medium.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,7 +14,7 @@
 @font-face {
   font-family: "Gill Sans Nova";
   src: local("Gill Sans Nova Medium Italic"),
-       url("fonts/GillSansNova-MediumItalic.ttf") format("truetype");
+       url("./fonts/GillSansNova-MediumItalic.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
