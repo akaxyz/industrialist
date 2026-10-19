@@ -2,6 +2,24 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Gill Sans Nova";
+  src: local("Gill Sans Nova Medium"),
+       url("fonts/GillSansNova-Medium.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gill Sans Nova";
+  src: local("Gill Sans Nova Medium Italic"),
+       url("fonts/GillSansNova-MediumItalic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 html,
 body {
   width: 100%;
@@ -10,7 +28,8 @@ body {
 }
 
 body {
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Gill Sans Nova", "Gill Sans", "Gill Sans MT",
+               "Segoe UI", system-ui, sans-serif;
   overflow: hidden;
 }
 
@@ -34,7 +53,8 @@ body {
 
   border-bottom: 1px solid #ccc;
 
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Gill Sans Nova", "Gill Sans", "Gill Sans MT",
+               "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
 }
 
